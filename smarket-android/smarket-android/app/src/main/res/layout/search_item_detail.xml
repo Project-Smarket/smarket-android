@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/detail_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/darker_gray"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="@color/colorPrimary"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/search_back_btn_detail"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/back_btn" />
+
+            <TextView
+                android:id="@+id/detail_banner_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginTop="4dp"
+                android:text="제목"
+                android:textColor="@color/cardview_light_background"
+                android:textSize="26sp" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/item_detail_image"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_marginBottom="8dp"
+            android:background="@color/cardview_light_background"
+            android:src="@mipmap/ic_launcher" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/cardview_light_background"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/detail_item_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="안드로이드 연습용 텍스트"
+                android:textSize="28sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:text="최저가"
+                    android:textColor="@color/red"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:id="@+id/detail_item_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="28800원"
+                    android:textColor="@color/red"
+                    android:textSize="26sp" />
+
+                <TextView
+                    android:id="@+id/item_Fluctuations"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="( down 500 )"
+                    android:textColor="@color/blue"
+                    android:textSize="24sp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/firm_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="4dp"
+                android:gravity="right"
+                android:text="판매처 : 위메프"
+                android:textSize="16sp" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@color/cardview_light_background"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/more_detail_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:text="판매처\n(314)" />
+
+            <Button
+                android:id="@+id/video_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:text="상세정보" />
+
+            <Button
+                android:id="@+id/store_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:text="관련영상" />
+        </LinearLayout>
+
+    </LinearLayout>
