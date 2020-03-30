@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class user_register_validate extends StringRequest {
 
-    final static private String url = "http://192.168.0.4:3000/register";
+    final static private String url = "http://10.0.2.2:3000/register";
     private Map<String, String> parameters;
 
     public user_register_validate(String userID, Response.Listener<String> listener) {

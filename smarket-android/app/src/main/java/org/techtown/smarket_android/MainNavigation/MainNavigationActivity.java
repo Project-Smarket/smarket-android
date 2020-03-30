@@ -12,13 +12,15 @@ import org.techtown.smarket_android.Alaram.alarm_fragment;
 import org.techtown.smarket_android.Home.home_fragment;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.User.user_login_fragment;
+import org.techtown.smarket_android.User.user_login_success;
 import org.techtown.smarket_android.searchItemList.search_fragment;
 
 
 public class MainNavigationActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
     home_fragment home_fragment1;
-    user_login_fragment user_fragment2;
+    user_login_success user_fragmnet2; // 로그인 완료 창
+    //user_login_fragment user_fragment2; // 로그인 창
     alarm_fragment alarm_fragment3;
     search_fragment search_fragment4;
 
@@ -28,7 +30,8 @@ public class MainNavigationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_navigation);
         bottomNavigationView = findViewById(R.id.bottomNavigationView); //프래그먼트 생성
         home_fragment1 = new home_fragment();
-        user_fragment2 = new user_login_fragment();
+        user_fragmnet2 = new user_login_success(); // 로그인 완료 창
+        //user_fragment2 = new user_login_fragment(); // 로그인 창
         alarm_fragment3 = new alarm_fragment();
         search_fragment4 = new search_fragment();//제일 처음 띄워줄 뷰를 세팅해줍니다. commit();까지 해줘야 합니다.
 
@@ -42,7 +45,8 @@ public class MainNavigationActivity extends AppCompatActivity {
                         return true;
                     }
                     case R.id.tab2: {
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, user_fragment2).commitAllowingStateLoss();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, user_fragmnet2).commitAllowingStateLoss(); //로그인 완료 창
+                        //getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, user_fragment2).commitAllowingStateLoss(); // 로그인 창
                         return true;
                     }
                     case R.id.tab3: {
