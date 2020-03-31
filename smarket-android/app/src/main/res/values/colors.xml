@@ -9,4 +9,6 @@
     <color name="bgBackSideColor">#0000ff</color>
     <color name="smarketyello">#FFC107</color>
     <color name="colorgray">#919191</color>
+    <color name="graphColor">#FFC107</color>
+    <color name="colorBlack">#000000</color>
 </resources>
