@@ -20,7 +20,11 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="40dp"
             android:hint="폴더명을 입력하세요"
-            android:imeOptions="actionNext" />
+            android:imeOptions="actionDone"
+            android:lines="1"
+            android:maxLength="20"
+            android:singleLine="true"
+            android:privateImeOptions="defaultInputmode=korean"/>
 
 
     </LinearLayout>

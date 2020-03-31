@@ -47,6 +47,7 @@ public class bookmark_fragment extends Fragment {
     ViewGroup viewGroup;
     Spinner bookmark_spinner;
     EditText bookmark_folder_name;
+    InputMethodManager imm;
 
     @Nullable
     @Override
@@ -56,7 +57,7 @@ public class bookmark_fragment extends Fragment {
         bookmarkList = new ArrayList<>();
 
         bookmarkList.add("철수");
-
+        imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 
         spinnerAdapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_spinner_dropdown_item,
@@ -99,21 +100,25 @@ public class bookmark_fragment extends Fragment {
 
         final View dialogView = inflater.inflate(R.layout.bookmark_plus_dialog, null);
         bookmark_folder_name = dialogView.findViewById(R.id.bookmark_folder_name);
-
-        bookmark_folder_name.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        bookmark_folder_name.setOnKeyListener(new View.OnKeyListener() {
             @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                switch (actionId) {
-                    case EditorInfo.IME_ACTION_NEXT:
-                        // 검색 동작
-                        break;
-                    default:
-                        // 기본 엔터키 동작
-                        return false;
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if(keyCode == KeyEvent.KEYCODE_ENTER){
+                    hideKeyboard();
                 }
-                return true;
+                return false;
             }
         });
+        /*bookmark_folder_name.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    Toast.makeText(getContext(), "gg", Toast.LENGTH_LONG).show();
+                }else{};
+                return false;
+            }
+        });*/
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(dialogView);
         builder.setTitle("북마크 폴더 추가");
@@ -121,6 +126,14 @@ public class bookmark_fragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String folder_name = bookmark_folder_name.getText().toString();
+
+                char except_enter[] = folder_name.toCharArray(); // 한글 입력 후 엔터시 개행문자 발생하는 오류 처리
+                char result_char[] = new char[except_enter.length-1];
+                if(except_enter[except_enter.length-1] == '\n'){
+                    System.arraycopy(except_enter, 0, result_char, 0, except_enter.length-1);
+                    folder_name = String.valueOf(result_char);
+                }
+
                 bookmarkList.add(folder_name); // 북마크 폴더 추가
                 spinnerAdapter.notifyDataSetChanged(); // 어댑터 갱신
                 bookmark_spinner.setSelection(bookmarkList.size()-1); // 새로운 북마크 생성 시 생성된 북마크 페이지
@@ -155,4 +168,10 @@ public class bookmark_fragment extends Fragment {
         builder.show();
 
     }// 북마크 폴더 삭제 기능
+
+    private void hideKeyboard(){
+        imm.hideSoftInputFromWindow(bookmark_folder_name.getWindowToken(), 0);
+        imm.hideSoftInputFromWindow(bookmark_folder_name.getWindowToken(), 0);
+    }// 키보드 입력 후 엔터 입력시 키보드 창 내림
+
 }
