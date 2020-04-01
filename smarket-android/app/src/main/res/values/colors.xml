@@ -12,5 +12,5 @@
     <color name="colorBlack">#000000</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="graphColor">#FFC107</color>
-
+    <color name="color_lite_gray">#E8E8E8</color>
 </resources>

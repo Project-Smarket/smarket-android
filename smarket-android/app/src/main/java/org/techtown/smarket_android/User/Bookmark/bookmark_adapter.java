@@ -5,15 +5,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.searchItemList.Item;
-import org.techtown.smarket_android.searchItemList.itemAdapter;
+import org.techtown.smarket_android.searchItemList.RecyclerAdapter;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
@@ -21,72 +23,68 @@ import java.util.ArrayList;
 public class bookmark_adapter extends RecyclerView.Adapter<bookmark_adapter.bmViewHolder> {
 
 
-    private ArrayList<Item> list;
-    private LayoutInflater mInflate;
-    private Context mContext;
+    // adapter에 들어갈 list 입니다.
+    private ArrayList<Item> listData = new ArrayList<>();
 
-    public interface OnItemClickListener{
-        void onItemClickListener(View v, int position);
-    }
-
-    private itemAdapter.OnItemClickListener onItemClickListener = null;
-
-    public void setOnItemClickListener(itemAdapter.OnItemClickListener listener){
-        this.onItemClickListener = listener;
-    }
-
-    public bookmark_adapter(Context context, ArrayList<Item> list){
-        this.mContext = context;
-        this.mInflate = LayoutInflater.from(context);
-        this.list = list;
-    }
-
+    @NonNull
     @Override
-    public bmViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = mInflate.inflate(R.layout.search_list_item, parent, false);
-        final bookmark_adapter.bmViewHolder viewHolder = new bookmark_adapter.bmViewHolder(view);
+    public bookmark_adapter.bmViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // LayoutInflater를 이용하여 전 단계에서 만들었던 item.xml을 inflate 시킵니다.
+        // return 인자는 ViewHolder 입니다.
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_list_item, parent, false);
 
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+        bmViewHolder itemViewHolder = new bookmark_adapter.bmViewHolder(view);
+
+        ImageButton heart = view.findViewById(R.id.heart_btn);
+        heart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int pos = viewHolder.getAdapterPosition();
-                if(pos != RecyclerView.NO_POSITION){
-                    if(onItemClickListener!=null){
-                        onItemClickListener.onItemClickListener(v,pos);
-                    }
-                }
+                Toast.makeText(v.getContext(),"hi",Toast.LENGTH_SHORT).show();
             }
         });
 
-        return viewHolder;
+        return itemViewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final bookmark_adapter.bmViewHolder holder, final int position) {
-        holder.item_name.setText(list.get(position).getItem_name());
-        holder.item_value.setText(list.get(position).getItem_value());
-        holder.item_image.setImageDrawable(list.get(position).getItem_image());
-
+    public void onBindViewHolder(@NonNull bookmark_adapter.bmViewHolder holder, int position) {
+        // Item을 하나, 하나 보여주는(bind 되는) 함수입니다.
+        holder.onBind(listData.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return list.size();
+        // RecyclerView의 총 개수 입니다.
+        return listData.size();
     }
 
-    public static class bmViewHolder extends RecyclerView.ViewHolder{
-        public TextView item_name;
-        public TextView item_value;
-        public ImageView item_image;
-        public Button heart_btn;
-        public final View mView;
+    void addItem(Item data) {
+        // 외부에서 item을 추가시킬 함수입니다.
+        listData.add(data);
+    }
 
-        public bmViewHolder(View itemView){
+    // RecyclerView의 핵심인 ViewHolder 입니다.
+    // 여기서 subView를 setting 해줍니다.
+    public static class bmViewHolder extends RecyclerView.ViewHolder {
+
+        private TextView item_name;
+        private TextView item_value;
+        private ImageView itemImage;
+        private ImageButton heart;
+
+        public bmViewHolder(@NonNull  View itemView) {
             super(itemView);
-            item_name = itemView.findViewById(R.id.item_name);
+
+            item_name = itemView.findViewById(R.id.search_list_item_name);
             item_value = itemView.findViewById(R.id.item_value);
-            item_image = itemView.findViewById(R.id.item_image);
-            mView = itemView;
+            itemImage = itemView.findViewById(R.id.item_image);
+            heart = itemView.findViewById(R.id.heart_btn);
+        }
+
+        void onBind(Item data) {
+            item_name.setText(data.getItem_name());
+            item_value.setText(data.getItem_value());
+            itemImage.setImageResource(data.getItem_image());
         }
     }
 }

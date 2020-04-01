@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/search_fragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/login_lock"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="right"
+            android:background="@drawable/lock"/>
+
+        <TextView
+            android:id="@+id/search_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_marginTop="58dp"
+            android:text="스 마 켓"
+            android:textSize="48sp" />
+
+        <ImageView
+            android:layout_width="112dp"
+            android:layout_height="112dp"
+            android:background="@drawable/premierball"
+            android:layout_margin="16dp"
+            android:layout_gravity="center"
+            />
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/search_value"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="4dp"
+                android:layout_weight="4"
+                android:background="@drawable/border" />
+
+            <Button
+                android:id="@+id/search_btn"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_weight="0"
+                android:background="@drawable/search_icon" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</FrameLayout>
