@@ -11,5 +11,6 @@
     <color name="colorgray">#919191</color>
     <color name="colorBlack">#000000</color>
     <color name="colorWhite">#FFFFFF</color>
+    <color name="graphColor">#FFC107</color>
 
 </resources>
