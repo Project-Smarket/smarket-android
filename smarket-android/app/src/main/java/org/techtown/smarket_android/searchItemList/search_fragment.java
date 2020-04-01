@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,25 +17,24 @@ import org.techtown.smarket_android.R;
 
 
 public class search_fragment extends Fragment {
-    ViewGroup viewGroup;
-    Button search_btn;
-    search_list_fragment sf;
+    private ViewGroup viewGroup;
+    private Button search_btn;
+    private search_list_fragment sf;
+    int check_Num=0;
+
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.search_main, container, false);
 
-        sf = new search_list_fragment();
-
         search_btn = (Button) viewGroup.findViewById(R.id.search_btn);
         search_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                sf = new search_list_fragment();
 
-                TextView textView = viewGroup.findViewById(R.id.search_value);
-                Bundle bundle = new Bundle(1);
-                bundle.putString("search", textView.getText().toString());
+                Bundle bundle = setBundle(v);
                 sf.setArguments(bundle);
 
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
@@ -44,6 +44,17 @@ public class search_fragment extends Fragment {
         });
 
         return viewGroup;
+    }
+
+    private Bundle setBundle(View v){
+        Bundle bundle = new Bundle();
+        TextView textView = viewGroup.findViewById(R.id.search_value);
+
+        if(getArguments() != null){
+            bundle.putString("search", textView.getText().toString());
+        }
+
+        return bundle;
     }
 
 }
