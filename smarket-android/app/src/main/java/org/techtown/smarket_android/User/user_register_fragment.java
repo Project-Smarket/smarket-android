@@ -2,11 +2,17 @@ package org.techtown.smarket_android.User;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,28 +25,47 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONObject;
 import org.techtown.smarket_android.R;
 
+import java.util.ArrayList;
+import java.util.regex.Pattern;
+
 
 public class user_register_fragment extends Fragment {
     ViewGroup viewGroup;
 
-    public static user_register_fragment newInstance(){
+    public static user_register_fragment newInstance() {
         return new user_register_fragment();
     }
 
     EditText register_id;
     EditText register_pw;
+    EditText register_pw_check;
     EditText register_name;
+    EditText register_nick;
+    Spinner register_phoneNumber_spinner;
+    ArrayList<String> phoneNumber_list;
+    ArrayAdapter<String> phoneNumberAdapter;
+    EditText register_phoneNumber1;
+    EditText register_phoneNumber2;
+
     private AlertDialog dialog;
     private boolean validate = false;
     Button validate_btn;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.user_register_main, container, false);
 
         register_id = viewGroup.findViewById(R.id.register_id_et);
+        register_id.setFilters(new InputFilter[] {filterEng});
+
         register_pw = viewGroup.findViewById(R.id.register_pw_et);
+        register_pw_check = viewGroup.findViewById(R.id.register_pw_check_et);
+
         register_name = viewGroup.findViewById(R.id.register_name_et);
+        register_name.setFilters(new InputFilter[] {filterKor});
+
+        register_nick = viewGroup.findViewById(R.id.register_nick_et);
 
         validate_btn = viewGroup.findViewById(R.id.validate_btn);
         validate_btn.setOnClickListener(new View.OnClickListener() {
@@ -50,25 +75,40 @@ public class user_register_fragment extends Fragment {
             }
         });
 
+        phoneNumber_list = new ArrayList<>();
+        phoneNumber_list.add("010");
+        phoneNumber_list.add("011");
+        phoneNumber_list.add("012");
+        phoneNumber_list.add("013");
+        phoneNumber_list.add("014");
+        phoneNumber_list.add("015");
+
+        phoneNumberAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, phoneNumber_list);
+
+        register_phoneNumber_spinner = (Spinner) viewGroup.findViewById(R.id.register_phoneNumber_spinner);
+        register_phoneNumber_spinner.setAdapter(phoneNumberAdapter);
+        register_phoneNumber1 = viewGroup.findViewById(R.id.register_phoneNumber1_et);
+        register_phoneNumber2 = viewGroup.findViewById(R.id.register_phoneNumber2_et);
+
         Button register_btn = viewGroup.findViewById(R.id.register_btn);
         register_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                register();
+                register2();
             }
         });
         return viewGroup;
     }
 
-    private void validate(){
+    private void validate() {
         String userID = register_id.getText().toString();
-        if(validate){
+        if (validate) {
             return;
         }
-        if(userID.equals("")){
+        if (userID.equals("")) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             dialog = builder.setMessage("아이디는 빈 칸 일 수 없습니다.")
-                    .setPositiveButton("확인",null)
+                    .setPositiveButton("확인", null)
                     .create();
             dialog.show();
             return;
@@ -79,10 +119,10 @@ public class user_register_fragment extends Fragment {
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     boolean success = jsonObject.getBoolean("success");
-                    if(success){
+                    if (success) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                         dialog = builder.setMessage("사용할 수 있는 아이디 입니다.")
-                                .setPositiveButton("확인",null)
+                                .setPositiveButton("확인", null)
                                 .create();
                         dialog.show();
                         register_id.setEnabled(true);
@@ -90,17 +130,16 @@ public class user_register_fragment extends Fragment {
                         register_id.setBackgroundColor(getResources().getColor(R.color.colorgray));
                         validate_btn.setBackgroundColor(getResources().getColor(R.color.colorgray));
                         return;
-                    }
-                    else {
+                    } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                         dialog = builder.setMessage("사용할 수 있는 아이디 입니다.")
-                                .setNegativeButton("확인",null)
+                                .setNegativeButton("확인", null)
                                 .create();
                         dialog.show();
                     }
-                }
-                catch (Exception e){
-                    e.printStackTrace();;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ;
                 }
             }
         };
@@ -109,26 +148,27 @@ public class user_register_fragment extends Fragment {
         queue.add(validateRequest);
     }
 
-    private void register(){
+    private void register() {
         String userID = register_id.getText().toString();
         String userPW = register_pw.getText().toString();
+        String userPW_Check = register_pw_check.getText().toString();
         String userName = register_name.getText().toString();
+        String userNick = register_nick.getText().toString();
+        String userPhoneNumber = register_phoneNumber_spinner.getSelectedItem().toString() + register_phoneNumber1.getText().toString() + register_phoneNumber2.getText().toString();
 
-        if(!validate)
-        {
+        if (!validate) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             dialog = builder.setMessage("먼저 중복 체크를 해주세요.")
-                    .setPositiveButton("확인",null)
+                    .setPositiveButton("확인", null)
                     .create();
             dialog.show();
             return;
         }
 
-        if(userID.equals("")|| userPW.equals("") || userName.equals(""))
-        {
+        if (userID.equals("") || userPW.equals("") || userName.equals("")) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             dialog = builder.setMessage("먼저 중복 체크를 해주세요.")
-                    .setPositiveButton("확인",null)
+                    .setPositiveButton("확인", null)
                     .create();
             dialog.show();
             return;
@@ -140,38 +180,73 @@ public class user_register_fragment extends Fragment {
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     boolean success = jsonObject.getBoolean("success");
-                    if(success){
+                    if (success) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                         dialog = builder.setMessage("회원등록에 성공했습니다.")
-                                .setPositiveButton("확인",null)
+                                .setPositiveButton("확인", null)
                                 .create();
                         dialog.show();
-                    }
-                    else {
+                    } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                         dialog = builder.setMessage("회원 등록에 실패했습니다.")
-                                .setNegativeButton("확인",null)
+                                .setNegativeButton("확인", null)
                                 .create();
                         dialog.show();
                     }
-                }
-                catch (Exception e){
-                    e.printStackTrace();;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ;
                 }
             }
         };
-        user_register_request registerRequest= new user_register_request(userID, userPW, userName, responseListener);
+        user_register_request registerRequest = new user_register_request(userID, userPW, userPW_Check, userName, userNick, userPhoneNumber, responseListener);
         RequestQueue queue = Volley.newRequestQueue(getContext());
         queue.add(registerRequest);
+    }
+
+    private void register2() {
+        String userID = register_id.getText().toString();
+        String userPW = register_pw.getText().toString();
+        String userPW_Check = register_pw_check.getText().toString();
+        String userName = register_name.getText().toString();
+        String userNick = register_nick.getText().toString();
+        String userPhoneNumber = register_phoneNumber_spinner.getSelectedItem().toString() + register_phoneNumber1.getText().toString() + register_phoneNumber2.getText().toString();
+
+        String user = userID + "\n" + userPW + "\n" + userPW_Check + "\n" + userName + "\n" + userNick + "\n" + userPhoneNumber;
+        Toast.makeText(getContext(), user, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if(dialog != null)
-        {
+        if (dialog != null) {
             dialog.dismiss();
             dialog = null;
         }
     }
+
+    protected InputFilter filterEng = new InputFilter() {
+        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+
+            Pattern ps = Pattern.compile("^[a-zA-Z0-9]+$");
+            if (!ps.matcher(source).matches()) {
+                return "";
+
+            }
+            return null;
+        }
+
+    }; // EditText 영문만 허용
+
+
+    public InputFilter filterKor = new InputFilter() {
+        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+
+            Pattern ps = Pattern.compile("^[ㄱ-ㅣ가-힣]+$");
+            if (!ps.matcher(source).matches()) {
+                return "";
+            }
+            return null;
+        }
+    }; // EditText 영문만 허용
 }
