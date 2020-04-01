@@ -86,7 +86,7 @@ public class user_login_fragment extends Fragment {
     }// 키보드 입력 후 엔터 입력시 키보드 창 내림
 
     private void login(){
-        String url = "http://192.168.0.4:3000/login";
+        String url = "http://10.0.2.2:3000/login"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
