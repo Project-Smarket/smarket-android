@@ -24,10 +24,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.toolbox.StringRequest;
 
 import org.techtown.smarket_android.R;
+import org.techtown.smarket_android.searchItemList.Item;
+import org.techtown.smarket_android.searchItemList.itemAdapter;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -42,12 +46,13 @@ public class bookmark_fragment extends Fragment {
     }
 
 
-    ArrayList<String> bookmarkList;
-    ArrayAdapter spinnerAdapter;
-    ViewGroup viewGroup;
-    Spinner bookmark_spinner;
-    EditText bookmark_folder_name;
-    InputMethodManager imm;
+    private ArrayList<String> bookmarkList;
+    private ArrayList<Item> items = new ArrayList<>();
+    private ArrayAdapter spinnerAdapter;
+    private ViewGroup viewGroup;
+    private Spinner bookmark_spinner;
+    private EditText bookmark_folder_name;
+    private InputMethodManager imm;
 
     @Nullable
     @Override
@@ -91,6 +96,17 @@ public class bookmark_fragment extends Fragment {
                 folder_remove();
             }
         });
+
+        initDataset(); // 리사이클러 뷰 데이터 설정
+
+        RecyclerView recyclerView = (RecyclerView) viewGroup.findViewById(R.id.bookmark_itemList);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
+
+        final itemAdapter adapter = new itemAdapter(getContext(), items);
+        recyclerView.setAdapter(adapter);
 
         return viewGroup;
     }
@@ -173,5 +189,13 @@ public class bookmark_fragment extends Fragment {
         imm.hideSoftInputFromWindow(bookmark_folder_name.getWindowToken(), 0);
         imm.hideSoftInputFromWindow(bookmark_folder_name.getWindowToken(), 0);
     }// 키보드 입력 후 엔터 입력시 키보드 창 내림
+
+    private void initDataset(){
+        items.clear();
+        items.add(new Item(getResources().getDrawable(R.drawable.premierball),"참깨라면", "1000원"));
+        items.add(new Item(getResources().getDrawable(R.drawable.premierball),"진라면","2000원"));
+        items.add(new Item(getResources().getDrawable(R.drawable.premierball),"프라포치노","3200원"));
+        items.add(new Item(getResources().getDrawable(R.drawable.premierball),"아이스커피","4000원"));
+    }
 
 }
