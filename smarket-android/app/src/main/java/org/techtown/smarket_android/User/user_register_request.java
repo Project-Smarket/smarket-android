@@ -8,17 +8,16 @@ import java.util.Map;
 
 public class  user_register_request extends StringRequest {
 
-    final static private String url = "http://10.0.2.2:3000/register";
+    final static private String url = "http://10.0.2.2:3000/api/users";
     private Map<String, String> parameters;
 
-    public user_register_request(String userID, String userPW, String userPW_Check, String userName, String userNick, String userPhoneNumber, Response .Listener<String> listener) {
+    public user_register_request(String userID, String userPW, String userName, String userNick, String userPhoneNumber, Response .Listener<String> listener) {
         super(Method.POST, url, listener, null);
         parameters = new HashMap<>();
         parameters.put("user_id", userID);
-        parameters.put("password", userPW);
-        parameters.put("password2", userPW_Check);
-        parameters.put("name", userName);
         parameters.put("nickname", userNick);
+        parameters.put("password", userPW);
+        parameters.put("name", userName);
         parameters.put("phonenum", userPhoneNumber);
 
     }

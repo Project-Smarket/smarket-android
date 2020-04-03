@@ -7,7 +7,6 @@ import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,6 +19,7 @@ import androidx.fragment.app.Fragment;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONObject;
@@ -38,9 +38,8 @@ public class user_register_fragment extends Fragment {
 
     EditText register_id;
     EditText register_pw;
-    EditText register_pw_check;
     EditText register_name;
-    EditText register_nick;
+    EditText register_nickname;
     Spinner register_phoneNumber_spinner;
     ArrayList<String> phoneNumber_list;
     ArrayAdapter<String> phoneNumberAdapter;
@@ -48,30 +47,40 @@ public class user_register_fragment extends Fragment {
     EditText register_phoneNumber2;
 
     private AlertDialog dialog;
-    private boolean validate = false;
-    Button validate_btn;
+    private boolean validate_id = false;
+    private boolean validate_nickname = false;
+    Button validate_id_btn;
+    Button validate_nickname_btn;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.user_register_main, container, false);
 
-        register_id = viewGroup.findViewById(R.id.register_id_et);
+        register_id = viewGroup.findViewById(R.id.register_id_et); // 사용자 아이디
         register_id.setFilters(new InputFilter[] {filterEng});
 
-        register_pw = viewGroup.findViewById(R.id.register_pw_et);
-        register_pw_check = viewGroup.findViewById(R.id.register_pw_check_et);
+        register_nickname = viewGroup.findViewById(R.id.register_nick_et); // 사용자 닉네임
+        register_pw = viewGroup.findViewById(R.id.register_pw_et); // 사용자 비번호
 
-        register_name = viewGroup.findViewById(R.id.register_name_et);
+        register_name = viewGroup.findViewById(R.id.register_name_et); // 사용자 이름
         register_name.setFilters(new InputFilter[] {filterKor});
 
-        register_nick = viewGroup.findViewById(R.id.register_nick_et);
 
-        validate_btn = viewGroup.findViewById(R.id.validate_btn);
-        validate_btn.setOnClickListener(new View.OnClickListener() {
+
+        validate_id_btn = viewGroup.findViewById(R.id.validate_id_btn);
+        validate_id_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                validate();
+                validate_id();
+            }
+        });
+
+        validate_nickname_btn = viewGroup.findViewById(R.id.validate_nick_btn);
+        validate_nickname_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                validate_nick();
             }
         });
 
@@ -94,15 +103,16 @@ public class user_register_fragment extends Fragment {
         register_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                register2();
+                register();
             }
         });
         return viewGroup;
     }
 
-    private void validate() {
+    private void validate_id() {
         String userID = register_id.getText().toString();
-        if (validate) {
+
+        if (validate_id) {
             return;
         }
         if (userID.equals("")) {
@@ -125,25 +135,88 @@ public class user_register_fragment extends Fragment {
                                 .setPositiveButton("확인", null)
                                 .create();
                         dialog.show();
-                        register_id.setEnabled(true);
-                        validate = true;
-                        register_id.setBackgroundColor(getResources().getColor(R.color.colorgray));
-                        validate_btn.setBackgroundColor(getResources().getColor(R.color.colorgray));
+                        register_id.setEnabled(false);
+                        validate_id = true;
+                        register_id.setTextColor(getResources().getColor(R.color.colorgray));
+
                         return;
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                        dialog = builder.setMessage("사용할 수 있는 아이디 입니다.")
+                        dialog = builder.setMessage("사용할 수 없는 아이디 입니다.")
                                 .setNegativeButton("확인", null)
                                 .create();
                         dialog.show();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    ;
+                    Toast.makeText(getContext(), "error", Toast.LENGTH_LONG).show();
                 }
             }
         };
-        user_register_validate validateRequest = new user_register_validate(userID, responseListener);
+
+        user_register_validate_id validateRequest = new user_register_validate_id(userID, responseListener, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getContext(), "errorListener", Toast.LENGTH_LONG).show();
+
+            }
+        });
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+        queue.add(validateRequest);
+    }
+
+    private void validate_nick() {
+        String userID = register_nickname.getText().toString();
+
+        if (validate_nickname) {
+            return;
+        }
+        if (userID.equals("")) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            dialog = builder.setMessage("닉네임은 빈 칸 일 수 없습니다.")
+                    .setPositiveButton("확인", null)
+                    .create();
+            dialog.show();
+            return;
+        }
+        Response.Listener<String> responseListener = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    boolean success = jsonObject.getBoolean("success");
+                    if (success) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        dialog = builder.setMessage("사용할 수 있는 닉네임 입니다.")
+                                .setPositiveButton("확인", null)
+                                .create();
+                        dialog.show();
+                        register_nickname.setEnabled(false);
+                        validate_nickname = true;
+                        register_nickname.setTextColor(getResources().getColor(R.color.colorgray));
+
+                        return;
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        dialog = builder.setMessage("사용할 수 없는 닉네임 입니다.")
+                                .setNegativeButton("확인", null)
+                                .create();
+                        dialog.show();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(getContext(), "error", Toast.LENGTH_LONG).show();
+                }
+            }
+        };
+
+        user_register_validate_id validateRequest = new user_register_validate_id(userID, responseListener, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getContext(), "errorListener", Toast.LENGTH_LONG).show();
+
+            }
+        });
         RequestQueue queue = Volley.newRequestQueue(getContext());
         queue.add(validateRequest);
     }
@@ -151,12 +224,13 @@ public class user_register_fragment extends Fragment {
     private void register() {
         String userID = register_id.getText().toString();
         String userPW = register_pw.getText().toString();
-        String userPW_Check = register_pw_check.getText().toString();
         String userName = register_name.getText().toString();
-        String userNick = register_nick.getText().toString();
-        String userPhoneNumber = register_phoneNumber_spinner.getSelectedItem().toString() + register_phoneNumber1.getText().toString() + register_phoneNumber2.getText().toString();
+        String userNick = register_nickname.getText().toString();
+        String register_phonNumber1 = register_phoneNumber1.getText().toString();
+        String register_phonNumber2 = register_phoneNumber2.getText().toString();
+        String userPhoneNumber = register_phoneNumber_spinner.getSelectedItem().toString() + register_phonNumber1 + register_phonNumber2;
 
-        if (!validate) {
+        if (!validate_id && !validate_nickname) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             dialog = builder.setMessage("먼저 중복 체크를 해주세요.")
                     .setPositiveButton("확인", null)
@@ -165,9 +239,9 @@ public class user_register_fragment extends Fragment {
             return;
         }
 
-        if (userID.equals("") || userPW.equals("") || userName.equals("")) {
+        if (userID.equals("") || userPW.equals("") || userName.equals("") || userNick.equals("") || register_phonNumber1.equals("") || register_phonNumber2.equals("")) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            dialog = builder.setMessage("먼저 중복 체크를 해주세요.")
+            dialog = builder.setMessage("사용자 정보를 입력해주세요.")
                     .setPositiveButton("확인", null)
                     .create();
             dialog.show();
@@ -199,22 +273,21 @@ public class user_register_fragment extends Fragment {
                 }
             }
         };
-        user_register_request registerRequest = new user_register_request(userID, userPW, userPW_Check, userName, userNick, userPhoneNumber, responseListener);
+        user_register_request registerRequest = new user_register_request(userID, userPW, userName, userNick, userPhoneNumber, responseListener);
         RequestQueue queue = Volley.newRequestQueue(getContext());
         queue.add(registerRequest);
     }
 
-    private void register2() {
+    /*private void register2() {
         String userID = register_id.getText().toString();
         String userPW = register_pw.getText().toString();
-        String userPW_Check = register_pw_check.getText().toString();
         String userName = register_name.getText().toString();
         String userNick = register_nick.getText().toString();
         String userPhoneNumber = register_phoneNumber_spinner.getSelectedItem().toString() + register_phoneNumber1.getText().toString() + register_phoneNumber2.getText().toString();
 
-        String user = userID + "\n" + userPW + "\n" + userPW_Check + "\n" + userName + "\n" + userNick + "\n" + userPhoneNumber;
+        String user = userID + "\n" + userPW + "\n" + userName + "\n" + userNick + "\n" + userPhoneNumber;
         Toast.makeText(getContext(), user, Toast.LENGTH_LONG).show();
-    }
+    }*/
 
     @Override
     public void onStop() {

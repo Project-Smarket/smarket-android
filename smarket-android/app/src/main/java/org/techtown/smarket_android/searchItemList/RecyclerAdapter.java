@@ -20,6 +20,35 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     // adapter에 들어갈 list 입니다.
     private ArrayList<Item> listData = new ArrayList<>();
 
+    class ItemViewHolder extends RecyclerView.ViewHolder {
+
+        private TextView item_name;
+        private TextView item_value;
+        private ImageView itemImage;
+        private ImageButton heart;
+
+        public ItemViewHolder(View itemView) {
+            super(itemView);
+
+            item_name = itemView.findViewById(R.id.search_list_item_name);
+            item_value = itemView.findViewById(R.id.item_value);
+            itemImage = itemView.findViewById(R.id.item_image);
+            heart = itemView.findViewById(R.id.heart_btn);
+
+            heart.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(v.getContext(),"hi",Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        void onBind(Item data) {
+            item_name.setText(data.getItem_name());
+            item_value.setText(data.getItem_value());
+            itemImage.setImageResource(data.getItem_image());
+        }
+    }
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -27,23 +56,31 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         // return 인자는 ViewHolder 입니다.
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_list_item, parent, false);
 
-        ItemViewHolder itemViewHolder = new ItemViewHolder(view);
+        final ItemViewHolder itemViewHolder = new ItemViewHolder(view);
 
-        ImageButton heart = view.findViewById(R.id.heart_btn);
-        heart.setOnClickListener(new View.OnClickListener() {
+
+        /*itemViewHolder.heart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(),"hi",Toast.LENGTH_SHORT).show();
+                Toast.makeText(v.getContext(),String.valueOf(itemViewHolder.getAdapterPosition()),Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
 
         return itemViewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ItemViewHolder holder, int position) {
         // Item을 하나, 하나 보여주는(bind 되는) 함수입니다.
         holder.onBind(listData.get(position));
+
+        /*ImageButton heart = holder.heart;
+        heart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(v.getContext(),"hi",Toast.LENGTH_SHORT).show();
+            }
+        });*/
     }
 
     @Override
@@ -59,28 +96,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
     // RecyclerView의 핵심인 ViewHolder 입니다.
     // 여기서 subView를 setting 해줍니다.
-    class ItemViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView item_name;
-        private TextView item_value;
-        private ImageView itemImage;
-        private ImageButton heart;
-
-        ItemViewHolder(View itemView) {
-            super(itemView);
-
-            item_name = itemView.findViewById(R.id.search_list_item_name);
-            item_value = itemView.findViewById(R.id.item_value);
-            itemImage = itemView.findViewById(R.id.item_image);
-            heart = itemView.findViewById(R.id.heart_btn);
-        }
-
-        void onBind(Item data) {
-            item_name.setText(data.getItem_name());
-            item_value.setText(data.getItem_value());
-            itemImage.setImageResource(data.getItem_image());
-        }
-    }
 
 
 //    private ArrayList<Item> listData = new ArrayList<>();

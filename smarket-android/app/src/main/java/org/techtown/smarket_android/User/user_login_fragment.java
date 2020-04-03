@@ -2,6 +2,7 @@ package org.techtown.smarket_android.User;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,13 +24,18 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.techtown.smarket_android.R;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.android.volley.VolleyLog.TAG;
 
 public class user_login_fragment extends Fragment {
 
@@ -80,36 +86,48 @@ public class user_login_fragment extends Fragment {
         return viewGroup;
     }
 
-    private void hideKeyboard(){
+    private void hideKeyboard() {
         imm.hideSoftInputFromWindow(login_id.getWindowToken(), 0);
         imm.hideSoftInputFromWindow(login_pw.getWindowToken(), 0);
     }// 키보드 입력 후 엔터 입력시 키보드 창 내림
 
-    private void login(){
-        String url = "http://10.0.2.2:3000/login"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+    private void login() {
+        String url = "http://10.0.2.2:3000/api/auth/login"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
 
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_layout, user_login_success.newInstance()).commit();
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(response);
+                    boolean success = jsonObject.getBoolean("success");
 
-            }
+                    if (success) {
+                        FragmentManager fragmentManager = getFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.main_layout, user_login_success.newInstance()).commit();
+                    } else if(!success)
+                        Toast.makeText(getContext(), jsonObject.toString() , Toast.LENGTH_LONG).show();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+
+                }
+                }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), error+"", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "errorListener", Toast.LENGTH_LONG).show();
 
             }
         }
-        ){
+        ) {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                String id = login_id.getText().toString();
-                String pw = login_pw.getText().toString();
-                params.put("id", id);
-                params.put("password", pw);
+                String user_id = login_id.getText().toString();
+                String password = login_pw.getText().toString();
+                params.put("user_id", user_id);
+                params.put("password", password);
                 return params;
             }
         };
@@ -117,7 +135,8 @@ public class user_login_fragment extends Fragment {
         RequestQueue requestQueue = Volley.newRequestQueue(getContext());
         requestQueue.add(stringRequest);
     }
-    private void goto_register(){
+
+    private void goto_register() {
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.main_layout, user_register_fragment.newInstance()).commit();
     }
