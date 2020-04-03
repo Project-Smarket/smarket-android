@@ -17,6 +17,16 @@ import java.util.ArrayList;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemViewHolder> {
 
+    public interface OnRecyclerClickListener{
+        void OnRecyclerClickListener(View v, int position);
+    }
+
+    private OnRecyclerClickListener onRecyclerClickListener = null;
+
+    public void setOnRecyclerClickListener(OnRecyclerClickListener listener){
+        this.onRecyclerClickListener = listener;
+    }
+
     // adapter에 들어갈 list 입니다.
     private ArrayList<Item> listData = new ArrayList<>();
 
@@ -27,13 +37,17 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         // return 인자는 ViewHolder 입니다.
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_list_item, parent, false);
 
-        ItemViewHolder itemViewHolder = new ItemViewHolder(view);
+        final ItemViewHolder itemViewHolder = new ItemViewHolder(view);
 
-        ImageButton heart = view.findViewById(R.id.heart_btn);
-        heart.setOnClickListener(new View.OnClickListener() {
+        itemViewHolder.itemView.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(),"hi",Toast.LENGTH_SHORT).show();
+                int pos = itemViewHolder.getAdapterPosition();
+                if(pos != RecyclerView.NO_POSITION){
+                    if(onRecyclerClickListener!=null){
+                        onRecyclerClickListener.OnRecyclerClickListener(v,pos);
+                    }
+                }
             }
         });
 
@@ -70,8 +84,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             super(itemView);
 
             item_name = itemView.findViewById(R.id.search_list_item_name);
-            item_value = itemView.findViewById(R.id.item_value);
-            itemImage = itemView.findViewById(R.id.item_image);
+            item_value = itemView.findViewById(R.id.search_list_item_value);
+            itemImage = itemView.findViewById(R.id.search_list_item_image);
             heart = itemView.findViewById(R.id.heart_btn);
         }
 

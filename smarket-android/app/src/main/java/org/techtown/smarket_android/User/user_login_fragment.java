@@ -90,11 +90,9 @@ public class user_login_fragment extends Fragment {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.main_layout, user_login_success.newInstance()).commit();
-
             }
         }, new Response.ErrorListener() {
             @Override

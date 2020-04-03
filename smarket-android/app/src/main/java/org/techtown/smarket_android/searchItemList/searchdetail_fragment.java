@@ -1,6 +1,8 @@
 package org.techtown.smarket_android.searchItemList;
 
 import android.app.ActionBar;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -9,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -48,9 +51,13 @@ public class searchdetail_fragment extends Fragment {
         if(bundle != null){
             String in = bundle.getString("item_name");
             String iv = bundle.getString("item_value");
+            Bitmap bitmap = bundle.getParcelable("item_image");
+
             TextView item_name = viewGroup.findViewById(R.id.detail_item_name);
             TextView item_value = viewGroup.findViewById(R.id.detail_item_value);
+            ImageView item_image = viewGroup.findViewById(R.id.item_detail_image);
 
+            item_image.setImageBitmap(bitmap);
             item_name.setText(in);
             item_value.setText(iv);
         }

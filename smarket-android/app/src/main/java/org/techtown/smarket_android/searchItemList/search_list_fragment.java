@@ -1,18 +1,31 @@
 package org.techtown.smarket_android.searchItemList;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
+
 import org.techtown.smarket_android.R;
 
+import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,7 +37,6 @@ public class search_list_fragment extends Fragment {
     @Nullable
     @Override
     public ViewGroup onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.search_list, container, false);
 
 //        CreateList(viewGroup);
@@ -37,21 +49,36 @@ public class search_list_fragment extends Fragment {
 //        adapter = new RecyclerAdapter();
 //        get_Dataset();
 //        recyclerView.setAdapter(adapter);
+        getBundle(viewGroup);
 
-        recyclerView = viewGroup.findViewById(R.id.search_item_list);
-        recyclerView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new RecyclerAdapter();
-        recyclerView.setAdapter(adapter);
+        CreateList(viewGroup);
 
         get_Dataset();
+
+        adapter.setOnRecyclerClickListener(new RecyclerAdapter.OnRecyclerClickListener() {
+            @Override
+            public void OnRecyclerClickListener(View v, int position) {
+                searchdetail_fragment searchdetailFragment = new searchdetail_fragment();
+                Bundle bundle = setBundle(v);
+                searchdetailFragment.setArguments(bundle);
+
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.main_layout, searchdetailFragment).addToBackStack(null);
+                fragmentTransaction.commit();
+            }
+        });
 
         return viewGroup;
     }
 
-
+    private void getBundle(ViewGroup viewGroup){
+        if(getArguments()!=null){
+            String txt;
+            txt = getArguments().getString("search");
+            TextView test = viewGroup.findViewById(R.id.test_text);
+            test.setText(txt);
+        }
+    }
 
     private void get_Dataset() {
         //        items.add(new Item(getResources().getDrawable(R.drawable.premierball), "참깨라면", "1000원"));
@@ -75,24 +102,37 @@ public class search_list_fragment extends Fragment {
         adapter.notifyDataSetChanged();
     }
 
-//    private void CreateList(ViewGroup viewGroup) {
+    private void CreateList(ViewGroup viewGroup) {
 //        context = viewGroup.getContext();
 //        recyclerView = (RecyclerView) viewGroup.findViewById(R.id.search_item_list);
 //        recyclerView.setHasFixedSize(true);
 //
 //        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
 //        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-//    }
 
-//    private Bundle setBundle(View v) {
-//        Bundle bundle = new Bundle();
-//        TextView item_name = v.findViewById(R.id.item_name);
-//        TextView item_value = v.findViewById(R.id.item_value);
-//
-//        if (getArguments() != null) {
-//            bundle.putString("item_name", item_name.getText().toString());
-//            bundle.putString("item_value", item_value.getText().toString());
-//        }
-//        return bundle;
-//    }
+        recyclerView = viewGroup.findViewById(R.id.search_item_list);
+        recyclerView.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        adapter = new RecyclerAdapter();
+        recyclerView.setAdapter(adapter);
+
+    }
+
+    private Bundle setBundle(View v) {
+        Bundle bundle = new Bundle();
+        TextView item_name = v.findViewById(R.id.search_list_item_name);
+        TextView item_value = v.findViewById(R.id.search_list_item_value);
+        ImageView item_image = v.findViewById(R.id.search_list_item_image);
+        Drawable d = item_image.getDrawable();
+        Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
+
+
+            bundle.putString("item_name", item_name.getText().toString());
+            bundle.putString("item_value", item_value.getText().toString());
+            bundle.putParcelable("item_image",bitmap);
+
+        return bundle;
+    }
 }
