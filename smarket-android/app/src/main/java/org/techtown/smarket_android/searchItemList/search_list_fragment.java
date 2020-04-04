@@ -49,18 +49,19 @@ public class search_list_fragment extends Fragment {
 //        adapter = new RecyclerAdapter();
 //        get_Dataset();
 //        recyclerView.setAdapter(adapter);
+
         getBundle(viewGroup);
 
         CreateList(viewGroup);
 
-        get_Dataset();
+//        get_Dataset();
 
         adapter.setOnRecyclerClickListener(new RecyclerAdapter.OnRecyclerClickListener() {
             @Override
             public void OnRecyclerClickListener(View v, int position) {
                 searchdetail_fragment searchdetailFragment = new searchdetail_fragment();
-                Bundle bundle = setBundle(v);
-                searchdetailFragment.setArguments(bundle);
+//                Bundle bundle = setBundle(v);
+//                searchdetailFragment.setArguments(bundle);
 
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.main_layout, searchdetailFragment).addToBackStack(null);
@@ -74,33 +75,45 @@ public class search_list_fragment extends Fragment {
     private void getBundle(ViewGroup viewGroup){
         if(getArguments()!=null){
             String txt;
-            txt = getArguments().getString("search");
+            txt = getArguments().getString("searchName");
             TextView test = viewGroup.findViewById(R.id.test_text);
             test.setText(txt);
         }
     }
 
-    private void get_Dataset() {
-        //        items.add(new Item(getResources().getDrawable(R.drawable.premierball), "참깨라면", "1000원"));
-//        items.add(new Item(getResources().getDrawable(R.drawable.premierball), "진라면", "2000원"));
-//        items.add(new Item(getResources().getDrawable(R.drawable.premierball), "프라포치노", "3200원"));
-//        items.add(new Item(getResources().getDrawable(R.drawable.premierball), "아이스커피", "4000원"));
-
-        List<String> item_name = Arrays.asList("국화", "사막", "수국", "해파리", "코알라", "등대", "펭귄");
-        List<String> item_value = Arrays.asList("1000","1100","1200","1300","1400","1500","1600");
-        List<Integer> itemImage = Arrays.asList(R.drawable.premierball,R.drawable.premierball,R.drawable.premierball,
-                R.drawable.premierball,R.drawable.premierball,R.drawable.premierball,R.drawable.premierball);
-
-        for(int i=0; i<item_name.size(); i++){
-            Item item = new Item();
-            item.setItem_name(item_name.get(i));
-            item.setItem_value(item_value.get(i));
-            item.setItem_image(itemImage.get(i));
-            adapter.addItem(item);
-        }
-
-        adapter.notifyDataSetChanged();
-    }
+//    private void get_Dataset() {
+//        //        items.add(new Item(getResources().getDrawable(R.drawable.premierball), "참깨라면", "1000원"));
+////        items.add(new Item(getResources().getDrawable(R.drawable.premierball), "진라면", "2000원"));
+////        items.add(new Item(getResources().getDrawable(R.drawable.premierball), "프라포치노", "3200원"));
+////        items.add(new Item(getResources().getDrawable(R.drawable.premierball), "아이스커피", "4000원"));
+//
+////        List<String> item_name = Arrays.asList("국화", "사막", "수국", "해파리", "코알라", "등대", "펭귄");
+////        List<String> item_value = Arrays.asList("1000","1100","1200","1300","1400","1500","1600");
+////        List<Integer> itemImage = Arrays.asList(R.drawable.premierball,R.drawable.premierball,R.drawable.premierball,
+////                R.drawable.premierball,R.drawable.premierball,R.drawable.premierball,R.drawable.premierball);
+////
+////        for(int i=0; i<item_name.size(); i++){
+////            Item item = new Item();
+////            item.setItem_name(item_name.get(i));
+////            item.setItem_value(item_value.get(i));
+////            item.setItem_image(itemImage.get(i));
+////            adapter.addItem(item);
+////        }
+//
+////        if(getArguments()!=null) {
+////            String item_name = getArguments().getString("searchItem_list_name");
+////            String item_value = getArguments().getString("searchItem_list_price");
+////            String item_image = getArguments().getString("searchItem_list_image");
+////
+////            List<String> ItemName = item_name;
+////            List<String> ItemValue = null;
+////            List<String> ItemImage = null;
+////
+////            TextView Name =
+//
+//        }
+////        adapter.notifyDataSetChanged();
+//    }
 
     private void CreateList(ViewGroup viewGroup) {
 //        context = viewGroup.getContext();
@@ -109,7 +122,6 @@ public class search_list_fragment extends Fragment {
 //
 //        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
 //        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-
         recyclerView = viewGroup.findViewById(R.id.search_item_list);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
@@ -117,22 +129,21 @@ public class search_list_fragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
         adapter = new RecyclerAdapter();
         recyclerView.setAdapter(adapter);
-
     }
 
-    private Bundle setBundle(View v) {
-        Bundle bundle = new Bundle();
-        TextView item_name = v.findViewById(R.id.search_list_item_name);
-        TextView item_value = v.findViewById(R.id.search_list_item_value);
-        ImageView item_image = v.findViewById(R.id.search_list_item_image);
-        Drawable d = item_image.getDrawable();
-        Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
-
-
-            bundle.putString("item_name", item_name.getText().toString());
-            bundle.putString("item_value", item_value.getText().toString());
-            bundle.putParcelable("item_image",bitmap);
-
-        return bundle;
-    }
+//    private Bundle setBundle(View v) {
+//        Bundle bundle = new Bundle();
+//        TextView item_name = v.findViewById(R.id.search_list_item_name);
+//        TextView item_value = v.findViewById(R.id.search_list_item_value);
+//        ImageView item_image = v.findViewById(R.id.search_list_item_image);
+//        Drawable d = item_image.getDrawable();
+//        Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
+//
+//
+//            bundle.putString("item_name", item_name.getText().toString());
+//            bundle.putString("item_value", item_value.getText().toString());
+//            bundle.putParcelable("item_image",bitmap);
+//
+//        return bundle;
+//    }
 }

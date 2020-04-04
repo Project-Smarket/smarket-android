@@ -45,7 +45,7 @@ public class MainNavigationActivity extends AppCompatActivity {
                         return true;
                     }
                     case R.id.tab2: {
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, user_fragment2).commitAllowingStateLoss(); //로그인 완료 창
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, user_fragment2).addToBackStack(null).commitAllowingStateLoss(); //로그인 완료 창
                         //getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, user_fragment2).commitAllowingStateLoss(); // 로그인 창
                         return true;
                     }
