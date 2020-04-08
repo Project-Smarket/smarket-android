@@ -2,6 +2,8 @@ package org.techtown.smarket_android.searchItemList;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.nfc.Tag;
 import android.util.Log;
@@ -60,16 +62,20 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             }
         });
 
-        ImageButton htn = view.findViewById(R.id.heart_btn);
-        htn.setOnClickListener(new View.OnClickListener() {
+        itemViewHolder.heart_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(),
-                        "htn", Toast.LENGTH_SHORT).show();
+                if (!itemViewHolder.bookmark_check) {
+                    itemViewHolder.heart_btn.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+                    itemViewHolder.bookmark_check = true;
+                } else if (itemViewHolder.bookmark_check) {
+                    itemViewHolder.heart_btn.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    itemViewHolder.bookmark_check = false;
+                }
             }
         });
 
-        ImageButton cash = view.findViewById(R.id.cash_btn);
+        ImageView cash = view.findViewById(R.id.cash_btn);
         cash.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,6 +91,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
         // Item을 하나, 하나 보여주는(bind 되는) 함수입니다.
         holder.onBind(listData.get(position));
+
+
     }
 
     @Override
@@ -105,8 +113,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         private TextView item_name;
         private TextView item_value;
         private ImageView itemImage;
+        private ImageView heart_btn;
         private String imageUrl;
         private Bitmap b;
+        private Boolean bookmark_check = false;
 
 
         ItemViewHolder(View itemView) {
@@ -115,6 +125,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             item_name = itemView.findViewById(R.id.search_list_item_name);
             item_value = itemView.findViewById(R.id.search_list_item_value);
             itemImage = itemView.findViewById(R.id.search_list_item_image);
+            heart_btn = itemView.findViewById(R.id.heart_btn);
         }
 
         void onBind(Item data) {
