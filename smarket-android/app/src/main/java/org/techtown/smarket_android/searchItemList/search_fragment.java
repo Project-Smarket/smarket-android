@@ -56,8 +56,6 @@ import static com.android.volley.VolleyLog.TAG;
 public class search_fragment extends Fragment {
     private ViewGroup viewGroup;
     private Button search_btn;
-    private search_list_fragment sf;
-    String itemTitle;
     InputMethodManager imm;
     EditText search_text;
     JSONArray key;
@@ -84,28 +82,28 @@ public class search_fragment extends Fragment {
         search_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    getJson();
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    getJson();
+//                } catch (UnsupportedEncodingException e) {
+//                    e.printStackTrace();
+//                }
+                search_list_fragment slf = new search_list_fragment();
+                Bundle bundle = setBundle();
+                slf.setArguments(bundle);
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.main_layout, slf).addToBackStack(null).commit();
+
             }
         });
 
         return viewGroup;
     }
 
-    private Bundle setBundle() throws JSONException {
+    private Bundle setBundle() {
         Bundle bundle = new Bundle();
 
         String textView = search_text.getText().toString();
         bundle.putString("searchName", textView);
-
-        for(int i=0; i<key.length(); i++) {
-            bundle.putString("searchItem_list_name",key.getJSONObject(i).getString("title"));
-            bundle.putString("searchItem_list_price",key.getJSONObject(i).getString("lprice"));
-            bundle.putString("searchItem_list_image",key.getJSONObject(i).getString("image"));
-        }
 
         return bundle;
     }
@@ -114,43 +112,43 @@ public class search_fragment extends Fragment {
         imm.hideSoftInputFromWindow(search_text.getWindowToken(), 0);
     }// 키보드 입력 후 엔터 입력시 키보드 창 내림
 
-
-    private void getJson() throws UnsupportedEncodingException {
-//        Toast.makeText(getContext(),search_text.getText().toString(),Toast.LENGTH_SHORT).show();
-        Response.Listener<String> responseListener = new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-
-                    key = jsonObject.getJSONArray("items"); // json으로 검색한 결과 객체
+//    private void getJson() throws UnsupportedEncodingException {
+//        Response.Listener<String> responseListener = new Response.Listener<String>() {
+//            @Override
+//            public void onResponse(String response) {
+//                try {
+//                    JSONObject jsonObject = new JSONObject(response);
+//
+//                    key = jsonObject.getJSONArray("items"); // json으로 검색한 결과 객체
+//
 //                    JSONObject item = key.getJSONObject(0); //원하는 json 결과 인덱스 접근
 //                    itemTitle = item.getString("title"); // 0번 인덱스 객체의 결과값 중 title 선택
-
+//
 //                    Bundle bundle = setBundle();
 //                    search_list_fragment slf = new search_list_fragment();
 //                    slf.setArguments(bundle);
 //                    try {
+//                        Toast.makeText(getContext(), key.getJSONObject(0).getString("title"), Toast.LENGTH_SHORT );
 //                        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
 //                        fragmentTransaction.replace(R.id.main_layout, slf).addToBackStack(null).commit();
 //                        Log.d(TAG, "onResponse: 성공");
 //                    } catch (Exception e){
 //                        e.printStackTrace();
 //                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        searchRequest searchRequest = new searchRequest(search_text.getText().toString(), responseListener, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), error + "", Toast.LENGTH_LONG).show();
-            }
-        });
-        RequestQueue queue = Volley.newRequestQueue(getContext());
-        queue.add(searchRequest);
-    }
+//
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        };
+//
+//        searchRequest searchRequest = new searchRequest(search_text.getText().toString(), responseListener, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                Toast.makeText(getContext(), error + "", Toast.LENGTH_LONG).show();
+//            }
+//        });
+//        RequestQueue queue = Volley.newRequestQueue(getContext());
+//        queue.add(searchRequest);
+//    }
 }

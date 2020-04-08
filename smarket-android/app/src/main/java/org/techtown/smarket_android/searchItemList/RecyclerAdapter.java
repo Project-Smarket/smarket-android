@@ -1,5 +1,10 @@
 package org.techtown.smarket_android.searchItemList;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.nfc.Tag;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +18,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.techtown.smarket_android.R;
 
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemViewHolder> {
@@ -51,6 +60,24 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             }
         });
 
+        ImageButton htn = view.findViewById(R.id.heart_btn);
+        htn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(v.getContext(),
+                        "htn",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        ImageButton cash = view.findViewById(R.id.cash_btn);
+        cash.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(v.getContext(),
+                        "cash",Toast.LENGTH_SHORT).show();
+            }
+        });
+
         return itemViewHolder;
     }
 
@@ -78,7 +105,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         private TextView item_name;
         private TextView item_value;
         private ImageView itemImage;
-        private ImageButton heart;
+        private String imageUrl;
+        private Bitmap b;
+
 
         ItemViewHolder(View itemView) {
             super(itemView);
@@ -86,16 +115,60 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             item_name = itemView.findViewById(R.id.search_list_item_name);
             item_value = itemView.findViewById(R.id.search_list_item_value);
             itemImage = itemView.findViewById(R.id.search_list_item_image);
-            heart = itemView.findViewById(R.id.heart_btn);
         }
 
         void onBind(Item data) {
-            item_name.setText(data.getItem_name());
-            item_value.setText(data.getItem_value());
-            itemImage.setImageResource(data.getItem_image());
+            item_name.setText(data.getList_item_name());
+            item_value.setText(data.getList_item_value());
+
+            imageUrl = data.getList_item_image();
+            b = getImagefromURL(imageUrl);
+            itemImage.setImageBitmap(b);
         }
     }
 
+    public Bitmap getImagefromURL(final String imageUrl){
+
+        if (imageUrl== null) return null;
+
+        try {
+
+            URL url = new URL(imageUrl);
+            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+
+
+            httpURLConnection.setReadTimeout(3000);
+            httpURLConnection.setConnectTimeout(3000);
+            httpURLConnection.setDoInput(true);
+            httpURLConnection.setRequestMethod("GET");
+            httpURLConnection.setUseCaches(false);
+            httpURLConnection.connect();
+
+
+            int responseStatusCode = httpURLConnection.getResponseCode();
+
+            InputStream inputStream;
+            if (responseStatusCode == HttpURLConnection.HTTP_OK) {
+
+                inputStream = httpURLConnection.getInputStream();
+            }
+            else
+                return null;
+
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+            Bitmap bitmap = BitmapFactory.decodeStream(bufferedInputStream);
+
+            bufferedInputStream.close();
+            httpURLConnection.disconnect();
+
+            return  bitmap;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 
 //    private ArrayList<Item> listData = new ArrayList<>();
 //

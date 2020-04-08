@@ -204,8 +204,8 @@ public class bookmark_fragment extends Fragment {
 
         for(int i=0; i<item_name.size(); i++){
             Item item = new Item();
-            item.setItem_name(item_name.get(i));
-            item.setItem_value(item_value.get(i));
+            item.setList_item_name(item_name.get(i));
+            item.setList_item_value(item_value.get(i));
             item.setItem_image(itemImage.get(i));
             adapter.addItem(item);
         }
