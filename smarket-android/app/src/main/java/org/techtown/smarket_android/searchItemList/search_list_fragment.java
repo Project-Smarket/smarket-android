@@ -1,45 +1,72 @@
 package org.techtown.smarket_android.searchItemList;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.icu.text.DecimalFormat;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.techtown.smarket_android.R;
+import org.techtown.smarket_android.searchItemList.Request.searchRequest;
 
+import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.android.volley.VolleyLog.TAG;
 
 public class search_list_fragment extends Fragment {
     private RecyclerView recyclerView;
     private Context context;
+    JSONArray key;
+    String txt;
+    TextView test;
     private RecyclerAdapter adapter;
+    private List<String> List_item_name = new ArrayList<>();
+    private List<String> List_item_value = new ArrayList<>();
+    private List<String> List_item_image = new ArrayList<>();
+    private List<String> List_item_mall = new ArrayList<>();
 
     @Nullable
     @Override
     public ViewGroup onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.search_list, container, false);
 
-//        CreateList(viewGroup);
-
-//        recyclerView = viewGroup.findViewById(R.id.search_item_list);
-//        recyclerView.setHasFixedSize(true);
-//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
-//        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-//
-//        adapter = new RecyclerAdapter();
-//        get_Dataset();
-//        recyclerView.setAdapter(adapter);
-
+        CreateList(viewGroup);
 
         getBundle(viewGroup);
+
         try {
             getJson();
         } catch (UnsupportedEncodingException e) {
@@ -66,40 +93,10 @@ public class search_list_fragment extends Fragment {
     private void getBundle(ViewGroup viewGroup){
         if(getArguments()!=null){
             txt = getArguments().getString("searchName");
-            test = viewGroup.findViewById(R.id.test_text);
-            test.setText(txt);
         }
     }
-
-//    private void get_Dataset(final ViewGroup viewGroup) {
-//          items.add(new Item(getResources().getDrawable(R.drawable.premierball), "참깨라면", "1000원"));
-////        items.add(new Item(getResources().getDrawable(R.drawable.premierball), "진라면", "2000원"));
-////        items.add(new Item(getResources().getDrawable(R.drawable.premierball), "프라포치노", "3200원"));
-////        items.add(new Item(getResources().getDrawable(R.drawable.premierball), "아이스커피", "4000원"));
-//
-////        List<String> item_name = Arrays.asList("국화", "사막", "수국", "해파리", "코알라", "등대", "펭귄");
-////        List<String> item_value = Arrays.asList("1000","1100","1200","1300","1400","1500","1600");
-////        List<Integer> itemImage = Arrays.asList(R.drawable.premierball,R.drawable.premierball,R.drawable.premierball,
-////                R.drawable.premierball,R.drawable.premierball,R.drawable.premierball,R.drawable.premierball);
-////
-////        for(int i=0; i<item_name.size(); i++){
-////            Item item = new Item();
-////            item.setItem_name(item_name.get(i));
-////            item.setItem_value(item_value.get(i));
-////            item.setItem_image(itemImage.get(i));
-////            adapter.addItem(item);
-////        }
-//
-
-////        adapter.notifyDataSetChanged();
-
     private void CreateList(ViewGroup viewGroup) {
-//        context = viewGroup.getContext();
-//        recyclerView = (RecyclerView) viewGroup.findViewById(R.id.search_item_list);
-//        recyclerView.setHasFixedSize(true);
-//
-//        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-//        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+
         recyclerView = viewGroup.findViewById(R.id.search_item_list);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
@@ -109,54 +106,113 @@ public class search_list_fragment extends Fragment {
         recyclerView.setAdapter(adapter);
     }
 
-        get_Dataset();
+    private Bundle setBundle(View v) {
+        Bundle bundle = new Bundle();
+        TextView item_name = v.findViewById(R.id.search_list_item_name);
+        TextView item_value = v.findViewById(R.id.search_list_item_value);
+        ImageView item_image = v.findViewById(R.id.search_list_item_image);
+//        ImageView item_image = v.findViewById(R.id.search_list_item_image);
+//        Drawable d = item_image.getDrawable();
+//        Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
 
-        return viewGroup;
+        bundle.putString("item_name", item_name.getText().toString());
+        bundle.putString("item_value", item_value.getText().toString());
+//            bundle.putParcelable("item_image",bitmap);
+
+        return bundle;
     }
 
 
     private void getJson() throws UnsupportedEncodingException {
 
-    private void get_Dataset() {
-        //        items.add(new Item(getResources().getDrawable(R.drawable.premierball), "참깨라면", "1000원"));
-//        items.add(new Item(getResources().getDrawable(R.drawable.premierball), "진라면", "2000원"));
-//        items.add(new Item(getResources().getDrawable(R.drawable.premierball), "프라포치노", "3200원"));
-//        items.add(new Item(getResources().getDrawable(R.drawable.premierball), "아이스커피", "4000원"));
+        Response.Listener<String> responseListener = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    key = jsonObject.getJSONArray("items");
 
-        List<String> item_name = Arrays.asList("국화", "사막", "수국", "해파리", "코알라", "등대", "펭귄");
-        List<String> item_value = Arrays.asList("1000","1100","1200","1300","1400","1500","1600");
-        List<Integer> itemImage = Arrays.asList(R.drawable.premierball,R.drawable.premierball,R.drawable.premierball,
-                R.drawable.premierball,R.drawable.premierball,R.drawable.premierball,R.drawable.premierball);
 
-        for(int i=0; i<item_name.size(); i++){
-            Item item = new Item();
-            item.setItem_name(item_name.get(i));
-            item.setItem_value(item_value.get(i));
-            item.setItem_image(itemImage.get(i));
-            adapter.addItem(item);
-        }
 
-        adapter.notifyDataSetChanged();
+                    for(int i=0, n=key.length(); i<n; i++){
+
+                        titleJob(i);
+                        priceJob(i);
+                        List_item_image.add(key.getJSONObject(i).getString("image"));
+                        List_item_mall.add(key.getJSONObject(i).getString("mallName"));
+                    }
+
+                    for(int i=0, n=List_item_name.size(); i<n; i++){
+                        Item item = new Item();
+                        item.setList_item_name(List_item_name.get(i));
+                        item.setList_item_value(List_item_value.get(i));
+                        item.setList_item_image(List_item_image.get(i));
+                        adapter.addItem(item);
+                    }
+                    adapter.notifyDataSetChanged();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        searchRequest searchRequest = new searchRequest(txt, responseListener, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getContext(), error + "", Toast.LENGTH_LONG).show();
+            }
+        });
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+        queue.add(searchRequest);
     }
 
-//    private void CreateList(ViewGroup viewGroup) {
+    /**
+     * 모든 HTML 태그를 제거하고 반환한다.
+     *
+     * @param html
+     * @throws Exception
+     */
+    public String removeTag(String html) throws Exception {
+        return html.replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", "");
+    }
+
+    public void titleJob(int index) throws Exception {
+        String title = key.getJSONObject(index).getString("title");
+        String res = removeTag(title);
+        List_item_name.add(res);
+    }
+
+    public void priceJob (int index) throws Exception {
+        String price = key.getJSONObject(index).getString("lprice");
+        int value = Integer.parseInt(price);
+        String lprice = String.format("%,d",value);
+        List_item_value.add(lprice+"원");
+    }
+
+
+}
+
+
+
 //        context = viewGroup.getContext();
 //        recyclerView = (RecyclerView) viewGroup.findViewById(R.id.search_item_list);
 //        recyclerView.setHasFixedSize(true);
 //
 //        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
 //        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-//    }
 
-//    private Bundle setBundle(View v) {
-//        Bundle bundle = new Bundle();
-//        TextView item_name = v.findViewById(R.id.item_name);
-//        TextView item_value = v.findViewById(R.id.item_value);
+//                    JSONObject items = key.getJSONObject(0); //원하는 json 결과 인덱스 접근
+//                    String itemTitle = items.getString("title"); // 0번 인덱스 객체의 결과값 중 title 선택
+//                    test.setText(itemTitle);
+
+//        recyclerView = viewGroup.findViewById(R.id.search_item_list);
+//        recyclerView.setHasFixedSize(true);
+//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
+//        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 //
-//        if (getArguments() != null) {
-//            bundle.putString("item_name", item_name.getText().toString());
-//            bundle.putString("item_value", item_value.getText().toString());
-//        }
-//        return bundle;
-//    }
-}
+//        adapter = new RecyclerAdapter();
+//        get_Dataset();
+//        recyclerView.setAdapter(adapter);
