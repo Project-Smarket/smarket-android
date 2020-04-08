@@ -43,7 +43,7 @@ public class bookmark_adapter extends RecyclerView.Adapter<bookmark_adapter.bmVi
     public void onBindViewHolder(@NonNull bookmark_adapter.bmViewHolder holder, int position) {
         // Item을 하나, 하나 보여주는(bind 되는) 함수입니다.
         holder.onBind(listData.get(position));
-        holder.heart.setOnClickListener(new View.OnClickListener() {
+        holder.heart_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(v.getContext(), "hihi", Toast.LENGTH_LONG).show();
@@ -69,7 +69,7 @@ public class bookmark_adapter extends RecyclerView.Adapter<bookmark_adapter.bmVi
         private TextView item_name;
         private TextView item_value;
         private ImageView itemImage;
-        private ImageButton heart;
+        private ImageView heart_btn;
 
         public bmViewHolder(@NonNull  View itemView) {
             super(itemView);
@@ -77,7 +77,7 @@ public class bookmark_adapter extends RecyclerView.Adapter<bookmark_adapter.bmVi
             item_name = itemView.findViewById(R.id.search_list_item_name);
             item_value = itemView.findViewById(R.id.search_list_item_value);
             itemImage = itemView.findViewById(R.id.search_list_item_image);
-            heart = itemView.findViewById(R.id.heart_btn);
+            heart_btn = itemView.findViewById(R.id.heart_btn);
         }
 
         void onBind(Item data) {
