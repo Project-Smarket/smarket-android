@@ -1,5 +1,10 @@
 package org.techtown.smarket_android.searchItemList;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.nfc.Tag;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,42 +18,27 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.techtown.smarket_android.R;
 
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemViewHolder> {
 
+    public interface OnRecyclerClickListener{
+        void OnRecyclerClickListener(View v, int position);
+    }
+
+    private OnRecyclerClickListener onRecyclerClickListener = null;
+
+    public void setOnRecyclerClickListener(OnRecyclerClickListener listener){
+        this.onRecyclerClickListener = listener;
+    }
+
     // adapter에 들어갈 list 입니다.
     private ArrayList<Item> listData = new ArrayList<>();
 
-    class ItemViewHolder extends RecyclerView.ViewHolder {
-
-        private TextView item_name;
-        private TextView item_value;
-        private ImageView itemImage;
-        private ImageButton heart;
-
-        public ItemViewHolder(View itemView) {
-            super(itemView);
-
-            item_name = itemView.findViewById(R.id.search_list_item_name);
-            item_value = itemView.findViewById(R.id.item_value);
-            itemImage = itemView.findViewById(R.id.item_image);
-            heart = itemView.findViewById(R.id.heart_btn);
-
-            heart.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(v.getContext(),"hi",Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-
-        void onBind(Item data) {
-            item_name.setText(data.getItem_name());
-            item_value.setText(data.getItem_value());
-            itemImage.setImageResource(data.getItem_image());
-        }
-    }
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -58,29 +48,43 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
         final ItemViewHolder itemViewHolder = new ItemViewHolder(view);
 
-
-        /*itemViewHolder.heart.setOnClickListener(new View.OnClickListener() {
+        itemViewHolder.itemView.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(),String.valueOf(itemViewHolder.getAdapterPosition()),Toast.LENGTH_SHORT).show();
+                int pos = itemViewHolder.getAdapterPosition();
+                if(pos != RecyclerView.NO_POSITION){
+                    if(onRecyclerClickListener!=null){
+                        onRecyclerClickListener.OnRecyclerClickListener(v,pos);
+                    }
+                }
             }
-        });*/
+        });
+
+        ImageButton htn = view.findViewById(R.id.heart_btn);
+        htn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(v.getContext(),
+                        "htn",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        ImageButton cash = view.findViewById(R.id.cash_btn);
+        cash.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(v.getContext(),
+                        "cash",Toast.LENGTH_SHORT).show();
+            }
+        });
 
         return itemViewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ItemViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
         // Item을 하나, 하나 보여주는(bind 되는) 함수입니다.
         holder.onBind(listData.get(position));
-
-        /*ImageButton heart = holder.heart;
-        heart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(v.getContext(),"hi",Toast.LENGTH_SHORT).show();
-            }
-        });*/
     }
 
     @Override
@@ -96,7 +100,72 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
     // RecyclerView의 핵심인 ViewHolder 입니다.
     // 여기서 subView를 setting 해줍니다.
+    class ItemViewHolder extends RecyclerView.ViewHolder {
 
+        private TextView item_name;
+        private TextView item_value;
+        private ImageView itemImage;
+        private String imageUrl;
+        private Bitmap b;
+
+
+        ItemViewHolder(View itemView) {
+            super(itemView);
+
+            item_name = itemView.findViewById(R.id.search_list_item_name);
+            item_value = itemView.findViewById(R.id.search_list_item_value);
+            itemImage = itemView.findViewById(R.id.search_list_item_image);
+        }
+
+        void onBind(Item data) {
+            item_name.setText(data.getList_item_name());
+            item_value.setText(data.getList_item_value());
+
+            imageUrl = data.getList_item_image();
+            b = getImagefromURL(imageUrl);
+            itemImage.setImageBitmap(b);
+        }
+    }
+
+    public Bitmap getImagefromURL(final String imageUrl){
+
+        if (imageUrl== null) return null;
+
+        try {
+
+            URL url = new URL(imageUrl);
+            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+
+
+            httpURLConnection.setReadTimeout(3000);
+            httpURLConnection.setConnectTimeout(3000);
+            httpURLConnection.setDoInput(true);
+            httpURLConnection.setRequestMethod("GET");
+            httpURLConnection.setUseCaches(false);
+            httpURLConnection.connect();
+
+
+            int responseStatusCode = httpURLConnection.getResponseCode();
+
+            InputStream inputStream;
+            if (responseStatusCode == HttpURLConnection.HTTP_OK) {
+
+                inputStream = httpURLConnection.getInputStream();
+            }
+            else
+                return null;
+
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+            Bitmap bitmap = BitmapFactory.decodeStream(bufferedInputStream);
+
+            bufferedInputStream.close();
+            httpURLConnection.disconnect();
+
+            return  bitmap;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
 //    private ArrayList<Item> listData = new ArrayList<>();
