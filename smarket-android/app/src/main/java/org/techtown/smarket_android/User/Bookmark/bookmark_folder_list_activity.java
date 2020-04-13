@@ -149,7 +149,7 @@ public class bookmark_folder_list_activity extends AppCompatActivity {
     } // 북마크 폴더 리스트 설정
 
     private void set_Data() {
-        bookmarkFolderList = bookmark.get_bookmark_folder_list();
+        bookmarkFolderList = Arrays.asList("폴더1, 폴더2", "폴더3");
     } // 북마크 폴더 리스트 데이터 설정
 
     private void hideKeyboard() {

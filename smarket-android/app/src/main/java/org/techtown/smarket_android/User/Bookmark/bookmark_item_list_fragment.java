@@ -42,7 +42,7 @@ public class bookmark_item_list_fragment extends Fragment implements bookmark_it
 
     private Spinner bookmark_spinner; // 북마크 스피너
     private ArrayAdapter spinnerAdapter; // 스피너 어댑터
-    private List<String> bookmarkFolderList; // 북마크 폴더 리스트
+    private List<String> bookmarkFolderList = Arrays.asList("폴더1", "폴더2"); // 북마크 폴더 리스트
 
     private EditText bookmark_folder_name; // 추가할 북마크 이름
 
@@ -51,10 +51,6 @@ public class bookmark_item_list_fragment extends Fragment implements bookmark_it
     private List<Item> bookmarkItemList;// 북마크 아이템 리스트
 
     private InputMethodManager imm; // 키보드 설정
-
-    public bookmark_item_list_fragment(){
-        this.bookmarkFolderList = Arrays.asList("폴더1", "폴더2", "폴더3");
-    }
 
     @Nullable
     @Override
@@ -146,7 +142,7 @@ public class bookmark_item_list_fragment extends Fragment implements bookmark_it
                         folder_name = String.valueOf(result_char);
 
                     } // 한글 입력 후 엔터시 개행문자 발생하는 오류 처리
-                    spinnerAdapter.add(folder_name); // 북마크 폴더 추가
+                    bookmarkFolderList.add(folder_name); // 북마크 폴더 추가
                     spinnerAdapter.notifyDataSetChanged(); // 어댑터 갱신
                     bookmark_spinner.setSelection(bookmarkFolderList.size()-1); // 새로운 북마크 생성 시 생성된 북마크 페이지
                 }

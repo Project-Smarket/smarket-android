@@ -103,7 +103,6 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
 
         void onBind(Item data) {
 //            Log.d(TAG, "onBind: "+data.getList_item_name());
-            Toast.makeText(itemView.getContext(), "바인드", Toast.LENGTH_LONG).show();
             item_name.setText(data.getList_item_name());
             item_value.setText(data.getList_item_value());
             itemImage.setImageResource(data.getItem_image());

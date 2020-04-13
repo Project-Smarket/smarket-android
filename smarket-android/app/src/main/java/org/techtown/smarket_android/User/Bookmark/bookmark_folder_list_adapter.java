@@ -45,16 +45,16 @@ public class bookmark_folder_list_adapter extends RecyclerView.Adapter<bookmark_
 
     @Override
     public void onBindViewHolder(@NonNull itemViewHolder holder, int position) {
-        holder.onBind(bookmarkFolderList.get(position));
+        holder.onBind(this.bookmarkFolderList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return bookmarkFolderList.size();
+        return this.bookmarkFolderList.size();
     }
 
     public void add_folder(String data){
-        bookmarkFolderList.add(data);
+        this.bookmarkFolderList.add(data);
     }
 
     // 뷰홀더 클래스
