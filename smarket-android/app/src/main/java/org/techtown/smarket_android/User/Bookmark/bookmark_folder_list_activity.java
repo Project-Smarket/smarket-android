@@ -50,7 +50,7 @@ public class bookmark_folder_list_activity extends AppCompatActivity {
     private RecyclerView recyclerView; // 북마크 폴더 리스트 리사이클러뷰
     private bookmark_folder_list_adapter adapter; // 북마크 폴더 리스트 어댑터
 
-    private List<String> bookmarkFolderList; // 북마크 폴더 리스트
+    private List<String> bookmarkFolderList = new ArrayList<>(); // 북마크 폴더 리스트
     private bookmark_item_list_fragment bookmark = new bookmark_item_list_fragment();
 
     @Override
@@ -112,8 +112,6 @@ public class bookmark_folder_list_activity extends AppCompatActivity {
                     } // 한글 입력 후 엔터시 개행문자 발생하는 오류 처리
                     adapter.add_folder(folder_name);
                     adapter.notifyDataSetChanged();
-
-                    bookmarkFolderList.add(folder_name);
                 }
             }
         });
@@ -149,7 +147,8 @@ public class bookmark_folder_list_activity extends AppCompatActivity {
     } // 북마크 폴더 리스트 설정
 
     private void set_Data() {
-        bookmarkFolderList = Arrays.asList("폴더1, 폴더2", "폴더3");
+        bookmarkFolderList.add("폴더1");
+        bookmarkFolderList.add("폴더2");
     } // 북마크 폴더 리스트 데이터 설정
 
     private void hideKeyboard() {

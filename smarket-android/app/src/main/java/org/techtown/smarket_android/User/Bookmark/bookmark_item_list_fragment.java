@@ -42,7 +42,7 @@ public class bookmark_item_list_fragment extends Fragment implements bookmark_it
 
     private Spinner bookmark_spinner; // 북마크 스피너
     private ArrayAdapter spinnerAdapter; // 스피너 어댑터
-    private List<String> bookmarkFolderList = Arrays.asList("폴더1", "폴더2"); // 북마크 폴더 리스트
+    private List<String> bookmarkFolderList = new ArrayList<>(); // 북마크 폴더 리스트
 
     private EditText bookmark_folder_name; // 추가할 북마크 이름
 
@@ -66,14 +66,11 @@ public class bookmark_item_list_fragment extends Fragment implements bookmark_it
         return viewGroup;
     }
 
-    public List<String> get_bookmark_folder_list(){
-        return this.bookmarkFolderList;
-    } // 북마크 폴더 리스트 반환
-
     private void set_bookmark_spinner(){
 
         spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, bookmarkFolderList);
 
+        bookmarkFolderList.add("폴더1");
         bookmark_spinner = (Spinner)viewGroup.findViewById(R.id.bookmark_folder);
         bookmark_spinner.setAdapter(spinnerAdapter);
         bookmark_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
