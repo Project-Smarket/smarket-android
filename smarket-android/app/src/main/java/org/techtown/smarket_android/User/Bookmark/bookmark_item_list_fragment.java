@@ -3,22 +3,18 @@ package org.techtown.smarket_android.User.Bookmark;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.media.Image;
 import android.os.Bundle;
-import android.view.FocusFinder;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -27,63 +23,73 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.toolbox.StringRequest;
-
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.searchItemList.Item;
-import org.techtown.smarket_android.searchItemList.RecyclerAdapter;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 
-public class bookmark_fragment extends Fragment {
+public class bookmark_item_list_fragment extends Fragment implements bookmark_item_list_adapter.OnItemClick {
 
-    public static bookmark_fragment newInstance() {
-        return new bookmark_fragment();
-    }
+    public static bookmark_item_list_fragment newInstance() {
+        return new bookmark_item_list_fragment();
+    } // 프래그먼트 생성
 
 
-    private ArrayList<String> bookmarkList;
-    private ArrayAdapter spinnerAdapter;
     private ViewGroup viewGroup;
-    private Spinner bookmark_spinner;
-    private EditText bookmark_folder_name;
-    private InputMethodManager imm;
 
-    private RecyclerView recyclerView;
-    private Context context;
-    private bookmark_adapter adapter;
+    private Spinner bookmark_spinner; // 북마크 스피너
+    private ArrayAdapter spinnerAdapter; // 스피너 어댑터
+    private List<String> bookmarkFolderList; // 북마크 폴더 리스트
+
+    private EditText bookmark_folder_name; // 추가할 북마크 이름
+
+    private RecyclerView recyclerView;// 북마크 아이템 리스트 리사이클러뷰
+    private bookmark_item_list_adapter adapter;// 북마크 아이템 리스트 어댑터
+    private List<Item> bookmarkItemList;// 북마크 아이템 리스트
+
+    private InputMethodManager imm; // 키보드 설정
+
+    public bookmark_item_list_fragment(){
+        this.bookmarkFolderList = Arrays.asList("폴더1", "폴더2", "폴더3");
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.bookmark_main, container, false);
-
-        bookmarkList = new ArrayList<>();
-
-        bookmarkList.add("철수");
         imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 
-        spinnerAdapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_spinner_dropdown_item,
-                bookmarkList);
+        set_bookmark_spinner(); // 북마크 스피너 설정
+        set_plus_btn(); // 북마크 추가 버튼 설정
+        set_trashcan_btn(); // 북마크 삭제 버튼 설정
+        set_bookmark_item_list(); // 북마크 리스트 설정
+
+        return viewGroup;
+    }
+
+    public List<String> get_bookmark_folder_list(){
+        return this.bookmarkFolderList;
+    } // 북마크 폴더 리스트 반환
+
+    private void set_bookmark_spinner(){
+
+        spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, bookmarkFolderList);
 
         bookmark_spinner = (Spinner)viewGroup.findViewById(R.id.bookmark_folder);
         bookmark_spinner.setAdapter(spinnerAdapter);
         bookmark_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(getContext(),bookmarkList.get(i)+"가 선택되었습니다.",
-                        Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
-
+    } // 북마크 스피너 설정
+    private void set_plus_btn(){
         ImageButton plus_btn = viewGroup.findViewById(R.id.plus_btn);
         plus_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,7 +97,8 @@ public class bookmark_fragment extends Fragment {
                 folder_add();  // 북마크 폴더 추가 기능
             }
         }); // 플러스 버튼
-
+    } // 북마크 추가 버튼 설정
+    private void set_trashcan_btn(){
         ImageButton trashcan_btn = viewGroup.findViewById(R.id.trashcan_btn);
         trashcan_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,18 +106,9 @@ public class bookmark_fragment extends Fragment {
                 folder_remove();
             }
         });
+    } // 북마크 삭제 버튼 설정
 
 
-        recyclerView = viewGroup.findViewById(R.id.bookmark_itemList);
-        recyclerView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new bookmark_adapter();
-        recyclerView.setAdapter(adapter);
-        get_Dataset();
-        return viewGroup;
-    }
 
     private void folder_add(){
         LayoutInflater inflater = getLayoutInflater();
@@ -126,15 +124,7 @@ public class bookmark_fragment extends Fragment {
                 return false;
             }
         });
-        /*bookmark_folder_name.setOnEditorActionListener(new EditText.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    Toast.makeText(getContext(), "gg", Toast.LENGTH_LONG).show();
-                }else{};
-                return false;
-            }
-        });*/
+
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(dialogView);
@@ -144,16 +134,24 @@ public class bookmark_fragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 String folder_name = bookmark_folder_name.getText().toString();
 
-                char except_enter[] = folder_name.toCharArray(); // 한글 입력 후 엔터시 개행문자 발생하는 오류 처리
-                char result_char[] = new char[except_enter.length-1];
-                if(except_enter[except_enter.length-1] == '\n'){
-                    System.arraycopy(except_enter, 0, result_char, 0, except_enter.length-1);
-                    folder_name = String.valueOf(result_char);
+                if(folder_name.equals("")){
+                    Toast.makeText(getContext(),"폴더명을 입력해주세요", Toast.LENGTH_LONG).show();
+                }
+                else if(!folder_name.equals("")){
+                    char except_enter[] = folder_name.toCharArray();
+                    if (except_enter[except_enter.length - 1] == '\n') {
+
+                        char result_char[] = new char[except_enter.length - 1];
+                        System.arraycopy(except_enter, 0, result_char, 0, except_enter.length - 1);
+                        folder_name = String.valueOf(result_char);
+
+                    } // 한글 입력 후 엔터시 개행문자 발생하는 오류 처리
+                    spinnerAdapter.add(folder_name); // 북마크 폴더 추가
+                    spinnerAdapter.notifyDataSetChanged(); // 어댑터 갱신
+                    bookmark_spinner.setSelection(bookmarkFolderList.size()-1); // 새로운 북마크 생성 시 생성된 북마크 페이지
                 }
 
-                bookmarkList.add(folder_name); // 북마크 폴더 추가
-                spinnerAdapter.notifyDataSetChanged(); // 어댑터 갱신
-                bookmark_spinner.setSelection(bookmarkList.size()-1); // 새로운 북마크 생성 시 생성된 북마크 페이지
+
             }
         });
 
@@ -164,7 +162,6 @@ public class bookmark_fragment extends Fragment {
             ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(bookmark_folder_name, 0); // 다이얼로그 생성시 EditText 활성화 2
 
     }  // 북마크 폴더 추가 기능
-
     private void folder_remove(){
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("북마크 삭제")
@@ -186,17 +183,23 @@ public class bookmark_fragment extends Fragment {
 
     }// 북마크 폴더 삭제 기능
 
-    private void hideKeyboard(){
-        imm.hideSoftInputFromWindow(bookmark_folder_name.getWindowToken(), 0);
-        imm.hideSoftInputFromWindow(bookmark_folder_name.getWindowToken(), 0);
-    }// 키보드 입력 후 엔터 입력시 키보드 창 내림
 
-    private void get_Dataset() {
-        //        items.add(new Item(getResources().getDrawable(R.drawable.premierball), "참깨라면", "1000원"));
-//        items.add(new Item(getResources().getDrawable(R.drawable.premierball), "진라면", "2000원"));
-//        items.add(new Item(getResources().getDrawable(R.drawable.premierball), "프라포치노", "3200원"));
-//        items.add(new Item(getResources().getDrawable(R.drawable.premierball), "아이스커피", "4000원"));
 
+    private void set_bookmark_item_list(){
+        bookmarkItemList = new ArrayList<>();
+
+        recyclerView = viewGroup.findViewById(R.id.bookmark_itemList);
+        recyclerView.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        set_Data();
+        adapter = new bookmark_item_list_adapter(getContext(), bookmarkItemList, this);
+        recyclerView.setAdapter(adapter);
+
+
+    } // 북마크 아이템 리스트 설정
+    private void set_Data() {
         List<String> item_name = Arrays.asList("국화", "사막", "수국", "해파리", "코알라", "등대", "펭귄");
         List<String> item_value = Arrays.asList("1000","1100","1200","1300","1400","1500","1600");
         List<Integer> itemImage = Arrays.asList(R.drawable.premierball,R.drawable.premierball,R.drawable.premierball,
@@ -207,10 +210,18 @@ public class bookmark_fragment extends Fragment {
             item.setList_item_name(item_name.get(i));
             item.setList_item_value(item_value.get(i));
             item.setItem_image(itemImage.get(i));
-            adapter.addItem(item);
+            bookmarkItemList.add(item);
         }
 
-        adapter.notifyDataSetChanged();
+    }// 북마크 아이템 리스트 데이터셋
+
+    @Override
+    public void onClick(String value) {
+
     }
 
+    private void hideKeyboard(){
+        imm.hideSoftInputFromWindow(bookmark_folder_name.getWindowToken(), 0);
+        imm.hideSoftInputFromWindow(bookmark_folder_name.getWindowToken(), 0);
+    }// 키보드 입력 후 엔터 입력시 키보드 창 내림
 }

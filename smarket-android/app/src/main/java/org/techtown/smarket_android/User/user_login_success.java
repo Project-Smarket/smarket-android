@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.User.Bookmark.bookmark_fragment;
+import org.techtown.smarket_android.User.Bookmark.bookmark_item_list_fragment;
 import org.techtown.smarket_android.User.UserInfrom.userinform_fragment;
 import org.techtown.smarket_android.User.recent.recent_fragment;
 
@@ -35,7 +35,7 @@ public class user_login_success extends Fragment {
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentManager = getFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.main_layout, bookmark_fragment.newInstance()).commit();
+                fragmentManager.beginTransaction().replace(R.id.main_layout, bookmark_item_list_fragment.newInstance()).commit();
             }
         });
 

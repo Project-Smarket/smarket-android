@@ -23,6 +23,7 @@
         </activity>
         <activity android:name=".User.user_login_fragment" android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
         <activity android:name=".MainNavigation.MainNavigationActivity"></activity>
+        <activity android:name=".User.Bookmark.bookmark_folder_list_activity"/>
     </application>
 
 </manifest>
