@@ -4,8 +4,10 @@ import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -25,6 +27,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.techtown.smarket_android.MainActivity;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.searchItemList.Item;
@@ -51,7 +55,8 @@ public class bookmark_folder_list_activity extends AppCompatActivity {
     private bookmark_folder_list_adapter adapter; // 북마크 폴더 리스트 어댑터
 
     private List<String> bookmarkFolderList = new ArrayList<>(); // 북마크 폴더 리스트
-    private bookmark_item_list_fragment bookmark = new bookmark_item_list_fragment();
+
+    private static final String SETTINGS_BOOKMARK_JSON = "settings_bookmark_json";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -112,6 +117,8 @@ public class bookmark_folder_list_activity extends AppCompatActivity {
                     } // 한글 입력 후 엔터시 개행문자 발생하는 오류 처리
                     adapter.add_folder(folder_name);
                     adapter.notifyDataSetChanged();
+                    updateBookmarkFolderList(getApplicationContext(), SETTINGS_BOOKMARK_JSON, bookmarkFolderList);
+                    //edit_bookmarkFolderList();
                 }
             }
         });
@@ -133,7 +140,7 @@ public class bookmark_folder_list_activity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
-        set_Data();
+        set_bookmarkFolderList(); // 북마크 폴더 리스트 셋
         adapter = new bookmark_folder_list_adapter(bookmarkFolderList);
         recyclerView.setAdapter(adapter);
 
@@ -146,10 +153,57 @@ public class bookmark_folder_list_activity extends AppCompatActivity {
         });
     } // 북마크 폴더 리스트 설정
 
-    private void set_Data() {
-        bookmarkFolderList.add("폴더1");
-        bookmarkFolderList.add("폴더2");
+    private void set_bookmarkFolderList() {
+        List<String> result = getStringArrayPref(getApplicationContext(), SETTINGS_BOOKMARK_JSON); // 폴더 리스트 데이터 가져오기
+        for (int i = 0; i < result.size(); i++) {
+            String folder = result.get(i);
+            bookmarkFolderList.add(folder);
+        }
+
     } // 북마크 폴더 리스트 데이터 설정
+    private ArrayList<String> getStringArrayPref(Context context, String key) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String json = prefs.getString(key, null);
+        ArrayList<String> folders = new ArrayList<String>();
+        if (json != null) {
+            try {
+                JSONArray a = new JSONArray(json);
+                for (int i = 0; i < a.length(); i++) {
+                    String folder = a.optString(i);
+                    folders.add(folder);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return folders;
+    } // 폴더 리스트 데이터 가져오기
+
+    /*private void edit_bookmarkFolderList(){
+        SharedPreferences test = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = test.edit();
+        editor.clear();
+
+        List<String> edited_bookmarkFolderList = this.bookmarkFolderList;
+
+        setStringArrayPref(getApplicationContext(), SETTINGS_BOOKMARK_JSON, edited_bookmarkFolderList);
+
+    }*/
+
+    private void updateBookmarkFolderList(Context context, String key, List<String> values) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        JSONArray a = new JSONArray();
+        for (int i = 0; i < values.size(); i++) {
+            a.put(values.get(i));
+        }
+        if (!values.isEmpty()) {
+            editor.putString(key, a.toString());
+        } else {
+            editor.putString(key, null);
+        }
+        editor.apply();
+    } // 북마크 폴더 업데이트
 
     private void hideKeyboard() {
         imm.hideSoftInputFromWindow(bookmark_folder_name.getWindowToken(), 0);
