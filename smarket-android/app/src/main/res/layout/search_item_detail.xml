@@ -4,8 +4,7 @@
     android:id="@+id/detailScrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:fillViewport="true">
+    android:orientation="vertical">
 
 <!--    fillViewport : 남아있는 공백을 자식 뷰의 높이만큼 채우겠다-->
 

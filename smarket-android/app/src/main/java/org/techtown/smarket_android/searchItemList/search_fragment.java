@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,6 +49,7 @@ public class search_fragment extends Fragment {
         search_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 search_list_fragment slf = new search_list_fragment();
                 Bundle bundle = setBundle();
                 slf.setArguments(bundle);
@@ -63,9 +65,21 @@ public class search_fragment extends Fragment {
     private Bundle setBundle() {
         Bundle bundle = new Bundle();
 
-        String textView = search_text.getText().toString();
-        bundle.putString("searchName", textView);
+        String text = search_text.getText().toString();
+        if (text.equals("")) {
+            Toast.makeText(getContext(), "폴더명을 입력해주세요", Toast.LENGTH_LONG).show();
+        } else if (!text.equals("")) {
+            char except_enter[] = text.toCharArray();
+            if (except_enter[except_enter.length - 1] == '\n') {
 
+                char result_char[] = new char[except_enter.length - 1];
+                System.arraycopy(except_enter, 0, result_char, 0, except_enter.length - 1);
+                text = String.valueOf(result_char);
+
+            } // 한글 입력 후 엔터시 개행문자 발생하는 오류 처리
+            bundle.putString("searchName", text);
+
+        }
         return bundle;
     }
 
