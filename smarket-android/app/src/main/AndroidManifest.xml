@@ -13,7 +13,6 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         >
-        <!--키보드 사용시 화면고정-->
         <activity android:name=".AppOnpage.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,6 +22,11 @@
         </activity>
         <activity android:name=".User.user_login_fragment" android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
         <activity android:name=".MainNavigation.MainNavigationActivity"></activity>
+        <activity android:name=".User.Bookmark.bookmark_folder_list_activity"></activity>
+        <activity android:name=".sharedpref.test1">
+
+        </activity>
+        <activity android:name=".sharedpref.test2"></activity>
     </application>
 
 </manifest>
