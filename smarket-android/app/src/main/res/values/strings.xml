@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">smarket-android</string>
     <string name="test">hello</string>
+    <string name="longTest">Hello</string>
+    <string name="longTest2">Good to see you</string>
+    <string name="longTest3">Nice to meet you</string>
 </resources>

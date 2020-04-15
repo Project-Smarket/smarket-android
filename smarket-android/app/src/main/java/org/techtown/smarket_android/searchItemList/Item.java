@@ -1,13 +1,25 @@
 package org.techtown.smarket_android.searchItemList;
 
+import android.graphics.Bitmap;
 import android.widget.ImageButton;
+
+import java.net.URL;
 
 public class Item {
 
     private String list_item_image;
     private String list_item_name;
     private String list_item_value;
+    private String list_item_mall;
     private int item_image;
+
+    public String getList_item_mall() {
+        return list_item_mall;
+    }
+
+    public void setList_item_mall(String list_item_mall) {
+        this.list_item_mall = list_item_mall;
+    }
 
     public int getItem_image() {
         return item_image;

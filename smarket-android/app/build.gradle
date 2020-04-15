@@ -37,5 +37,7 @@ dependencies {
     implementation 'com.android.support:design:29.+'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'me.relex:circleindicator:1.2.2'
+
 
 }

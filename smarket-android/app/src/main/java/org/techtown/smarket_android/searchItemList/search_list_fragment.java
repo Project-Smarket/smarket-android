@@ -1,57 +1,48 @@
 package org.techtown.smarket_android.searchItemList;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.icu.text.DecimalFormat;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.searchItemList.Request.searchRequest;
 
-import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import static com.android.volley.VolleyLog.TAG;
 
 public class search_list_fragment extends Fragment {
     private RecyclerView recyclerView;
     private Context context;
     JSONArray key;
     String txt;
-    TextView test;
+    private Toolbar toolbar;
     private RecyclerAdapter adapter;
     private List<String> List_item_name = new ArrayList<>();
     private List<String> List_item_value = new ArrayList<>();
@@ -73,7 +64,7 @@ public class search_list_fragment extends Fragment {
             e.printStackTrace();
         }
 
-        CreateList(viewGroup);
+        setHasOptionsMenu(true);
 
         adapter.setOnRecyclerClickListener(new RecyclerAdapter.OnRecyclerClickListener() {
             @Override
@@ -95,8 +86,8 @@ public class search_list_fragment extends Fragment {
             txt = getArguments().getString("searchName");
         }
     }
-    private void CreateList(ViewGroup viewGroup) {
 
+    private void CreateList(ViewGroup viewGroup) {
         recyclerView = viewGroup.findViewById(R.id.search_item_list);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
@@ -111,13 +102,12 @@ public class search_list_fragment extends Fragment {
         TextView item_name = v.findViewById(R.id.search_list_item_name);
         TextView item_value = v.findViewById(R.id.search_list_item_value);
         ImageView item_image = v.findViewById(R.id.search_list_item_image);
-//        ImageView item_image = v.findViewById(R.id.search_list_item_image);
-//        Drawable d = item_image.getDrawable();
-//        Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
+        Drawable d = item_image.getDrawable();
+        Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
 
         bundle.putString("item_name", item_name.getText().toString());
         bundle.putString("item_value", item_value.getText().toString());
-//            bundle.putParcelable("item_image",bitmap);
+        bundle.putParcelable("item_image",bitmap);
 
         return bundle;
     }
@@ -132,14 +122,10 @@ public class search_list_fragment extends Fragment {
                     JSONObject jsonObject = new JSONObject(response);
                     key = jsonObject.getJSONArray("items");
 
-
-
                     for(int i=0, n=key.length(); i<n; i++){
-
                         titleJob(i);
                         priceJob(i);
-                        List_item_image.add(key.getJSONObject(i).getString("image"));
-                        List_item_mall.add(key.getJSONObject(i).getString("mallName"));
+                        ImageJob(i);
                     }
 
                     for(int i=0, n=List_item_name.size(); i<n; i++){
@@ -149,6 +135,7 @@ public class search_list_fragment extends Fragment {
                         item.setList_item_image(List_item_image.get(i));
                         adapter.addItem(item);
                     }
+
                     adapter.notifyDataSetChanged();
 
                 } catch (JSONException e) {
@@ -192,7 +179,18 @@ public class search_list_fragment extends Fragment {
         List_item_value.add(lprice+"원");
     }
 
+    public void ImageJob (int index) throws Exception{
+        String image = key.getJSONObject(index).getString("image");
+        List_item_image.add(image);
+    }
 
+
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.search_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
 }
 
 
@@ -204,9 +202,11 @@ public class search_list_fragment extends Fragment {
 //        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
 //        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
+
 //                    JSONObject items = key.getJSONObject(0); //원하는 json 결과 인덱스 접근
 //                    String itemTitle = items.getString("title"); // 0번 인덱스 객체의 결과값 중 title 선택
 //                    test.setText(itemTitle);
+
 
 //        recyclerView = viewGroup.findViewById(R.id.search_item_list);
 //        recyclerView.setHasFixedSize(true);

@@ -1,10 +1,7 @@
 package org.techtown.smarket_android.searchItemList;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,45 +9,14 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.User.user_login_success;
-import org.techtown.smarket_android.User.user_register_request;
-import org.techtown.smarket_android.searchItemList.Request.searchRequest;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.android.volley.VolleyLog.TAG;
 
 
 public class search_fragment extends Fragment {
@@ -82,17 +48,12 @@ public class search_fragment extends Fragment {
         search_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                try {
-//                    getJson();
-//                } catch (UnsupportedEncodingException e) {
-//                    e.printStackTrace();
-//                }
                 search_list_fragment slf = new search_list_fragment();
                 Bundle bundle = setBundle();
                 slf.setArguments(bundle);
+                assert getFragmentManager() != null;
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.main_layout, slf).addToBackStack(null).commit();
-
             }
         });
 
@@ -111,6 +72,8 @@ public class search_fragment extends Fragment {
     private void hideKeyboard(){
         imm.hideSoftInputFromWindow(search_text.getWindowToken(), 0);
     }// 키보드 입력 후 엔터 입력시 키보드 창 내림
+}
+
 
 //    private void getJson() throws UnsupportedEncodingException {
 //        Response.Listener<String> responseListener = new Response.Listener<String>() {
@@ -151,4 +114,4 @@ public class search_fragment extends Fragment {
 //        RequestQueue queue = Volley.newRequestQueue(getContext());
 //        queue.add(searchRequest);
 //    }
-}
+// getJson 양식 참고

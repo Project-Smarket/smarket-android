@@ -41,21 +41,22 @@ public class MainNavigationActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) { //menu_bottom.xml에서 지정해줬던 아이디 값을 받아와서 각 아이디값마다 다른 이벤트를 발생시킵니다.
                     case R.id.tab1: {
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, home_fragment1).addToBackStack(null).commitAllowingStateLoss();
+
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, home_fragment1).commitAllowingStateLoss();
                         return true;
                     }
                     case R.id.tab2: {
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, user_fragment2).addToBackStack(null).commitAllowingStateLoss(); //로그인 완료 창
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, user_fragment2).commitAllowingStateLoss(); //로그인 완료 창
                         //getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, user_fragment2).commitAllowingStateLoss(); // 로그인 창
                         return true;
                     }
                     case R.id.tab3: {
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, alarm_fragment3).addToBackStack(null).commitAllowingStateLoss();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, alarm_fragment3).commitAllowingStateLoss();
                         return true;
                     }
 
                     case R.id.tab4: {
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, search_fragment4).addToBackStack(null).commitAllowingStateLoss();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, search_fragment4).commitAllowingStateLoss();
                         return true;
                     }
                     default:
