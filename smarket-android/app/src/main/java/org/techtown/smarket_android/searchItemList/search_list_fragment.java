@@ -93,7 +93,7 @@ public class search_list_fragment extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new RecyclerAdapter();
+        adapter = new RecyclerAdapter(getContext());
         recyclerView.setAdapter(adapter);
     }
 

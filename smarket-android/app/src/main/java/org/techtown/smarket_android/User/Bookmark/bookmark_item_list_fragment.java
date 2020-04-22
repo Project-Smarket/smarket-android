@@ -38,7 +38,7 @@ import java.util.List;
 import static android.content.Context.MODE_PRIVATE;
 
 
-public class bookmark_item_list_fragment extends Fragment implements bookmark_item_list_adapter.OnItemClick {
+public class bookmark_item_list_fragment extends Fragment {
 
     private String TAG = "tag";
 
@@ -82,12 +82,11 @@ public class bookmark_item_list_fragment extends Fragment implements bookmark_it
     }
 
     private void set_bookmark_spinner(){
-
-        spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, bookmarkFolderList);
-
         set_bookmarkFolderList();
+        spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, bookmarkFolderList);
         bookmark_spinner = (Spinner)viewGroup.findViewById(R.id.bookmark_folder);
         bookmark_spinner.setAdapter(spinnerAdapter);
+
         bookmark_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -100,10 +99,11 @@ public class bookmark_item_list_fragment extends Fragment implements bookmark_it
 
     private void set_bookmarkFolderList(){
         List<String> result = getStringArrayPref(getContext(), SETTINGS_BOOKMARK_JSON); // 폴더 리스트 데이터 가져오기
-        for (int i = 0; i < result.size(); i++) {
+        bookmarkFolderList = result;
+        /*for (int i = 0; i < result.size(); i++) {
             String folder = result.get(i);
             bookmarkFolderList.add(folder);
-        }
+        }*/
     }
     private ArrayList<String> getStringArrayPref(Context context, String key) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -218,17 +218,6 @@ public class bookmark_item_list_fragment extends Fragment implements bookmark_it
 
     }// 북마크 폴더 삭제 기능
 
-    /*private void edit_bookmarkFolderList(){
-        SharedPreferences test = PreferenceManager.getDefaultSharedPreferences(getContext());
-        SharedPreferences.Editor editor = test.edit();
-        editor.clear();
-
-        List<String> edited_bookmarkFolderList = this.bookmarkFolderList;
-
-        setStringArrayPref(getContext(), SETTINGS_BOOKMARK_JSON, edited_bookmarkFolderList);
-
-    }*/
-
     private void updateBookmarkFolderList(Context context, String key, List<String> values) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
@@ -249,12 +238,10 @@ public class bookmark_item_list_fragment extends Fragment implements bookmark_it
         bookmarkItemList = new ArrayList<>();
 
         recyclerView = viewGroup.findViewById(R.id.bookmark_itemList);
-        recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
         set_Data();
-        adapter = new bookmark_item_list_adapter(getContext(), bookmarkItemList, this);
+        adapter = new bookmark_item_list_adapter(getContext(), getActivity(), bookmarkItemList, bookmarkFolderList);
         recyclerView.setAdapter(adapter);
 
 
@@ -274,11 +261,6 @@ public class bookmark_item_list_fragment extends Fragment implements bookmark_it
         }
 
     }// 북마크 아이템 리스트 데이터셋
-
-    @Override
-    public void onClick(String value) {
-
-    }
 
     private void hideKeyboard(){
         imm.hideSoftInputFromWindow(bookmark_folder_name.getWindowToken(), 0);

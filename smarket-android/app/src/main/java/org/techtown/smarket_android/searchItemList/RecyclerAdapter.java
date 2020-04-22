@@ -1,16 +1,14 @@
 package org.techtown.smarket_android.searchItemList;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
-import android.nfc.Tag;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.techtown.smarket_android.R;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -42,6 +39,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
     // adapter에 들어갈 list 입니다.
     private ArrayList<Item> listData = new ArrayList<>();
+    private Context mContext;
+    RecyclerAdapter(Context context){
+        mContext = context;
+    }
 
     @NonNull
     @Override

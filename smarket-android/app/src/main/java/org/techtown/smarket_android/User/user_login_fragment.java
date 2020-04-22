@@ -47,6 +47,10 @@ public class user_login_fragment extends Fragment {
 
     InputMethodManager imm;
 
+    public static user_login_fragment newInstance() {
+        return new user_login_fragment();
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
