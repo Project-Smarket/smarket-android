@@ -93,6 +93,7 @@ public class search_fragment extends Fragment {
             } // 한글 입력 후 엔터시 개행문자 발생하는 오류 처리
             bundle.putString("searchName", text);
 
+
         }
         return bundle;
     }

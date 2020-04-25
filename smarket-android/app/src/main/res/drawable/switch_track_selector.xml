@@ -6,5 +6,5 @@
 
     <item
         android:drawable="@drawable/switch_track_on"
-        android:state_checked="true"/>
+        android:state_checked="true" />
 </selector>
