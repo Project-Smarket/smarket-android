@@ -33,6 +33,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,26 +46,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class search_list_fragment extends Fragment {
+    private ViewGroup viewGroup;
     private RecyclerView recyclerView;
     private Context context;
     private int cnt = 0;
-    JSONArray key;
     String txt;
     Toolbar toolbar;
     private RecyclerAdapter adapter;
-    private List<String> List_item_name = new ArrayList<>();
+
+    private List<Item> getList = new ArrayList<>();
+    /*private List<String> List_item_name = new ArrayList<>();
     private List<String> List_item_value = new ArrayList<>();
     private List<String> List_item_image = new ArrayList<>();
-    private List<String> List_item_mall = new ArrayList<>();
+    private List<String> List_item_mall = new ArrayList<>();*/
 
     @Nullable
     @Override
     public ViewGroup onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.search_list, container, false);
+        viewGroup = (ViewGroup) inflater.inflate(R.layout.search_list, container, false);
 
-        CreateList(viewGroup);
-
-        getBundle(viewGroup);
+        getBundle();
 
         try {
             getJson();
@@ -72,8 +73,9 @@ public class search_list_fragment extends Fragment {
             e.printStackTrace();
         }
 
+        CreateList();
 
-        settingToolbar(viewGroup);
+        settingToolbar();
 
         setHasOptionsMenu(true);
 
@@ -83,7 +85,7 @@ public class search_list_fragment extends Fragment {
                 searchdetail_fragment searchdetailFragment = new searchdetail_fragment();
                 Bundle bundle = settingBundle(v);
                 searchdetailFragment.setArguments(bundle);
-                listClear();
+                //listClear();
                 adapter.notifyDataSetChanged();
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.main_layout, searchdetailFragment).addToBackStack(null);
@@ -95,14 +97,14 @@ public class search_list_fragment extends Fragment {
         return viewGroup;
     }
 
-    private void getBundle(ViewGroup viewGroup) {
+    private void getBundle() {
         if (getArguments() != null) {
             txt = getArguments().getString("searchName");
         }
 
     }
 
-    private void CreateList(ViewGroup viewGroup) {
+    private void CreateList() {
         recyclerView = viewGroup.findViewById(R.id.search_item_list);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
@@ -140,22 +142,19 @@ public class search_list_fragment extends Fragment {
             public void onResponse(String response) {
                 try {
                     JSONObject jsonObject = new JSONObject(response);
-                    key = jsonObject.getJSONArray("items");
+                    JSONArray key = jsonObject.getJSONArray("items");
 
                     for (int i = 0, n = key.length(); i < n; i++) {
-                        titleJob(i);
-                        priceJob(i);
-                        ImageJob(i);
-                        ItemMall(i);
+                        getItem(i, key);
+//                        titleJob(i);
+//                        priceJob(i);
+//                        ImageJob(i);
+//                        ItemMall(i);
                     }
 
-                    for (int i = 0, n = List_item_name.size(); i < n; i++) {
-                        Item item = new Item();
-                        item.setList_item_name(List_item_name.get(i));
-                        item.setList_item_value(List_item_value.get(i));
-                        item.setList_item_image(List_item_image.get(i));
-                        item.setList_item_mall(List_item_mall.get(i));
-                        adapter.addItem(item);
+
+                    for (int i = 0, n = getList.size(); i < n; i++) {
+                        adapter.addItem(getList.get(i));
                     }
 
                     adapter.notifyDataSetChanged();
@@ -188,8 +187,26 @@ public class search_list_fragment extends Fragment {
         return html.replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", "");
     }
 
-    public void titleJob(int index) throws Exception {
+    private void getItem (int index, JSONArray key) throws Exception {
         String title = key.getJSONObject(index).getString("title");
+        String bookmark_name = removeTag(title);
+
+
+        String price = key.getJSONObject(index).getString("lprice");
+        int bookmark_price = Integer.parseInt(price);
+        String bookmark_lprice = String.format("%,d", bookmark_price);
+
+        String bookmark_image = key.getJSONObject(index).getString("image");
+
+        String bookmark_mallName = key.getJSONObject(index).getString("mallName");
+
+        Item item = new Item(bookmark_name, bookmark_lprice, bookmark_image, bookmark_mallName);
+
+        getList.add(item);
+    }
+
+    /*public void titleJob(int index) throws Exception {
+
         String res = removeTag(title);
         List_item_name.add(res);
     }
@@ -209,7 +226,7 @@ public class search_list_fragment extends Fragment {
     public void ItemMall(int index) throws Exception {
         String name = key.getJSONObject(index).getString("mallName");
         List_item_mall.add(name);
-    }
+    }*/
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
@@ -265,7 +282,7 @@ public class search_list_fragment extends Fragment {
         return bundle;
     }
 
-    public void settingToolbar(ViewGroup viewGroup) {
+    public void settingToolbar() {
         toolbar = viewGroup.findViewById(R.id.searchToolbar);
         toolbar.setTitle(txt);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
@@ -291,10 +308,6 @@ public class search_list_fragment extends Fragment {
     }
 
     public void listClear(){
-        List_item_image.clear();
-        List_item_mall.clear();
-        List_item_name.clear();
-        List_item_value.clear();
         adapter.clear();
     }
 

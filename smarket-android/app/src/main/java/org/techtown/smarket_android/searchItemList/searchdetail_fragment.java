@@ -34,10 +34,10 @@ import org.techtown.smarket_android.searchItemList.Pager.search_detail_video_fra
 
 
 public class searchdetail_fragment extends Fragment {
-    ViewGroup viewGroup;
-    Bundle bundle;
-    String in;
-    Toolbar toolbar;
+    private ViewGroup viewGroup;
+    private Bundle bundle;
+    private String in;
+    private Toolbar toolbar;
     private ViewPager viewPager;
     private SectionPageAdapter S_adapter;
 

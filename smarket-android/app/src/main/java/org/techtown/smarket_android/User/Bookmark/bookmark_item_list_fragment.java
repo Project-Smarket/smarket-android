@@ -265,13 +265,12 @@ public class bookmark_item_list_fragment extends Fragment implements bookmark_it
         List<Integer> itemImage = Arrays.asList(R.drawable.premierball,R.drawable.premierball,R.drawable.premierball,
                 R.drawable.premierball,R.drawable.premierball,R.drawable.premierball,R.drawable.premierball);
 
-        for(int i=0; i<item_name.size(); i++){
+        /*for(int i=0; i<item_name.size(); i++){
             Item item = new Item();
             item.setList_item_name(item_name.get(i));
             item.setList_item_value(item_value.get(i));
-            item.setItem_image(itemImage.get(i));
             bookmarkItemList.add(item);
-        }
+        }*/
 
     }// 북마크 아이템 리스트 데이터셋
 

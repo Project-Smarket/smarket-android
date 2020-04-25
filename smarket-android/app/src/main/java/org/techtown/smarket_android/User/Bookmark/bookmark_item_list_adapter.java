@@ -105,7 +105,6 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
 //            Log.d(TAG, "onBind: "+data.getList_item_name());
             item_name.setText(data.getList_item_name());
             item_value.setText(data.getList_item_value());
-            itemImage.setImageResource(data.getItem_image());
         }
     }
 
