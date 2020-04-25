@@ -319,9 +319,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         }
 
         void onBind(final Item data) {
-            item_name.setText(data.getList_item_name());
-            item_value.setText(data.getList_item_value());
-            ItemMall.setText(data.getList_item_mall());
+            item_name.setText(data.getItem_name());
+            item_value.setText(data.getItem_value());
+            ItemMall.setText(data.getItem_mall());
 
             //안드로이드에서 네트워크와 관련된 작업을 할 때,
             //반드시 메인 쓰레드가 아닌 별도의 작업 쓰레드를 생성하여 작업해야 한다.
@@ -330,7 +330,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                 public void run() {
                     try{
                         try {
-                            URL url = new URL(data.getList_item_image());
+                            URL url = new URL(data.getItem_image());
 
                             //웹에서 이미지를 가져온 뒤
                             //이미지뷰에 지정할 비트맵을 만든다
