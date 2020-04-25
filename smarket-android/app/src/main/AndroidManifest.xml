@@ -19,6 +19,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
         <activity android:name=".User.user_login_fragment" android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
         <activity android:name=".MainNavigation.MainNavigationActivity"></activity>

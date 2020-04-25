@@ -50,6 +50,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         // return 인자는 ViewHolder 입니다.
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_list_item, parent, false);
 
+        View cashBtn = view.findViewById(R.id.cash_btn);
+        cashBtn.setVisibility(View.INVISIBLE);
+
         final ItemViewHolder itemViewHolder = new ItemViewHolder(view);
 
         itemViewHolder.heart_btn.setOnClickListener(new View.OnClickListener() {
@@ -62,15 +65,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                     itemViewHolder.heart_btn.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
                     itemViewHolder.bookmark_check = false;
                 }
-            }
-        });
-
-        ImageView cash = view.findViewById(R.id.cash_btn);
-        cash.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(v.getContext(),
-                        "cash", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -94,6 +88,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         listData.add(data);
     }
 
+    public void clear(){
+        listData.clear();
+    }
+
+
     // RecyclerView의 핵심인 ViewHolder 입니다.
     // 여기서 subView를 setting 해줍니다.
     class ItemViewHolder extends RecyclerView.ViewHolder {
@@ -102,6 +101,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         private TextView item_value;
         private ImageView item_Image;
         private ImageView heart_btn;
+        private TextView ItemMall;
         private Boolean bookmark_check = false;
         private Bitmap bitmap;
 
@@ -112,6 +112,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             item_name = itemView.findViewById(R.id.search_list_item_name);
             item_value = itemView.findViewById(R.id.search_list_item_value);
             item_Image = itemView.findViewById(R.id.search_list_item_image);
+            ItemMall = itemView.findViewById(R.id.search_mallName);
             heart_btn = itemView.findViewById(R.id.heart_btn);
 
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -130,6 +131,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         void onBind(final Item data) {
             item_name.setText(data.getList_item_name());
             item_value.setText(data.getList_item_value());
+            ItemMall.setText(data.getList_item_mall());
 
             //안드로이드에서 네트워크와 관련된 작업을 할 때,
             //반드시 메인 쓰레드가 아닌 별도의 작업 쓰레드를 생성하여 작업해야 한다.

@@ -4,4 +4,8 @@
     <string name="longTest">Hello</string>
     <string name="longTest2">Good to see you</string>
     <string name="longTest3">Nice to meet you</string>
+    <string name="lowpriceTag">최저가</string>
+    <string name="lowprice">33,000원</string>
+    <string name="MallName">판매처 : OOO</string>
+    <string name="priceDifference"> 500 </string>
 </resources>

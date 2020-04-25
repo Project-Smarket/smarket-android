@@ -8,16 +8,23 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,9 +47,10 @@ import java.util.List;
 public class search_list_fragment extends Fragment {
     private RecyclerView recyclerView;
     private Context context;
+    private int cnt = 0;
     JSONArray key;
     String txt;
-    private Toolbar toolbar;
+    Toolbar toolbar;
     private RecyclerAdapter adapter;
     private List<String> List_item_name = new ArrayList<>();
     private List<String> List_item_value = new ArrayList<>();
@@ -64,27 +72,34 @@ public class search_list_fragment extends Fragment {
             e.printStackTrace();
         }
 
+
+        settingToolbar(viewGroup);
+
         setHasOptionsMenu(true);
 
         adapter.setOnRecyclerClickListener(new RecyclerAdapter.OnRecyclerClickListener() {
             @Override
             public void OnRecyclerClickListener(View v, int position) {
                 searchdetail_fragment searchdetailFragment = new searchdetail_fragment();
-                Bundle bundle = setBundle(v);
+                Bundle bundle = settingBundle(v);
                 searchdetailFragment.setArguments(bundle);
+                listClear();
+                adapter.notifyDataSetChanged();
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.main_layout, searchdetailFragment).addToBackStack(null);
-                fragmentTransaction.commit();
+                fragmentTransaction.commitAllowingStateLoss();
             }
         });
+
 
         return viewGroup;
     }
 
-    private void getBundle(ViewGroup viewGroup){
-        if(getArguments()!=null){
+    private void getBundle(ViewGroup viewGroup) {
+        if (getArguments() != null) {
             txt = getArguments().getString("searchName");
         }
+
     }
 
     private void CreateList(ViewGroup viewGroup) {
@@ -95,19 +110,24 @@ public class search_list_fragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
         adapter = new RecyclerAdapter();
         recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
-    private Bundle setBundle(View v) {
+    private Bundle settingBundle(View v) {
         Bundle bundle = new Bundle();
         TextView item_name = v.findViewById(R.id.search_list_item_name);
         TextView item_value = v.findViewById(R.id.search_list_item_value);
         ImageView item_image = v.findViewById(R.id.search_list_item_image);
+        TextView item_mall = v.findViewById(R.id.search_mallName);
+
         Drawable d = item_image.getDrawable();
-        Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
+        Bitmap bitmap = ((BitmapDrawable) d).getBitmap();
 
         bundle.putString("item_name", item_name.getText().toString());
         bundle.putString("item_value", item_value.getText().toString());
-        bundle.putParcelable("item_image",bitmap);
+        bundle.putParcelable("item_image", bitmap);
+        bundle.putString("item_mallName", item_mall.getText().toString());
+        bundle.putString("txt",txt);
 
         return bundle;
     }
@@ -122,17 +142,19 @@ public class search_list_fragment extends Fragment {
                     JSONObject jsonObject = new JSONObject(response);
                     key = jsonObject.getJSONArray("items");
 
-                    for(int i=0, n=key.length(); i<n; i++){
+                    for (int i = 0, n = key.length(); i < n; i++) {
                         titleJob(i);
                         priceJob(i);
                         ImageJob(i);
+                        ItemMall(i);
                     }
 
-                    for(int i=0, n=List_item_name.size(); i<n; i++){
+                    for (int i = 0, n = List_item_name.size(); i < n; i++) {
                         Item item = new Item();
                         item.setList_item_name(List_item_name.get(i));
                         item.setList_item_value(List_item_value.get(i));
                         item.setList_item_image(List_item_image.get(i));
+                        item.setList_item_mall(List_item_mall.get(i));
                         adapter.addItem(item);
                     }
 
@@ -172,27 +194,111 @@ public class search_list_fragment extends Fragment {
         List_item_name.add(res);
     }
 
-    public void priceJob (int index) throws Exception {
+    public void priceJob(int index) throws Exception {
         String price = key.getJSONObject(index).getString("lprice");
         int value = Integer.parseInt(price);
-        String lprice = String.format("%,d",value);
-        List_item_value.add(lprice+"원");
+        String lprice = String.format("%,d", value);
+        List_item_value.add(lprice + "원");
     }
 
-    public void ImageJob (int index) throws Exception{
+    public void ImageJob(int index) throws Exception {
         String image = key.getJSONObject(index).getString("image");
         List_item_image.add(image);
     }
 
-
+    public void ItemMall(int index) throws Exception {
+        String name = key.getJSONObject(index).getString("mallName");
+        List_item_mall.add(name);
+    }
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+
         inflater.inflate(R.menu.search_menu, menu);
+
+        MenuItem searchBtn = menu.findItem(R.id.search_list_btn);
+        SearchView searchView = (SearchView) searchBtn.getActionView();
+        searchView.setQueryHint(txt);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                search_list_fragment slf = new search_list_fragment();
+                Bundle bundle = setBundle(query);
+                slf.setArguments(bundle);
+                assert getFragmentManager() != null;
+                listClear();
+                adapter.notifyDataSetChanged();
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.main_layout, slf).addToBackStack(null).commitAllowingStateLoss();
+
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                return false;
+            }
+        });
+
         super.onCreateOptionsMenu(menu, inflater);
     }
-}
 
+    private Bundle setBundle(String query) {
+        Bundle bundle = new Bundle();
+
+        String text = query;
+        if (text.equals("")) {
+            Toast.makeText(getContext(), "폴더명을 입력해주세요", Toast.LENGTH_LONG).show();
+        } else if (!text.equals("")) {
+            char except_enter[] = text.toCharArray();
+            if (except_enter[except_enter.length - 1] == '\n') {
+
+                char result_char[] = new char[except_enter.length - 1];
+                System.arraycopy(except_enter, 0, result_char, 0, except_enter.length - 1);
+                text = String.valueOf(result_char);
+
+            } // 한글 입력 후 엔터시 개행문자 발생하는 오류 처리
+            bundle.putString("searchName", text);
+
+        }
+        return bundle;
+    }
+
+    public void settingToolbar(ViewGroup viewGroup) {
+        toolbar = viewGroup.findViewById(R.id.searchToolbar);
+        toolbar.setTitle(txt);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+//              프래그먼트 모든 stack 한번에 지우기 fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                fm.beginTransaction().remove(search_list_fragment.this).commit();
+                fm.popBackStack();
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void listClear(){
+        List_item_image.clear();
+        List_item_mall.clear();
+        List_item_name.clear();
+        List_item_value.clear();
+        adapter.clear();
+    }
+
+}
 
 
 //        context = viewGroup.getContext();
