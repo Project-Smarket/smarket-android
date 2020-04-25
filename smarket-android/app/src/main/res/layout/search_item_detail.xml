@@ -1,26 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<org.techtown.smarket_android.searchItemList.Pager.CustomScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/detailScrollView"
+    android:id="@+id/detailScroll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:fillViewport="true"
+    tools:context=".MainActivity">
 
-<!--    fillViewport : 남아있는 공백을 자식 뷰의 높이만큼 채우겠다-->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/detailToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/smarketyello"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            app:layout_constraintBottom_toTopOf="@id/detail_item_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/detail_item_image"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_marginBottom="8dp"
+            android:background="@color/colorWhite"
+            android:src="@mipmap/ic_launcher"
+            app:layout_constraintBottom_toTopOf="@id/detailTextCollection"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detailToolbar" />
 
         <LinearLayout
-            android:id="@+id/detail_layout"
+            android:id="@+id/detailTextCollection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <ImageView
-                android:id="@+id/detail_item_image"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_marginBottom="8dp"
-                android:background="@color/colorWhite"
-                android:src="@mipmap/ic_launcher" />
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/detail_tab"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/detail_item_image">
 
             <TextView
                 android:id="@+id/detail_item_name"
@@ -28,18 +51,17 @@
                 android:layout_height="wrap_content"
                 android:background="@color/colorWhite"
                 android:text="안드로이드 연습용 텍스트"
-                android:textSize="28sp" />
+                android:textSize="26sp" />
 
             <LinearLayout
+                android:id="@+id/detailPriceArray"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorWhite"
                 android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorWhite"
                     android:text="최저가"
                     android:textColor="@color/red"
                     android:textSize="24sp" />
@@ -48,43 +70,162 @@
                     android:id="@+id/detail_item_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorWhite"
-                    android:text="28800원"
                     android:layout_marginLeft="8dp"
+                    android:background="@color/colorWhite"
+                    android:text="@string/lowprice"
                     android:textColor="@color/red"
                     android:textSize="26sp" />
 
                 <TextView
                     android:id="@+id/item_Fluctuations"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
                     android:layout_marginLeft="8dp"
+                    android:layout_weight="1"
                     android:background="@color/colorWhite"
-                    android:text="( down 500 )"
+                    android:text="@string/priceDifference"
                     android:textColor="@color/blue"
                     android:textSize="24sp" />
+
             </LinearLayout>
 
             <TextView
-                android:id="@+id/firm_name"
+                android:id="@+id/detail_firm_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/colorWhite"
-                android:gravity="right"
-                android:text="판매처 : OOO"
+                android:gravity="end"
+                android:text="@string/MallName"
                 android:textSize="16sp" />
-
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/detail_tab"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <androidx.viewpager.widget.ViewPager
-                android:id="@+id/detail_viewPage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
 
         </LinearLayout>
 
-</ScrollView>
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/detail_tab"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/detailTextCollection"
+            app:layout_constraintBottom_toTopOf="@id/detail_viewPage"/>
+
+        <org.techtown.smarket_android.searchItemList.Pager.CustomViewPager
+            android:id="@+id/detail_viewPage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/detail_tab"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</org.techtown.smarket_android.searchItemList.Pager.CustomScrollView>
+
+    <!--    <LinearLayout-->
+    <!--        xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--        xmlns:tools="http://schemas.android.com/tools"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent"-->
+    <!--        android:orientation="vertical">-->
+
+    <!--        <androidx.appcompat.widget.Toolbar-->
+    <!--            android:id="@+id/detailToolbar"-->
+    <!--            android:background="@color/smarketyello"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="?attr/actionBarSize"-->
+    <!--            android:theme="@style/ThemeOverlay.AppCompat.Dark" />-->
+
+    <!--        <ScrollView-->
+    <!--            android:id="@+id/detailScroll"-->
+    <!--            android:fillViewport="true"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="match_parent">-->
+
+
+    <!--            <LinearLayout-->
+    <!--                android:id="@+id/detail_layout"-->
+    <!--                android:layout_width="match_parent"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:orientation="vertical">-->
+
+    <!--                <ImageView-->
+    <!--                    android:id="@+id/detail_item_image"-->
+    <!--                    android:layout_width="match_parent"-->
+    <!--                    android:layout_height="300dp"-->
+    <!--                    android:layout_marginLeft="4dp"-->
+    <!--                    android:layout_marginBottom="8dp"-->
+    <!--                    android:background="@color/colorWhite"-->
+    <!--                    android:src="@mipmap/ic_launcher" />-->
+
+    <!--                <TextView-->
+    <!--                    android:id="@+id/detail_item_name"-->
+    <!--                    android:layout_width="match_parent"-->
+    <!--                    android:layout_height="wrap_content"-->
+    <!--                    android:background="@color/colorWhite"-->
+    <!--                    android:text="안드로이드 연습용 텍스트"-->
+    <!--                    android:textSize="26sp" />-->
+
+    <!--                <LinearLayout-->
+    <!--                    android:layout_width="match_parent"-->
+    <!--                    android:layout_height="wrap_content"-->
+    <!--                    android:layout_marginLeft="4dp"-->
+    <!--                    android:background="@color/colorWhite"-->
+    <!--                    android:orientation="horizontal">-->
+
+    <!--                    <TextView-->
+    <!--                        android:layout_width="wrap_content"-->
+    <!--                        android:layout_height="wrap_content"-->
+    <!--                        android:text="최저가"-->
+    <!--                        android:textColor="@color/red"-->
+    <!--                        android:textSize="24sp" />-->
+
+    <!--                    <TextView-->
+    <!--                        android:id="@+id/detail_item_value"-->
+    <!--                        android:layout_width="wrap_content"-->
+    <!--                        android:layout_height="wrap_content"-->
+    <!--                        android:layout_marginLeft="8dp"-->
+    <!--                        android:background="@color/colorWhite"-->
+    <!--                        android:text="@string/lowprice"-->
+    <!--                        android:textColor="@color/red"-->
+    <!--                        android:textSize="26sp" />-->
+
+    <!--                    <TextView-->
+    <!--                        android:id="@+id/item_Fluctuations"-->
+    <!--                        android:layout_width="0dp"-->
+    <!--                        android:layout_height="wrap_content"-->
+    <!--                        android:layout_marginLeft="8dp"-->
+    <!--                        android:layout_weight="1"-->
+    <!--                        android:background="@color/colorWhite"-->
+    <!--                        android:text="@string/priceDifference"-->
+    <!--                        android:textColor="@color/blue"-->
+    <!--                        android:textSize="24sp"-->
+    <!--                        android:layout_marginStart="8dp" />-->
+
+
+    <!--                </LinearLayout>-->
+
+    <!--                <TextView-->
+    <!--                    android:id="@+id/detail_firm_name"-->
+    <!--                    android:layout_width="match_parent"-->
+    <!--                    android:layout_height="wrap_content"-->
+    <!--                    android:background="@color/colorWhite"-->
+    <!--                    android:gravity="end"-->
+    <!--                    android:text="@string/MallName"-->
+    <!--                    android:textSize="16sp" />-->
+
+<!--                    <com.google.android.material.tabs.TabLayout-->
+<!--                        android:id="@+id/detail_tab"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content" />-->
+
+<!--                    <androidx.viewpager.widget.ViewPager-->
+<!--                        android:id="@+id/detail_viewPage"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content" />-->
+
+    <!--            </LinearLayout>-->
+
+    <!--        </ScrollView>-->
+    <!--    </LinearLayout>-->

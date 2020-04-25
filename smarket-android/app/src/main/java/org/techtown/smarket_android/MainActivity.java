@@ -6,6 +6,7 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;

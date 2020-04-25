@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import org.json.JSONArray;
 import org.techtown.smarket_android.R;
+import org.techtown.smarket_android.User.user_login_fragment;
 
 
 public class search_fragment extends Fragment {
@@ -25,6 +27,7 @@ public class search_fragment extends Fragment {
     private Button search_btn;
     InputMethodManager imm;
     EditText search_text;
+    Button lockBtn;
     JSONArray key;
 
     @Nullable
@@ -55,7 +58,18 @@ public class search_fragment extends Fragment {
                 slf.setArguments(bundle);
                 assert getFragmentManager() != null;
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.main_layout, slf).addToBackStack(null).commit();
+                fragmentTransaction.replace(R.id.main_layout, slf).addToBackStack(null).commitAllowingStateLoss();
+            }
+        });
+
+        lockBtn = (Button) viewGroup.findViewById(R.id.login_lock);
+        lockBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                user_login_fragment ulf = new user_login_fragment();
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.main_layout, ulf).addToBackStack(null).commitAllowingStateLoss();
+
             }
         });
 
@@ -82,6 +96,7 @@ public class search_fragment extends Fragment {
         }
         return bundle;
     }
+
 
     private void hideKeyboard(){
         imm.hideSoftInputFromWindow(search_text.getWindowToken(), 0);
