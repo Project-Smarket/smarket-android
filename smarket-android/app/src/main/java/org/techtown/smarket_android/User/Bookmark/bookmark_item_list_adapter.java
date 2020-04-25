@@ -5,9 +5,11 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,10 +28,12 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.GsonBuilder;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.User.user_login_success;
+import org.techtown.smarket_android.searchItemList.Bookmark;
 import org.techtown.smarket_android.searchItemList.Item;
 
 import java.util.ArrayList;
@@ -41,26 +45,21 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
     // adapter에 들어갈 list 입니다.
     private Context mContext;
     private Activity mActivity;
-    private List<Item> bookmarkItemList;
-    private List<String> bookmarkFolderList;
+    private List<Bookmark> bookmarkItemList;
     private List<String> timeList;
     private List<String> booleanValueList;
-    private EditText bookmark_folder_name;
     private InputMethodManager imm;
 
-    public static bookmark_dialog bookmarkDialog;
-    public static bookmark_dialog_adapter bookmarkRecyclerviewAdapter;
     private static final String SETTINGS_BOOKMARK_JSON = "settings_bookmark_json"; // SharedPreference 북마크 리스트 Data Key
     private static final String SETTINGS_TIMELIST_JSON = "settings_timelist_json"; // SharedPreference 타임 리스트 Data Key
     private static final String SETTINGS_BOOLEANVALUE_JSON = "settings_booleanvalue_json"; // SharedPreference 최저가 알람 설정 값 Data Key
 
 
-    public bookmark_item_list_adapter(Context context, Activity activity, List<Item> bookmarkItemList, List<String> bookmarkFolderList) {
+    public bookmark_item_list_adapter(Context context, Activity activity, List<Bookmark> bookmarkItemList) {
 
         this.mContext = context;
         this.mActivity = activity;
         this.bookmarkItemList = bookmarkItemList;
-        this.bookmarkFolderList = bookmarkFolderList;
         imm = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
     }
 
@@ -85,7 +84,8 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
 
         timeList = getStringArrayPref(mContext, SETTINGS_TIMELIST_JSON);// 최저가 알람 시간 데이터 가져오기
         booleanValueList = getStringArrayPref(mContext, SETTINGS_BOOLEANVALUE_JSON); // 최저가 알람 설정 데이터 가져오기
-        holder.setColor(booleanValueList.get(position)); // 최저가 알람 버튼 색상 설정
+        holder.setPriceAlarm(booleanValueList.get(position)); // 최저가 알람 버튼 색상 설정
+        holder.setBookmark();
         //set_timeList();
         //set_booleanValueList();
 
@@ -93,21 +93,8 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
             @Override
             public void onClick(final View itemView) {
                 if (!holder.bookmark_check) {
-                    bookmarkRecyclerviewAdapter = new bookmark_dialog_adapter(bookmarkFolderList, mActivity);
-                    bookmarkDialog = new bookmark_dialog(mActivity, "북마크 폴더 리스트", bookmarkRecyclerviewAdapter, bookmarkFolderList, mClickAddListener);
-
-                    bookmarkRecyclerviewAdapter.setOnItemClickListener(new bookmark_dialog_adapter.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(View v, int position, List<String> list) {
-                            String bookmark = list.get(position);
-                            String item = String.valueOf(holder.item_name.getText());
-                            Toast.makeText(mContext, "'" + bookmark +"'" +"폴더에 " + "'" +item+"'" + "등록", Toast.LENGTH_LONG).show();
-                            bookmarkDialog.dismiss();
-                            holder.heart_btn.setColorFilter(v.getResources().getColor(R.color.red), PorterDuff.Mode.SRC_IN);
-                            holder.bookmark_check = true;
-                        }
-                    });
-                    bookmarkDialog.show();
+                    holder.heart_btn.setColorFilter(itemView.getResources().getColor(R.color.red), PorterDuff.Mode.SRC_IN);
+                    holder.bookmark_check = true;
 
                 } else if (holder.bookmark_check) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
@@ -141,14 +128,6 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
 
     }
 
-    Button.OnClickListener mClickAddListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            bookmarkDialog.dismiss();
-            folder_add();
-        }
-    };
-
     @Override
     public int getItemCount() {
         // RecyclerView의 총 개수 입니다.
@@ -159,115 +138,58 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
     // 여기서 subView를 setting 해줍니다.
     public static class bmViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView item_name;
-        private TextView item_value;
-        private ImageView itemImage;
-        private ImageView heart_btn;
-        private ImageView cash_btn;
+        private TextView bookmark_name;
+        private String bookmark_url;
+        private TextView bookmark_price;
+        private ImageView bookmark_image;
         private Boolean bookmark_check;
         private Boolean alarm_check;
+
+        private ImageView heart_btn;
+        private ImageView cash_btn;
 
         public bmViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            item_name = itemView.findViewById(R.id.search_list_item_name);
-            item_value = itemView.findViewById(R.id.search_list_item_value);
-            itemImage = itemView.findViewById(R.id.search_list_item_image);
-            heart_btn = itemView.findViewById(R.id.heart_btn);
-            cash_btn = itemView.findViewById(R.id.cash_btn);
+            bookmark_name = itemView.findViewById(R.id.search_list_item_name);
+            bookmark_url = "";
+            bookmark_price = itemView.findViewById(R.id.search_list_item_value);
+            bookmark_image = itemView.findViewById(R.id.search_list_item_image);
             bookmark_check = false;
             alarm_check = false;
+
+            heart_btn = itemView.findViewById(R.id.heart_btn);
+            cash_btn = itemView.findViewById(R.id.cash_btn);
         }
 
-        void onBind(Item data) {
-//            Log.d(TAG, "onBind: "+data.getList_item_name());
-            item_name.setText(data.getList_item_name());
-            item_value.setText(data.getList_item_value());
-            itemImage.setImageResource(data.getItem_image());
+        void onBind(Bookmark bookmark) {
+
+            bookmark_name.setText(bookmark.getBookmark_name());
+            bookmark_url = bookmark.getBookmark_url();
+            bookmark_price.setText(bookmark.getBookmark_price());
+            Bitmap image = new GsonBuilder().create().fromJson(bookmark.getBookmark_image(), Bitmap.class);
+            //bookmark_image.setImageBitmap(image);
+            bookmark_image.setImageDrawable(itemView.getResources().getDrawable(R.drawable.premierball));
+            bookmark_check = bookmark.getBookmark_check();
+
+            Log.d("bookmark", bookmark.toString());
         } // 아이템 바인드
 
-        void setColor(String alarm_checked){
+        void setPriceAlarm(String alarm_checked){
             if(alarm_checked.equals("true")){
                 cash_btn.setColorFilter(itemView.getResources().getColor(R.color.smarketyello), PorterDuff.Mode.SRC_IN);
             }else{
                 cash_btn.setColorFilter(itemView.getResources().getColor(R.color.colorBlack), PorterDuff.Mode.SRC_IN);
             }
         } // 최적가 알람 버튼 색상 설정
+
+        void setBookmark(){
+            bookmark_check = true;
+            heart_btn.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+        }
     }
 
-    private void folder_add(){
 
-        LayoutInflater inflater = mActivity.getLayoutInflater();
-
-        final View dialogView = inflater.inflate(R.layout.bookmark_plus_dialog, null);
-        bookmark_folder_name = dialogView.findViewById(R.id.bookmark_folder_name);
-        bookmark_folder_name.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if(keyCode == KeyEvent.KEYCODE_ENTER){
-                    hideKeyboard();
-                }
-                return false;
-            }
-        });
-
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setView(dialogView);
-        builder.setTitle("북마크 폴더 추가");
-        builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String folder_name = bookmark_folder_name.getText().toString();
-
-                if(folder_name.equals("")){
-                    Toast.makeText(mContext,"폴더명을 입력해주세요", Toast.LENGTH_LONG).show();
-                }
-                else if(!folder_name.equals("")){
-                    char except_enter[] = folder_name.toCharArray();
-                    if (except_enter[except_enter.length - 1] == '\n') {
-
-                        char result_char[] = new char[except_enter.length - 1];
-                        System.arraycopy(except_enter, 0, result_char, 0, except_enter.length - 1);
-                        folder_name = String.valueOf(result_char);
-
-                    } // 한글 입력 후 엔터시 개행문자 발생하는 오류 처리
-                    bookmarkFolderList.add(folder_name); // 북마크 폴더 추가
-                    bookmarkRecyclerviewAdapter.notifyDataSetChanged(); // 어댑터 갱신
-                    updateBookmarkFolderList(mContext, SETTINGS_BOOKMARK_JSON, bookmarkFolderList);
-                }
-
-                bookmarkDialog.show();
-            }
-        });
-
-        AlertDialog dialog = builder.create();
-        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE); // 다이얼로그 생성시 EditText 활성화 1
-        dialog.show();
-        if(bookmark_folder_name.requestFocus())
-            ((InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(bookmark_folder_name, 0); // 다이얼로그 생성시 EditText 활성화 2
-
-    }  // 북마크 폴더 추가 기능
-
-    private void updateBookmarkFolderList(Context context, String key, List<String> values) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor editor = prefs.edit();
-        JSONArray a = new JSONArray();
-        for (int i = 0; i < values.size(); i++) {
-            a.put(values.get(i));
-        }
-        if (!values.isEmpty()) {
-            editor.putString(key, a.toString());
-        } else {
-            editor.putString(key, null);
-        }
-        editor.apply();
-    } // 북마크 폴더 리스트 업데이트
-
-    private void hideKeyboard(){
-        imm.hideSoftInputFromWindow(bookmark_folder_name.getWindowToken(), 0);
-        imm.hideSoftInputFromWindow(bookmark_folder_name.getWindowToken(), 0);
-    }// 키보드 입력 후 엔터 입력시 키보드 창 내림
 
     private ArrayList<String> getStringArrayPref(Context context, String key) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);

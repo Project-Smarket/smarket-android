@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 
 import android.widget.TextView;
 
@@ -24,7 +23,7 @@ public class bookmark_dialog extends Dialog {
     // 리스트뷰 어뎁터
     private View.OnClickListener addFolderlistener;
 
-    private bookmark_dialog_adapter bookmarkRecyclerviewAdapter;
+    private bookmark_recyclerview_adapater bookmarkRecyclerviewAdapter;
     private RecyclerView recyclerView;
     private List<String> bookmarkFolderList;
     // 닫기 버튼
@@ -42,7 +41,7 @@ public class bookmark_dialog extends Dialog {
      * @param list
      * @param addFolderlistener
      */
-    public bookmark_dialog(Activity activity, String title, bookmark_dialog_adapter adapter, List<String> list,
+    public bookmark_dialog(Activity activity, String title, bookmark_recyclerview_adapater adapter, List<String> list,
                            View.OnClickListener addFolderlistener) {
         //super(activity, android.R.style.Theme_Material);
         super(activity);

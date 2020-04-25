@@ -26,14 +26,20 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.techtown.smarket_android.R;
+import org.techtown.smarket_android.searchItemList.Bookmark;
 import org.techtown.smarket_android.searchItemList.Item;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.ToLongBiFunction;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -57,11 +63,13 @@ public class bookmark_item_list_fragment extends Fragment {
 
     private RecyclerView recyclerView;// 북마크 아이템 리스트 리사이클러뷰
     private bookmark_item_list_adapter adapter;// 북마크 아이템 리스트 어댑터
-    private List<Item> bookmarkItemList;// 북마크 아이템 리스트
+    private List<Bookmark> bookmarkItemList;// 북마크 아이템 리스트
 
     private InputMethodManager imm; // 키보드 설정
 
     private static final String SETTINGS_BOOKMARK_JSON = "settings_bookmark_json";
+
+    private SharedPreferences userFile;
 
     @Nullable
     @Override
@@ -87,9 +95,19 @@ public class bookmark_item_list_fragment extends Fragment {
         bookmark_spinner = (Spinner)viewGroup.findViewById(R.id.bookmark_folder);
         bookmark_spinner.setAdapter(spinnerAdapter);
 
+        set_Data();
+
         bookmark_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Toast.makeText(getContext(), bookmark_spinner.getSelectedItem().toString(), Toast.LENGTH_LONG).show();
+                set_Data();
+                recyclerView = viewGroup.findViewById(R.id.bookmark_itemList);
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
+                recyclerView.setLayoutManager(linearLayoutManager);
+                Log.d("bookmarkItemList", bookmarkItemList.toString());
+                adapter = new bookmark_item_list_adapter(getContext(), getActivity(), bookmarkItemList);
+                recyclerView.setAdapter(adapter);
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -100,10 +118,6 @@ public class bookmark_item_list_fragment extends Fragment {
     private void set_bookmarkFolderList(){
         List<String> result = getStringArrayPref(getContext(), SETTINGS_BOOKMARK_JSON); // 폴더 리스트 데이터 가져오기
         bookmarkFolderList = result;
-        /*for (int i = 0; i < result.size(); i++) {
-            String folder = result.get(i);
-            bookmarkFolderList.add(folder);
-        }*/
     }
     private ArrayList<String> getStringArrayPref(Context context, String key) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -235,30 +249,40 @@ public class bookmark_item_list_fragment extends Fragment {
 
 
     private void set_bookmark_item_list(){
-        bookmarkItemList = new ArrayList<>();
 
         recyclerView = viewGroup.findViewById(R.id.bookmark_itemList);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
-        set_Data();
-        adapter = new bookmark_item_list_adapter(getContext(), getActivity(), bookmarkItemList, bookmarkFolderList);
+        Log.d("bookmarkItemList", bookmarkItemList.toString());
+        adapter = new bookmark_item_list_adapter(getContext(), getActivity(), bookmarkItemList);
         recyclerView.setAdapter(adapter);
 
 
     } // 북마크 아이템 리스트 설정
     private void set_Data() {
-        List<String> item_name = Arrays.asList("국화", "사막", "수국", "해파리", "코알라", "등대", "펭귄");
-        List<String> item_value = Arrays.asList("1000","1100","1200","1300","1400","1500","1600");
-        List<Integer> itemImage = Arrays.asList(R.drawable.premierball,R.drawable.premierball,R.drawable.premierball,
-                R.drawable.premierball,R.drawable.premierball,R.drawable.premierball,R.drawable.premierball);
-
-        for(int i=0; i<item_name.size(); i++){
-            Item item = new Item();
-            item.setList_item_name(item_name.get(i));
-            item.setList_item_value(item_value.get(i));
-            item.setItem_image(itemImage.get(i));
-            bookmarkItemList.add(item);
+        userFile = getActivity().getSharedPreferences("userFile", MODE_PRIVATE);
+        String user_id = userFile.getString("user_id", null);
+        String folder_name = bookmark_spinner.getSelectedItem().toString();
+        List<Bookmark> bookmarks;
+        if(userFile.getString("myBookmarks", null) != null){
+            String myBookmarks = userFile.getString("myBookmarks", null);
+            Type listType = new TypeToken<ArrayList<Bookmark>>(){}.getType();
+            bookmarks = new GsonBuilder().create().fromJson(myBookmarks, listType);
+            Log.d("Get myBookmarks", "myBookmarks: Complete Getting myBookmarks");
+        }else{
+            bookmarks = null;
         }
+
+        List<Bookmark> sorted_bookmarks = new ArrayList<>();
+        for (int i = 0; i < bookmarks.size(); i++) {
+            if(bookmarks.get(i).getUser_id().equals(user_id) && bookmarks.get(i).getFolder_name().equals(folder_name)){
+                sorted_bookmarks.add(bookmarks.get(i));
+            }
+        }
+        bookmarkItemList = sorted_bookmarks;
+        Log.d(TAG, "set_Data: " + sorted_bookmarks.toString());
+
+
 
     }// 북마크 아이템 리스트 데이터셋
 
