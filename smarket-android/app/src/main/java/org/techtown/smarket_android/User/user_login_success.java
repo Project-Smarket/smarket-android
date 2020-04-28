@@ -13,6 +13,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.User.Bookmark.bookmark_item_list_fragment;
@@ -47,7 +48,10 @@ public class user_login_success extends Fragment {
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentManager = getFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.main_layout, bookmark_item_list_fragment.newInstance()).commit();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.main_layout, bookmark_item_list_fragment.newInstance()).commit();
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
             }
         });
 
@@ -57,7 +61,10 @@ public class user_login_success extends Fragment {
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentManager = getFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.main_layout, recent_fragment.newInstance()).commit();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.main_layout, recent_fragment.newInstance()).commit();
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
             }
         });
 
@@ -67,7 +74,10 @@ public class user_login_success extends Fragment {
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentManager = getFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.main_layout, userinform_fragment.newInstance()).commit();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.main_layout, user_login_fragment.newInstance()).commit();
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
             }
         });
 
@@ -75,6 +85,7 @@ public class user_login_success extends Fragment {
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // 현재 로그인된 id와 access_token 제거
                 null_userFile();
                 FragmentManager fragmentManager = getFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.main_layout, user_login_fragment.newInstance()).commit();
@@ -85,6 +96,7 @@ public class user_login_success extends Fragment {
         return viewGroup;
     }
 
+    // 현재 로그인된 id와 access_token 제거
     private void null_userFile(){
         userFile = getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = userFile.edit();

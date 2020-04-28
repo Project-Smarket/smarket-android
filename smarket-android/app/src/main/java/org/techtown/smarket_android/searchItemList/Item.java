@@ -51,4 +51,14 @@ public class Item {
     public void setItem_mall(String item_mall) {
         this.item_mall = item_mall;
     }
+
+    @Override
+    public String toString() {
+        return "Item{" +
+                "item_name='" + item_name + '\'' +
+                ", item_value='" + item_value + '\'' +
+                ", item_image='" + item_image + '\'' +
+                ", item_mall='" + item_mall + '\'' +
+                '}';
+    }
 }

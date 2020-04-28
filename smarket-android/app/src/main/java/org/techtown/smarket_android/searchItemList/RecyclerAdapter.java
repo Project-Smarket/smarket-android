@@ -59,6 +59,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.List;
 
+import static com.android.volley.VolleyLog.TAG;
+
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemViewHolder> {
 
     public interface OnRecyclerClickListener {
@@ -72,7 +74,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     }
 
     // adapter에 들어갈 list 입니다.
-    private ArrayList<Item> listData = new ArrayList<>();
+    private List<Item> itemList;
     private Context mContext;
     private Activity mActivity;
 
@@ -98,9 +100,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
     private List<Bookmark> bookmarks;
 
-    RecyclerAdapter(Context context, Activity activity) {
+    RecyclerAdapter(Context context, Activity activity, List<Item> itemList) {
         mContext = context;
         mActivity = activity;
+        this.itemList = itemList;
+        Log.d(TAG, "RecyclerAdapter: "+ itemList.toString());
         imm = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
         bookmarkFolderList = getStringArrayPref(mContext, SETTINGS_BOOKMARK_JSON);
         userFile = mContext.getSharedPreferences("userFile", Context.MODE_PRIVATE);
@@ -153,7 +157,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     @Override
     public void onBindViewHolder(@NonNull final ItemViewHolder holder, int position) {
         // Item을 하나, 하나 보여주는(bind 되는) 함수입니다.
-        holder.onBind(listData.get(position));
+        holder.onBind(itemList.get(position));
 
         // 북마크 버튼 기능 설정
         holder.heart_btn.setOnClickListener(new View.OnClickListener() {
@@ -215,14 +219,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     @Override
     public int getItemCount() {
         // RecyclerView의 총 개수 입니다.
-        return listData.size();
+        return itemList.size();
     }
 
     // 북마크 폴더 추가 기능
     private void folder_add() {
 
+        // 북마크 폴더 리스트 다이얼로그
         LayoutInflater inflater = mActivity.getLayoutInflater();
-
         final View dialogView = inflater.inflate(R.layout.bookmark_plus_dialog, null);
         bookmark_folder_name = dialogView.findViewById(R.id.bookmark_folder_name);
         bookmark_folder_name.setOnKeyListener(new View.OnKeyListener() {
@@ -236,6 +240,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         });
 
 
+        // 새 폴더 이름 입력 다이얼로그
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setView(dialogView);
         builder.setTitle("북마크 폴더 추가");
@@ -275,11 +280,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
     void addItem(Item data) {
         // 외부에서 item을 추가시킬 함수입니다.
-        listData.add(data);
+        itemList.add(data);
     }
 
     public void clear(){
-        listData.clear();
+        itemList.clear();
     }
 
 
@@ -288,8 +293,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     class ItemViewHolder extends RecyclerView.ViewHolder {
 
         private TextView item_name;
-        private TextView item_value;
-        private ImageView item_Image;
+        private TextView item_price;
+
+        private String item_image_url;
+        private ImageView item_image;
+
         private ImageView heart_btn;
         private TextView ItemMall;
         private Boolean bookmark_check = false;
@@ -300,8 +308,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             super(itemView);
 
             item_name = itemView.findViewById(R.id.search_list_item_name);
-            item_value = itemView.findViewById(R.id.search_list_item_value);
-            item_Image = itemView.findViewById(R.id.search_list_item_image);
+            item_price = itemView.findViewById(R.id.search_list_item_value);
+            item_image = itemView.findViewById(R.id.search_list_item_image);
             ItemMall = itemView.findViewById(R.id.search_mallName);
             heart_btn = itemView.findViewById(R.id.heart_btn);
 
@@ -320,7 +328,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
         void onBind(final Item data) {
             item_name.setText(data.getItem_name());
-            item_value.setText(data.getItem_value());
+            item_price.setText(data.getItem_value());
+            item_image_url = data.getItem_image();
             ItemMall.setText(data.getItem_mall());
 
             //안드로이드에서 네트워크와 관련된 작업을 할 때,
@@ -330,7 +339,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                 public void run() {
                     try{
                         try {
-                            URL url = new URL(data.getItem_image());
+                            URL url = new URL(item_image_url);
 
                             //웹에서 이미지를 가져온 뒤
                             //이미지뷰에 지정할 비트맵을 만든다
@@ -360,7 +369,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
                 // 작업 쓰레드에서 이미지를 불러오는 작업을 완료한 뒤
                 // UI 작업을 할 수 있는 메인 쓰레드에서 imageView에 이미지를 지정한다.
-                item_Image.setImageBitmap(bitmap);
+                item_image.setImageBitmap(bitmap);
             }catch (InterruptedException e){
                 e.printStackTrace();
             }
@@ -458,47 +467,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         return true;
     }
 
-    private void save_data(ItemViewHolder holder){
-        //user_id;
-        //folder_name;
-        //bookmark_name;
-        //bookmark_url;
-        Gson gson = new GsonBuilder().create();
-        String bookmark_image = gson.toJson(holder.bitmap, Bitmap.class);
-        String bookmark_price = holder.item_value.getText().toString();
-        Boolean bookmark_check = true;
-        final Integer alarm_time = 3;
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
-                .setTitle("최저가 알람 등록")
-                .setMessage("최저가 알람을 등록하시겠습니까?")
-                .setPositiveButton("등록", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        alarm_check = true;
-                    }
-                })
-                .setNegativeButton("아니오", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        alarm_check = false;
-                    }
-                });
-        builder.create();
-        builder.show();
-
-        Bookmark bookmark = new Bookmark(user_id, folder_name, bookmark_name, bookmark_url, bookmark_image, bookmark_price, bookmark_check, alarm_time, alarm_check);
-        bookmarks.add(bookmark);
-
-        Type listType = new TypeToken<ArrayList<Bookmark>>(){}.getType();
-        String json = new GsonBuilder().create().toJson(bookmarks, listType);
-
-        // 스트링 객체로 변환된 데이터를 myBookmarks에 저장
-        SharedPreferences.Editor editor = userFile.edit();
-        editor.putString("myBookmarks", json);
-        editor.commit();
-        Log.d("SAVE", "save_data: Set new data");
-
-    }
     // 북마크 삭제 요청 기능
     private void delete_bookmark() {
         String request_url = "http://10.0.2.2:3000/api/bookmarks"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
@@ -538,6 +506,49 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
         RequestQueue requestQueue = Volley.newRequestQueue(mContext);
         requestQueue.add(stringRequest);
+    }
+
+    // 북마크 등록 시 클라이언트에 북마크 저장
+    private void save_data(ItemViewHolder holder){
+        //user_id;
+        //folder_name;
+        //bookmark_name;
+        //bookmark_url;
+        String bookmark_image = holder.item_image_url;
+        String bookmark_price = holder.item_price.getText().toString();
+        Boolean bookmark_check = true;
+        final Integer alarm_time = 3;
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
+                .setTitle("최저가 알람 등록")
+                .setMessage("최저가 알람을 등록하시겠습니까?")
+                .setPositiveButton("등록", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        alarm_check = true;
+                    }
+                })
+                .setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        alarm_check = false;
+                    }
+                });
+        builder.create();
+        builder.show();
+
+        Bookmark bookmark = new Bookmark(user_id, folder_name, bookmark_name, bookmark_url, bookmark_image, bookmark_price, bookmark_check, alarm_time, alarm_check);
+        bookmarks.add(bookmark);
+
+        // List<Bookmark> 클래스 객체를 String 객체로 변환
+        Type listType = new TypeToken<ArrayList<Bookmark>>(){}.getType();
+        String json = new GsonBuilder().create().toJson(bookmarks, listType);
+
+        // 스트링 객체로 변환된 데이터를 myBookmarks에 저장
+        SharedPreferences.Editor editor = userFile.edit();
+        editor.putString("myBookmarks", json);
+        editor.commit();
+        Log.d("SAVE", "save_data: Set new data");
+
     }
 
     // userFile에 저장된 user_id 와 access_token 값 가져오기

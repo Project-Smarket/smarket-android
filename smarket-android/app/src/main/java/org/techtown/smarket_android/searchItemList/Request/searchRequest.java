@@ -12,19 +12,24 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.android.volley.VolleyLog.TAG;
+
 
 public class searchRequest extends StringRequest {
     final static private String urlRouter = "http://10.0.2.2:3000/api/naver/search?query=";
-    private Map<String, String> parameters;
+    private Response.Listener<String> responseListener;
+    private Response.ErrorListener errorListener;
 
-    public searchRequest(String searchItemName, Response.Listener<String> listener, Response.ErrorListener errorListener) throws UnsupportedEncodingException {
-        super(Method.GET, urlRouter+URLEncoder.encode(searchItemName, "UTF-8"), listener, errorListener);
-
-        parameters = new HashMap<>();
-        parameters.put("searchItemName", this.getUrl());
+    public searchRequest(String searchItemName, Response.Listener<String> responseListener, Response.ErrorListener errorListener) throws UnsupportedEncodingException {
+        super(Method.GET, urlRouter+URLEncoder.encode(searchItemName, "UTF-8"), responseListener, errorListener);
+        this.responseListener = responseListener;
+        this.errorListener = errorListener;
     }
 
     public Map<String, String> getParams(){
+        Map<String,String> parameters;
+        parameters = new HashMap<>();
+        parameters.put("searchItemName", this.getUrl());
         return parameters;
     }
 }

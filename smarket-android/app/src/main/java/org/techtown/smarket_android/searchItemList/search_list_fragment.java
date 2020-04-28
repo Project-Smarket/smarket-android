@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -45,20 +46,19 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.android.volley.VolleyLog.TAG;
+
 public class search_list_fragment extends Fragment {
+
     private ViewGroup viewGroup;
     private RecyclerView recyclerView;
-    private Context context;
-    private int cnt = 0;
-    String txt;
-    Toolbar toolbar;
+    private String txt;
+    private Toolbar toolbar;
     private RecyclerAdapter adapter;
 
-    private List<Item> getList = new ArrayList<>();
-    /*private List<String> List_item_name = new ArrayList<>();
-    private List<String> List_item_value = new ArrayList<>();
-    private List<String> List_item_image = new ArrayList<>();
-    private List<String> List_item_mall = new ArrayList<>();*/
+    // 검색한 데이터 가져오기
+    private List<Item> itemList = new ArrayList<>();
+
 
     @Nullable
     @Override
@@ -67,13 +67,16 @@ public class search_list_fragment extends Fragment {
 
         getBundle();
 
+        // 검색 데이터 가져오기
+        CreateList();
+
         try {
             getJson();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 
-        CreateList();
+        Log.d(TAG, "CreateList: " + itemList.isEmpty());
 
         settingToolbar();
 
@@ -97,12 +100,7 @@ public class search_list_fragment extends Fragment {
         return viewGroup;
     }
 
-    private void getBundle() {
-        if (getArguments() != null) {
-            txt = getArguments().getString("searchName");
-        }
 
-    }
 
     private void CreateList() {
         recyclerView = viewGroup.findViewById(R.id.search_item_list);
@@ -110,53 +108,38 @@ public class search_list_fragment extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new RecyclerAdapter(getContext(), getActivity());
+        adapter = new RecyclerAdapter(getContext(), getActivity(), itemList);
         recyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-    }
-
-    private Bundle settingBundle(View v) {
-        Bundle bundle = new Bundle();
-        TextView item_name = v.findViewById(R.id.search_list_item_name);
-        TextView item_value = v.findViewById(R.id.search_list_item_value);
-        ImageView item_image = v.findViewById(R.id.search_list_item_image);
-        TextView item_mall = v.findViewById(R.id.search_mallName);
-
-        Drawable d = item_image.getDrawable();
-        Bitmap bitmap = ((BitmapDrawable) d).getBitmap();
-
-        bundle.putString("item_name", item_name.getText().toString());
-        bundle.putString("item_value", item_value.getText().toString());
-        bundle.putParcelable("item_image", bitmap);
-        bundle.putString("item_mallName", item_mall.getText().toString());
-        bundle.putString("txt",txt);
-
-        return bundle;
     }
 
 
     private void getJson() throws UnsupportedEncodingException {
 
-        Response.Listener<String> responseListener = new Response.Listener<String>() {
+        searchRequest searchRequest = new searchRequest(txt, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
                     JSONObject jsonObject = new JSONObject(response);
-                    JSONArray key = jsonObject.getJSONArray("items");
+                    JSONObject data = jsonObject.getJSONObject("data");
+                    JSONArray key = data.getJSONArray("items");
 
-                    for (int i = 0, n = key.length(); i < n; i++) {
-                        getItem(i, key);
-//                        titleJob(i);
-//                        priceJob(i);
-//                        ImageJob(i);
-//                        ItemMall(i);
+                    for (int index = 0; index < key.length(); index++) {
+                        String title = key.getJSONObject(index).getString("title");
+                        String item_name = removeTag(title);
+
+                        String price = key.getJSONObject(index).getString("lprice");
+                        int item_price = Integer.parseInt(price);
+                        String item_lprice = String.format("%,d", item_price);
+
+                        String item_image = key.getJSONObject(index).getString("image");
+
+                        String item_mallName = key.getJSONObject(index).getString("mallName");
+
+                        Item item = new Item(item_name, item_lprice, item_image, item_mallName);
+
+                        itemList.add(item);
+                        Log.d(TAG, "onResponse: " + itemList.get(index).toString());
                     }
-
-
-                    for (int i = 0, n = getList.size(); i < n; i++) {
-                        adapter.addItem(getList.get(i));
-                    }
-
                     adapter.notifyDataSetChanged();
 
                 } catch (JSONException e) {
@@ -165,9 +148,7 @@ public class search_list_fragment extends Fragment {
                     e.printStackTrace();
                 }
             }
-        };
-
-        searchRequest searchRequest = new searchRequest(txt, responseListener, new Response.ErrorListener() {
+        }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(getContext(), error + "", Toast.LENGTH_LONG).show();
@@ -188,45 +169,10 @@ public class search_list_fragment extends Fragment {
     }
 
     private void getItem (int index, JSONArray key) throws Exception {
-        String title = key.getJSONObject(index).getString("title");
-        String bookmark_name = removeTag(title);
 
+        //
 
-        String price = key.getJSONObject(index).getString("lprice");
-        int bookmark_price = Integer.parseInt(price);
-        String bookmark_lprice = String.format("%,d", bookmark_price);
-
-        String bookmark_image = key.getJSONObject(index).getString("image");
-
-        String bookmark_mallName = key.getJSONObject(index).getString("mallName");
-
-        Item item = new Item(bookmark_name, bookmark_lprice, bookmark_image, bookmark_mallName);
-
-        getList.add(item);
     }
-
-    /*public void titleJob(int index) throws Exception {
-
-        String res = removeTag(title);
-        List_item_name.add(res);
-    }
-
-    public void priceJob(int index) throws Exception {
-        String price = key.getJSONObject(index).getString("lprice");
-        int value = Integer.parseInt(price);
-        String lprice = String.format("%,d", value);
-        List_item_value.add(lprice + "원");
-    }
-
-    public void ImageJob(int index) throws Exception {
-        String image = key.getJSONObject(index).getString("image");
-        List_item_image.add(image);
-    }
-
-    public void ItemMall(int index) throws Exception {
-        String name = key.getJSONObject(index).getString("mallName");
-        List_item_mall.add(name);
-    }*/
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
@@ -311,27 +257,29 @@ public class search_list_fragment extends Fragment {
         adapter.clear();
     }
 
+    private void getBundle() {
+        if (getArguments() != null) {
+            txt = getArguments().getString("searchName");
+        }
+
+    }
+    private Bundle settingBundle(View v) {
+        Bundle bundle = new Bundle();
+        TextView item_name = v.findViewById(R.id.search_list_item_name);
+        TextView item_value = v.findViewById(R.id.search_list_item_value);
+        ImageView item_image = v.findViewById(R.id.search_list_item_image);
+        TextView item_mall = v.findViewById(R.id.search_mallName);
+
+        Drawable d = item_image.getDrawable();
+        Bitmap bitmap = ((BitmapDrawable) d).getBitmap();
+
+        bundle.putString("item_name", item_name.getText().toString());
+        bundle.putString("item_value", item_value.getText().toString());
+        bundle.putParcelable("item_image", bitmap);
+        bundle.putString("item_mallName", item_mall.getText().toString());
+        bundle.putString("txt",txt);
+
+        return bundle;
+    }
+
 }
-
-
-//        context = viewGroup.getContext();
-//        recyclerView = (RecyclerView) viewGroup.findViewById(R.id.search_item_list);
-//        recyclerView.setHasFixedSize(true);
-//
-//        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-//        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-
-
-//                    JSONObject items = key.getJSONObject(0); //원하는 json 결과 인덱스 접근
-//                    String itemTitle = items.getString("title"); // 0번 인덱스 객체의 결과값 중 title 선택
-//                    test.setText(itemTitle);
-
-
-//        recyclerView = viewGroup.findViewById(R.id.search_item_list);
-//        recyclerView.setHasFixedSize(true);
-//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
-//        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-//
-//        adapter = new RecyclerAdapter();
-//        get_Dataset();
-//        recyclerView.setAdapter(adapter);

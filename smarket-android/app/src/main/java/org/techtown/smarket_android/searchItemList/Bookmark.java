@@ -5,18 +5,18 @@ public class Bookmark {
     private String folder_name;
     private String bookmark_name;
     private String bookmark_url;
-    private String bookmark_image;
+    private String bookmark_image_url;
     private String bookmark_price;
     private Boolean bookmark_check;
-    private Integer alarm_time;
+    private int alarm_time;
     private Boolean alarm_check;
 
-    public Bookmark(String user_id, String folder_name, String bookmark_name, String bookmark_url, String bookmark_image, String bookmark_price, Boolean bookmark_check, Integer alarm_time, Boolean alarm_check) {
+    public Bookmark(String user_id, String folder_name, String bookmark_name, String bookmark_url, String bookmark_image_url, String bookmark_price, Boolean bookmark_check, int alarm_time, Boolean alarm_check) {
         this.user_id = user_id;
         this.folder_name = folder_name;
         this.bookmark_name = bookmark_name;
         this.bookmark_url = bookmark_url;
-        this.bookmark_image = bookmark_image;
+        this.bookmark_image_url = bookmark_image_url;
         this.bookmark_price = bookmark_price;
         this.bookmark_check = bookmark_check;
         this.alarm_time = alarm_time;
@@ -55,12 +55,12 @@ public class Bookmark {
         this.bookmark_url = bookmark_url;
     }
 
-    public String getBookmark_image() {
-        return bookmark_image;
+    public String getBookmark_image_url() {
+        return bookmark_image_url;
     }
 
-    public void setBookmark_image(String bookmark_image) {
-        this.bookmark_image = bookmark_image;
+    public void setBookmark_image_url(String bookmark_image_url) {
+        this.bookmark_image_url = bookmark_image_url;
     }
 
     public String getBookmark_price() {
@@ -79,11 +79,11 @@ public class Bookmark {
         this.bookmark_check = bookmark_check;
     }
 
-    public Integer getAlarm_time() {
+    public int getAlarm_time() {
         return alarm_time;
     }
 
-    public void setAlarm_time(Integer alarm_time) {
+    public void setAlarm_time(int alarm_time) {
         this.alarm_time = alarm_time;
     }
 
