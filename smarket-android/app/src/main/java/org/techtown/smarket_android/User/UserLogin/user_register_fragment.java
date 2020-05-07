@@ -1,4 +1,4 @@
-package org.techtown.smarket_android.User;
+package org.techtown.smarket_android.User.UserLogin;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -113,12 +113,14 @@ public class user_register_fragment extends Fragment {
     }
 
     private void validate_id() {
-        String userID = register_id.getText().toString();
+        String url = "http://10.0.2.2:3000/api/auth/checknickname";
+        String key = "nickname";
+        String user_id = register_id.getText().toString();
 
         if (validate_id) {
             return;
         }
-        if (userID.equals("")) {
+        if (user_id.equals("")) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             dialog = builder.setMessage("아이디는 빈 칸 일 수 없습니다.")
                     .setPositiveButton("확인", null)
@@ -126,6 +128,7 @@ public class user_register_fragment extends Fragment {
             dialog.show();
             return;
         }
+
         Response.Listener<String> responseListener = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -157,7 +160,7 @@ public class user_register_fragment extends Fragment {
             }
         };
 
-        user_register_validate_id validateRequest = new user_register_validate_id(userID, responseListener, new Response.ErrorListener() {
+        user_validate validateRequest = new user_validate(url, key, user_id, responseListener, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(getContext(), "errorListener", Toast.LENGTH_LONG).show();
@@ -169,12 +172,14 @@ public class user_register_fragment extends Fragment {
     }
 
     private void validate_nick() {
-        String userID = register_nickname.getText().toString();
+        String url = "http://10.0.2.2:3000/api/auth/checknickname";
+        String key = "nickname";
+        String user_nickname = register_nickname.getText().toString();
 
         if (validate_nickname) {
             return;
         }
-        if (userID.equals("")) {
+        if (user_nickname.equals("")) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             dialog = builder.setMessage("닉네임은 빈 칸 일 수 없습니다.")
                     .setPositiveButton("확인", null)
@@ -213,7 +218,7 @@ public class user_register_fragment extends Fragment {
             }
         };
 
-        user_register_validate_id validateRequest = new user_register_validate_id(userID, responseListener, new Response.ErrorListener() {
+        user_validate validateRequest = new user_validate(url, key, user_nickname, responseListener, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(getContext(), "errorListener", Toast.LENGTH_LONG).show();
@@ -283,21 +288,11 @@ public class user_register_fragment extends Fragment {
                 }
             }
         };
+
         user_register_request registerRequest = new user_register_request(userID, userPW, userName, userNick, userPhoneNumber, responseListener);
         RequestQueue queue = Volley.newRequestQueue(getContext());
         queue.add(registerRequest);
     }
-
-    /*private void register2() {
-        String userID = register_id.getText().toString();
-        String userPW = register_pw.getText().toString();
-        String userName = register_name.getText().toString();
-        String userNick = register_nick.getText().toString();
-        String userPhoneNumber = register_phoneNumber_spinner.getSelectedItem().toString() + register_phoneNumber1.getText().toString() + register_phoneNumber2.getText().toString();
-
-        String user = userID + "\n" + userPW + "\n" + userName + "\n" + userNick + "\n" + userPhoneNumber;
-        Toast.makeText(getContext(), user, Toast.LENGTH_LONG).show();
-    }*/
 
     @Override
     public void onStop() {

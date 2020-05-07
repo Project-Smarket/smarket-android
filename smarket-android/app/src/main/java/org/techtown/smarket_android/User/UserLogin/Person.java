@@ -1,4 +1,4 @@
-package org.techtown.smarket_android.User;
+package org.techtown.smarket_android.User.UserLogin;
 
 import java.io.Serializable;
 

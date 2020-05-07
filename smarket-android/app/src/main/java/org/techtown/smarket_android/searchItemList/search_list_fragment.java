@@ -1,6 +1,5 @@
 package org.techtown.smarket_android.searchItemList;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -12,8 +11,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -34,11 +31,11 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.JsonArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.techtown.smarket_android.Class.SearchedItem;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.searchItemList.Request.searchRequest;
 
@@ -57,7 +54,7 @@ public class search_list_fragment extends Fragment {
     private RecyclerAdapter adapter;
 
     // 검색한 데이터 가져오기
-    private List<Item> itemList = new ArrayList<>();
+    private List<SearchedItem> itemList = new ArrayList<>();
 
 
     @Nullable
@@ -125,8 +122,9 @@ public class search_list_fragment extends Fragment {
 
                     for (int index = 0; index < key.length(); index++) {
                         String title = key.getJSONObject(index).getString("title");
-                        String item_name = removeTag(title);
-
+                        String item_title = removeTag(title);
+                        String item_id = key.getJSONObject(index).getString("productId");
+                        String item_type = key.getJSONObject(index).getString("productType");
                         String price = key.getJSONObject(index).getString("lprice");
                         int item_price = Integer.parseInt(price);
                         String item_lprice = String.format("%,d", item_price);
@@ -135,10 +133,9 @@ public class search_list_fragment extends Fragment {
 
                         String item_mallName = key.getJSONObject(index).getString("mallName");
 
-                        Item item = new Item(item_name, item_lprice, item_image, item_mallName);
+                        SearchedItem item = new SearchedItem(item_title, item_id, item_type, item_lprice, item_image, item_mallName);
 
                         itemList.add(item);
-                        Log.d(TAG, "onResponse: " + itemList.get(index).toString());
                     }
                     adapter.notifyDataSetChanged();
 
@@ -166,12 +163,6 @@ public class search_list_fragment extends Fragment {
      */
     public String removeTag(String html) throws Exception {
         return html.replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", "");
-    }
-
-    private void getItem (int index, JSONArray key) throws Exception {
-
-        //
-
     }
 
     @Override

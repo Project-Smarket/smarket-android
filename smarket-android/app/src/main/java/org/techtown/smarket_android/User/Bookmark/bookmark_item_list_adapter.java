@@ -7,18 +7,13 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,14 +24,22 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
+import org.techtown.smarket_android.Class.BookmarkAlarm;
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.searchItemList.Bookmark;
-import org.techtown.smarket_android.searchItemList.Item;
+import org.techtown.smarket_android.Class.Bookmark;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,7 +48,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_item_list_adapter.bmViewHolder> {
 
@@ -53,17 +58,32 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
     // adapter에 들어갈 list 입니다.
     private Context mContext;
     private Activity mActivity;
-    private List<Bookmark> bookmarkItemList;
+    private List<Bookmark> bookmarkList;
     private InputMethodManager imm;
 
+    // ** 로그인 및 토큰 정보 ** //
     private SharedPreferences userFile;
+    private String user_id;
+    private String access_token;
+    private String refresh_token;
 
     // bookmark_item_list_adapter 생성자
-    public bookmark_item_list_adapter(Context context, Activity activity, List<Bookmark> bookmarkItemList) {
+    public bookmark_item_list_adapter(Context context, Activity activity, List<Bookmark> bookmarkList) {
         this.mContext = context;
         this.mActivity = activity;
-        this.bookmarkItemList = bookmarkItemList;
+        this.bookmarkList = bookmarkList;
         imm = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(View v, int position, String bookmark_id);
+    }
+
+    private OnItemClickListener mListener = null;
+
+    // OnItemClickListener 리스너 객체 참조를 어댑터에 전달하는 메서드
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.mListener = listener;
     }
 
     @NonNull
@@ -72,6 +92,7 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
         // LayoutInflater를 이용하여 전 단계에서 만들었던 item.xml을 inflate 시킵니다.
         // return 인자는 ViewHolder 입니다.
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_list_item, parent, false);
+        get_userFile();
 
         bmViewHolder itemViewHolder = new bookmark_item_list_adapter.bmViewHolder(view);
 
@@ -82,192 +103,270 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
     @Override
     public void onBindViewHolder(@NonNull final bookmark_item_list_adapter.bmViewHolder holder, final int position) {
         // Item을 하나, 하나 보여주는(bind 되는) 함수입니다.
-        holder.onBind(bookmarkItemList.get(position));
+        holder.onBind(bookmarkList.get(position));
 
         // 최저가 알람 버튼 색상 설정
         holder.setPriceAlarm(holder);
 
         // 북마크 버튼 기능 설정
-        holder.heart_btn.setOnClickListener(new View.OnClickListener() {
+        /*holder.heart_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View itemView) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
                         .setTitle("북마크 해제")
                         .setMessage("북마크 등록을 해제 하시겠습니까?")
-                        .setPositiveButton("등록", new DialogInterface.OnClickListener() {
+                        .setPositiveButton("해제", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                remove_bookmark(holder.bookmark_name.getText().toString());
+                                remove_bookmark(holder.getBookmark_id());
                             }
                         })
                         .setNegativeButton("취소", null);
                 builder.create();
                 builder.show();
             }
-        });
+        });*/
 
 
-            // 최저가 알람 버튼 기능 설정
-        holder.cash_btn.setOnClickListener(new View.OnClickListener()
-
-            {
-                @Override
-                public void onClick (View v){
+        // 최저가 알람 버튼 기능 설정
+        holder.cash_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 FragmentManager fragmentManager = ((AppCompatActivity) mContext).getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.main_layout, bookmark_price_alarm_fragment.newInstance(holder));
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             }
-            });
+        });
 
-        }
+    }
 
-        private void remove_bookmark (String bookmark_name){
-            List<Bookmark> bookmarks;
-            if (userFile.getString("myBookmarks", null) != null) {
-                String myBookmarks = userFile.getString("myBookmarks", null);
-                Type listType = new TypeToken<ArrayList<Bookmark>>() {
-                }.getType();
-                bookmarks = new GsonBuilder().create().fromJson(myBookmarks, listType);
-                Log.d("Get myBookmarks", "myBookmarks: Complete Getting myBookmarks");
-            } else {
-                bookmarks = null;
-            }
+    private void remove_bookmark(String bookmark_id) {
 
-            for (int i = 0; i < bookmarks.size(); i++) {
-                if (bookmarks.get(i).getBookmark_name().equals(bookmark_name)) {
-                    bookmarks.remove(i);
-                    break;
-                }
-            }
+        // DB의 북마크 삭제 요청
+        request_delete_bookmark(bookmark_id);
 
-            // List<Bookmark> 클래스 객체를 String 객체로 변환
-            Type listType = new TypeToken<ArrayList<Bookmark>>() {
+        //bookmarkAlarmList에서 bookmark_id와 일치하는 데이터 삭제
+        List<BookmarkAlarm> bookmarkAlarmList;
+        if (userFile.getString("bookmarkAlarmList", null) != null) {
+            String bookmarkAlarm = userFile.getString("bookmarkAlarmList", null);
+            Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {
             }.getType();
-            String json = new GsonBuilder().create().toJson(bookmarks, listType);
-
-            // 스트링 객체로 변환된 데이터를 myBookmarks에 저장
-            SharedPreferences.Editor editor = userFile.edit();
-            editor.putString("myBookmarks", json);
-            editor.commit();
-
-            this.notifyDataSetChanged();
+            bookmarkAlarmList = new GsonBuilder().create().fromJson(bookmarkAlarm, listType);
+            Log.d("Get bookmarkAlarmList", "bookmarkAlarmList: Complete Getting bookmarkAlarmList");
+        } else {
+            bookmarkAlarmList = null;
         }
 
-        @Override
-        public int getItemCount () {
-            // RecyclerView의 총 개수 입니다.
-            return bookmarkItemList.size();
+        for (int i = 0; i < bookmarkAlarmList.size(); i++) {
+            if (bookmarkAlarmList.get(i).getBookmark_id().equals(bookmark_id)) {
+                bookmarkAlarmList.remove(i);
+                break;
+            }
         }
 
-        // RecyclerView의 핵심인 ViewHolder 입니다.
-        // 여기서 subView를 setting 해줍니다.
-        public static class bmViewHolder extends RecyclerView.ViewHolder {
+        // List<Bookmark> 클래스 객체를 String 객체로 변환
+        Type listType = new TypeToken<ArrayList<Bookmark>>() {
+        }.getType();
+        String json = new GsonBuilder().create().toJson(bookmarkAlarmList, listType);
 
-            private TextView bookmark_name;
-            private String bookmark_url;
-            private String bookmark_image_url;
-            private ImageView bookmark_image;
-            private TextView bookmark_price;
-            private Boolean bookmark_check;
-            private int alarm_time;
-            private Boolean alarm_check;
+        // 스트링 객체로 변환된 데이터를 myBookmarks에 저장
+        SharedPreferences.Editor editor = userFile.edit();
+        editor.putString("bookmarkAlarmList", json);
+        editor.commit();
 
-            private ImageView heart_btn;
-            private ImageView cash_btn;
+        notifyDataSetChanged();
 
-            private Bitmap bitmap;
+    }
 
-            public bmViewHolder(@NonNull View itemView) {
-                super(itemView);
+    private void request_delete_bookmark(String bookmark_id) {
+        String url = "http://10.0.2.2:3000/api/bookmarks/" + bookmark_id; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        StringRequest stringRequest = new StringRequest(Request.Method.DELETE, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
 
-                bookmark_name = itemView.findViewById(R.id.search_list_item_name);
-                bookmark_image = itemView.findViewById(R.id.search_list_item_image);
-                bookmark_price = itemView.findViewById(R.id.search_list_item_value);
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(response);
+                    boolean success = jsonObject.getBoolean("success");
 
-                heart_btn = itemView.findViewById(R.id.heart_btn);
-                heart_btn.setColorFilter(itemView.getResources().getColor(R.color.red), PorterDuff.Mode.SRC_IN);
-                cash_btn = itemView.findViewById(R.id.cash_btn);
-            }
 
-            // 아이템 바인드
-            void onBind(Bookmark bookmark) {
+                    if (success) {
+                        // ** 북마크 삭제 성공시 ** //
+                        Toast.makeText(mContext, "해당 북마크를 삭제했습니다.", Toast.LENGTH_LONG).show();
+                    } else if (!success)
+                        // ** 북마크 삭제 실패시 ** //
+                        Toast.makeText(mContext, jsonObject.toString(), Toast.LENGTH_LONG).show();
 
-                bookmark_name.setText(bookmark.getBookmark_name());
-                bookmark_url = bookmark.getBookmark_url();
-                bookmark_image_url = bookmark.getBookmark_image_url();
-                set_bookmark_image();
-                bookmark_price.setText(bookmark.getBookmark_price());
-                bookmark_check = bookmark.getBookmark_check();
-                alarm_time = bookmark.getAlarm_time();
-                alarm_check = bookmark.getAlarm_check();
+                } catch (JSONException e) {
+                    e.printStackTrace();
 
-            }
-
-            // 최저가 알람 버튼 색상 설정
-            void setPriceAlarm(bmViewHolder holder) {
-                if (alarm_check) {
-                    cash_btn.setColorFilter(itemView.getResources().getColor(R.color.smarketyello), PorterDuff.Mode.SRC_IN);
-                } else {
-                    cash_btn.setColorFilter(itemView.getResources().getColor(R.color.colorBlack), PorterDuff.Mode.SRC_IN);
                 }
             }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("REQUESTERROR", "onErrorResponse: " + error.toString());
 
-            // 북마크 아이템 이미지 설정
-            void set_bookmark_image() {
-                Thread mThread = new Thread() {
-                    @Override
-                    public void run() {
-                        try {
-                            try {
-                                URL url = new URL(bookmark_image_url);
+            }
+        }
+        ) {
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("x-access-token", access_token);
+                return params;
+            }
+        };
 
-                                //웹에서 이미지를 가져온 뒤
-                                //이미지뷰에 지정할 비트맵을 만든다
-                                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                                connection.setDoInput(true); //서버로부터 응답 수신
-                                connection.connect();
+        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+        requestQueue.add(stringRequest);
+    }
 
-                                InputStream is = connection.getInputStream(); //inputStream 값 가져오기
-                                bitmap = BitmapFactory.decodeStream(is); // Bitmap으로 변환
-                            } catch (MalformedURLException e) {
-                                e.printStackTrace();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
+    // userFile에 저장된 user_id 와 access_token 값 가져오기
+    private void get_userFile() {
+        userFile = mContext.getSharedPreferences("userFile", Context.MODE_PRIVATE);
+        user_id = userFile.getString("user_id", null);
+        access_token = userFile.getString("access_token", null);
+        refresh_token = userFile.getString("refresh_token", null);
+    }
+
+    @Override
+    public int getItemCount() {
+        // RecyclerView의 총 개수 입니다.
+        return bookmarkList.size();
+    }
+
+    // RecyclerView의 핵심인 ViewHolder 입니다.
+    // 여기서 subView를 setting 해줍니다.
+    public class bmViewHolder extends RecyclerView.ViewHolder {
+
+        private String bookmark_id;
+        private TextView bookmark_title;
+        private String bookmark_itemId;
+        private String bookmark_type;
+        private Boolean bookmark_selling;
+        private String bookmark_link;
+        private String bookmark_image_url;
+        private ImageView bookmark_image;
+        private TextView bookmark_price;
+        private BookmarkAlarm bookmark_alarm;
+
+        private ImageView heart_btn;
+        private ImageView cash_btn;
+
+        private Bitmap bitmap;
+
+        public bmViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            bookmark_title = itemView.findViewById(R.id.search_list_item_name);
+            bookmark_image = itemView.findViewById(R.id.search_list_item_image);
+            bookmark_price = itemView.findViewById(R.id.search_list_item_value);
+
+            heart_btn = itemView.findViewById(R.id.heart_btn);
+            cash_btn = itemView.findViewById(R.id.cash_btn);
+
+            heart_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    int pos = getAdapterPosition();
+                    // 리스너 객체의 메서드 호출
+                    if (pos != RecyclerView.NO_POSITION) {
+                        if(mListener != null){
+                            mListener.onItemClick(v, pos, bookmark_id);
+                        }
+                        else{
+                            Toast.makeText(mContext, "null입니다", Toast.LENGTH_LONG).show();
                         }
                     }
-                };
-                mThread.setDaemon(true);
-                mThread.start(); //쓰레드 실행
 
-                try {
-                    // 메인 쓰레드는 별도의 작업 쓰레드가 작업을 완료할 때까지 대기
-                    // join()을 호출하여 별도의 작업 쓰레드가 종료될 때까지 메인 쓰레드가 기다리게 한다.
-                    mThread.join();
-
-                    // 작업 쓰레드에서 이미지를 불러오는 작업을 완료한 뒤
-                    // UI 작업을 할 수 있는 메인 쓰레드에서 imageView에 이미지를 지정한다.
-                    bookmark_image.setImageBitmap(bitmap);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
-            }
+            });
+        }
 
-            public int getAlarm_time() {
-                return alarm_time;
-            }
+        // 아이템 바인드
+        void onBind(Bookmark bookmark) {
+            bookmark_id = bookmark.getBookmark_id();
+            bookmark_title.setText(bookmark.getBookmark_title());
+            bookmark_itemId = bookmark.getBookmark_itemId();
+            bookmark_type = bookmark.getBookmark_type();
+            bookmark_selling = bookmark.getBookmark_selling();
+            bookmark_link = bookmark.getBookmark_link();
+            bookmark_image_url = bookmark.getBookmark_image_url();
+            set_bookmark_image();
+            bookmark_price.setText(bookmark.getBookmark_lprice());
+            bookmark_alarm = bookmark.getBookmarkAlarm();
+        }
 
-            public Boolean getAlarm_check() {
-                return alarm_check;
+        // 최저가 알람 버튼 색상 설정
+        void setPriceAlarm(bmViewHolder holder) {
+            if (bookmark_alarm.getAlarm_check()) {
+                cash_btn.setColorFilter(itemView.getResources().getColor(R.color.smarketyello), PorterDuff.Mode.SRC_IN);
+            } else {
+                cash_btn.setColorFilter(itemView.getResources().getColor(R.color.colorBlack), PorterDuff.Mode.SRC_IN);
             }
+        }
 
-            public String getBookmark_name() {
-                return bookmark_name.getText().toString();
+        // 북마크 아이템 이미지 설정
+        void set_bookmark_image() {
+            Thread mThread = new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        try {
+                            URL url = new URL(bookmark_image_url);
+
+                            //웹에서 이미지를 가져온 뒤
+                            //이미지뷰에 지정할 비트맵을 만든다
+                            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                            connection.setDoInput(true); //서버로부터 응답 수신
+                            connection.connect();
+
+                            InputStream is = connection.getInputStream(); //inputStream 값 가져오기
+                            bitmap = BitmapFactory.decodeStream(is); // Bitmap으로 변환
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+            mThread.setDaemon(true);
+            mThread.start(); //쓰레드 실행
+
+            try {
+                // 메인 쓰레드는 별도의 작업 쓰레드가 작업을 완료할 때까지 대기
+                // join()을 호출하여 별도의 작업 쓰레드가 종료될 때까지 메인 쓰레드가 기다리게 한다.
+                mThread.join();
+
+                // 작업 쓰레드에서 이미지를 불러오는 작업을 완료한 뒤
+                // UI 작업을 할 수 있는 메인 쓰레드에서 imageView에 이미지를 지정한다.
+                bookmark_image.setImageBitmap(bitmap);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+        }
+
+        // GET - bookmarkAlarm_time
+        public int getAlarm_time() {
+            return bookmark_alarm.getAlarm_time();
+        }
+
+        // GET - bookmarkAlarm_check
+        public Boolean getAlarm_check() {
+            return bookmark_alarm.getAlarm_check();
+        }
+
+        // GET - bookmark_id
+        public String getBookmark_id() {
+            return bookmark_id;
         }
 
     }
+
+}

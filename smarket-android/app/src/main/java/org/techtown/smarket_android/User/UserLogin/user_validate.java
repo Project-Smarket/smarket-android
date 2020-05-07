@@ -1,4 +1,4 @@
-package org.techtown.smarket_android.User;
+package org.techtown.smarket_android.User.UserLogin;
 
 import android.widget.Toast;
 
@@ -11,22 +11,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class user_register_validate_id extends StringRequest {
+public class user_validate extends StringRequest {
 
-    final static private String url = "http://10.0.2.2:3000/api/auth/checkid";
+    private String key;
+    private String value;
     private Map<String, String> parameters;
 
-
-
-    public user_register_validate_id(String userID, Response.Listener<String> listener, ErrorListener errorListener) {
+    public user_validate(String url, String key, String value, Response.Listener<String> listener, ErrorListener errorListener) {
         super(Method.POST, url, listener, errorListener);
-        parameters = new HashMap<>();
-        parameters.put("user_id", userID);
-
+        this.key = key;
+        this.value = value;
     }
 
     public Map<String, String> getParams() {
-
+        parameters = new HashMap<>();
+        parameters.put(key, value);
         return parameters;
     }
 

@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,7 +18,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import org.json.JSONArray;
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.User.user_login_fragment;
+import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
 
 
 public class search_fragment extends Fragment {

@@ -4,9 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.media.Image;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,9 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -30,11 +26,8 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.techtown.smarket_android.Alaram.alarm_fragment;
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.searchItemList.Bookmark;
+import org.techtown.smarket_android.Class.BookmarkAlarm;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -55,25 +48,22 @@ public class bookmark_price_alarm_fragment extends Fragment {
     private Switch alarm_switch;
     private ImageView back_btn;
 
-
-//    private static final String SETTINGS_TIMELIST_JSON = "settings_timelist_json";
-//    private static final String SETTINGS_BOOLEANVALUE_JSON = "settings_booleanvalue_json";
-
     private SharedPreferences userFile;
-    private List<Bookmark> bookmarks;
-    private int alarm_time;
-    private boolean alarm_check;
+    private List<BookmarkAlarm> bookmarkAlarmList;
 
-    private Bookmark this_bookmark; // 선택된 북마크
-    private String this_bookmark_name; // 선택된 북마크 이름
-    private int this_bookmark_index; // 선택된 북마크 인덱스
+    // 생성자에서 초기화
+    private String this_bookmark_id; // 선택된 북마크의 itemId
+    private boolean this_alarm_check; // 선택된 북마크 alarm_check
+    private int this_alarm_time; // 선택된 북마크 alarm_time
 
-
+    // get_this_bookmark()에서 초기화
+    private BookmarkAlarm this_bookmarkAlarm; // 선택된 북마크알람 객체
+    private int this_bookmarkAlarm_index; // 선택된 북마크 인덱스
 
     bookmark_price_alarm_fragment(bookmark_item_list_adapter.bmViewHolder bmViewHolder) {
-        alarm_time = bmViewHolder.getAlarm_time();
-        alarm_check = bmViewHolder.getAlarm_check();
-        this_bookmark_name = bmViewHolder.getBookmark_name();
+        this_bookmark_id = bmViewHolder.getBookmark_id();
+        this_alarm_check = bmViewHolder.getAlarm_check();
+        this_alarm_time = bmViewHolder.getAlarm_time();
     }
 
     @Nullable
@@ -81,22 +71,25 @@ public class bookmark_price_alarm_fragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.bookmark_price_alarm, container, false);
         userFile = getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE);
-        get_this_bookmark();
+
+        // 선택된 bookmark_title을 이용해 SharedPreference에서 북마크 알람 파일 가져오기
+        get_this_bookmarkAlarmList();
 
         lineChart = (LineChart) viewGroup.findViewById(R.id.linechart);
 
+        // 그래프 설정
         set_chart();
 
         alarm_switch = viewGroup.findViewById(R.id.alarm_setting_switch);
-        alarm_switch.setChecked(alarm_check);
+        alarm_switch.setChecked(this_alarm_check);
         alarm_switch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!alarm_check) {
-                    alarm_check = true;
+                if (!this_alarm_check) {
+                    this_alarm_check = true;
                     set_alarm_check();
                 } else {
-                    alarm_check = false;
+                    this_alarm_check = false;
                     set_alarm_check();
                 }
             }
@@ -104,7 +97,13 @@ public class bookmark_price_alarm_fragment extends Fragment {
 
         timeSet_view = viewGroup.findViewById(R.id.timeSet_view);
         timeSet_tv = viewGroup.findViewById(R.id.timeSet_tv2);
-        timeSet_tv.setText(alarm_time+"시간 마다");
+        switch (this_alarm_time){
+            case 0 : timeSet_tv.setText(1+"시간 마다");break;
+            case 1 : timeSet_tv.setText(6+"시간 마다");break;
+            case 2 : timeSet_tv.setText(12+"시간 마다");break;
+            case 3 : timeSet_tv.setText(24+"시간 마다");break;
+        }
+
 
         timeSet_view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,11 +149,11 @@ public class bookmark_price_alarm_fragment extends Fragment {
     }
 
     private void set_timer() {
-        final String[] timeList = {"1시간 마다", "3시간 마다", "6시간 마다", "12시간 마다"};
+        final String[] timeList = {"1시간 마다", "6시간 마다", "12시간 마다", "24시간 마다"};
         AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
 
         dialog.setTitle("시간 설정")
-                .setSingleChoiceItems(timeList, alarm_time, new DialogInterface.OnClickListener() {
+                .setSingleChoiceItems(timeList, this_alarm_time, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         nSelectItem = which;
@@ -165,7 +164,7 @@ public class bookmark_price_alarm_fragment extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
                         if (nSelectItem >= 0) {
                             timeSet_tv.setText(timeList[nSelectItem]);
-                            alarm_time = nSelectItem;
+                            this_alarm_time = nSelectItem;
                             set_alarm_time();
                             nSelectItem = -1;
                         }
@@ -175,21 +174,22 @@ public class bookmark_price_alarm_fragment extends Fragment {
                 .show();
     }
 
-    // 클라이언트에 저장된 모든 북마크 정보 가져오기
-    private void get_this_bookmark(){
-        if(userFile.getString("myBookmarks", null) != null){
-            String myBookmarks = userFile.getString("myBookmarks", null);
-            Type listType = new TypeToken<ArrayList<Bookmark>>(){}.getType();
-            bookmarks = new GsonBuilder().create().fromJson(myBookmarks, listType);
-            Log.d("Get myBookmarks", "myBookmarks: Complete Getting myBookmarks");
+    // 클라이언트에 저장된 모든 북마크 알람 정보 가져오기
+    private void get_this_bookmarkAlarmList(){
+        if(userFile.getString("bookmarkAlarmList", null) != null){
+            String bookmarkAlarm = userFile.getString("bookmarkAlarmList", null);
+            Type listType = new TypeToken<ArrayList<BookmarkAlarm>>(){}.getType();
+            bookmarkAlarmList = new GsonBuilder().create().fromJson(bookmarkAlarm, listType);
+            Log.d("Get bookmarkAlarmList", "bookmarkAlarmList : Complete Getting bookmarkAlarmList");
         }else{
-            bookmarks = null;
+            bookmarkAlarmList = null;
         }
 
-        for (int i = 0; i < bookmarks.size(); i++) {
-            if(bookmarks.get(i).getBookmark_name().equals(this_bookmark_name)){
-                this_bookmark_index = i;
-                this_bookmark = bookmarks.get(i);
+        for (int i = 0; i < bookmarkAlarmList.size(); i++) {
+            // 현재 선택된 북마크의 bookmark_id와 SharedPreference의 bookmark_id 일치하면 해당 데이터의 index와 객체를 가져옴
+            if(bookmarkAlarmList.get(i).getBookmark_id().equals(this_bookmark_id)){
+                this_bookmarkAlarm_index = i;
+                this_bookmarkAlarm = bookmarkAlarmList.get(i);
                 break;
             }
         }
@@ -197,24 +197,24 @@ public class bookmark_price_alarm_fragment extends Fragment {
 
     // alarm_check 값 설정
     private void set_alarm_check(){
-        this_bookmark.setAlarm_check(alarm_check);
-        bookmarks.set(this_bookmark_index, this_bookmark);
+        this_bookmarkAlarm.setAlarm_check(this_alarm_check);
+        bookmarkAlarmList.set(this_bookmarkAlarm_index, this_bookmarkAlarm);
     }
 
     // alarm_time 값 설정
     private void set_alarm_time(){
-        this_bookmark.setAlarm_time(alarm_time);
-        bookmarks.set(this_bookmark_index, this_bookmark);
+        this_bookmarkAlarm.setAlarm_time(this_alarm_time);
+        bookmarkAlarmList.set(this_bookmarkAlarm_index, this_bookmarkAlarm);
     }
 
     private void set_myBookmarks(){
         // List<Bookmark> 클래스 객체를 String 객체로 변환
-        Type listType = new TypeToken<ArrayList<Bookmark>>(){}.getType();
-        String json = new GsonBuilder().create().toJson(bookmarks, listType);
+        Type listType = new TypeToken<ArrayList<BookmarkAlarm>>(){}.getType();
+        String json = new GsonBuilder().create().toJson(bookmarkAlarmList, listType);
 
         // 스트링 객체로 변환된 데이터를 myBookmarks에 저장
         SharedPreferences.Editor editor = userFile.edit();
-        editor.putString("myBookmarks", json);
+        editor.putString("bookmarkAlarmList", json);
         editor.commit();
     }
 }
