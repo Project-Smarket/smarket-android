@@ -94,6 +94,9 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_list_item, parent, false);
         get_userFile();
 
+        View delete_btn = view.findViewById(R.id.heart_btn);
+        delete_btn.setBackgroundResource(R.drawable.delete_btn);
+
         bmViewHolder itemViewHolder = new bookmark_item_list_adapter.bmViewHolder(view);
 
         return itemViewHolder;
@@ -107,26 +110,6 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
 
         // 최저가 알람 버튼 색상 설정
         holder.setPriceAlarm(holder);
-
-        // 북마크 버튼 기능 설정
-        /*holder.heart_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View itemView) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
-                        .setTitle("북마크 해제")
-                        .setMessage("북마크 등록을 해제 하시겠습니까?")
-                        .setPositiveButton("해제", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                remove_bookmark(holder.getBookmark_id());
-                            }
-                        })
-                        .setNegativeButton("취소", null);
-                builder.create();
-                builder.show();
-            }
-        });*/
-
 
         // 최저가 알람 버튼 기능 설정
         holder.cash_btn.setOnClickListener(new View.OnClickListener() {

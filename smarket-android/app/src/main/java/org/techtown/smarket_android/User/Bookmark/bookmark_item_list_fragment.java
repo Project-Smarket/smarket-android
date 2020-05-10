@@ -68,7 +68,9 @@ public class bookmark_item_list_fragment extends Fragment {
 
     private Spinner bookmark_spinner; // 북마크 스피너
     private ArrayAdapter spinnerAdapter; // 스피너 어댑터
-    private List<String> bookmarkFolderList = new ArrayList<>(); // 북마크 폴더 리스트
+    private List<String> bookmarkFolderList = new ArrayList<>(); // SharedPreference에 저장된 bookmarkFolderList
+    private List<BookmarkAlarm> bookmarkAlarmList; // SharedPreference에 저장된 bookmarkAlarmList
+
 
     private EditText bookmark_folder_name; // 추가할 북마크 이름
 
@@ -87,8 +89,9 @@ public class bookmark_item_list_fragment extends Fragment {
     private String refresh_token;
 
 
-    private List<BookmarkAlarm> bookmarkAlarmList;
 
+
+    // 실행 시간 지연
     private Handler mHandler = new Handler();
 
     @Nullable
@@ -133,9 +136,23 @@ public class bookmark_item_list_fragment extends Fragment {
             bookmarkAlarmList = new GsonBuilder().create().fromJson(bookmarkAlarm, listType);
             Log.d("Get myBookmarks", "myBookmarks: Complete Getting myBookmarks");
         } else {
-            bookmarkAlarmList = null;
+            bookmarkAlarmList = new ArrayList<>();
+            save_bookmarkAlarmList();
         }
 
+    }
+
+    // SharedPreference에 bookmarkAlarmList 데이터 저장
+    private void save_bookmarkAlarmList() {
+        // List<BookmarkAlarm> 클래스 객체를 String 객체로 변환
+        Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {
+        }.getType();
+        String json = new GsonBuilder().create().toJson(bookmarkAlarmList, listType);
+
+        // 스트링 객체로 변환된 데이터를 bookmarkFolderList에 저장
+        SharedPreferences.Editor editor = userFile.edit();
+        editor.putString("bookmarkAlarmList", json);
+        editor.commit();
     }
 
     // 북마크 폴더 스피너 설정
@@ -289,7 +306,6 @@ public class bookmark_item_list_fragment extends Fragment {
                 .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        spinnerAdapter.remove(bookmark_spinner.getSelectedItem());
                         /*updateBookmarkFolderList(getContext(), SETTINGS_BOOKMARK_JSON, bookmarkFolderList);*/
                         try {
                             remove_bookmarkFolder(bookmark_spinner.getSelectedItem().toString());
@@ -328,8 +344,13 @@ public class bookmark_item_list_fragment extends Fragment {
 
     private void remove_bookmarkFolder(String folder_name) throws UnsupportedEncodingException {
         request_remove_bookmarkFolder_to_server_by_folder_name(folder_name);
-        remove_bookmarkFolder_in_bookmarkFolderList(folder_name);
-        remove_bookmark_in_bookmarkAlarmList_by_folder_name(folder_name);
+        if(bookmark_spinner.getSelectedItemPosition() == 0){
+            spinnerAdapter.remove(bookmark_spinner.getSelectedItem());
+            bookmark_spinner.setSelection(bookmarkFolderList.size()-1);
+        }else{
+            spinnerAdapter.remove(bookmark_spinner.getSelectedItem());
+            bookmark_spinner.setSelection(bookmark_spinner.getSelectedItemPosition()-1);
+        }
         spinnerAdapter.notifyDataSetChanged();
         set_bookmarkList();
     }
@@ -350,6 +371,8 @@ public class bookmark_item_list_fragment extends Fragment {
                     if (success) {
                         // ** 북마크 삭제 성공시 ** //
                         Toast.makeText(getContext(), folder_name + " 북마크 폴더를 삭제했습니다.", Toast.LENGTH_LONG).show();
+                        remove_bookmark_in_bookmarkAlarmList_by_folder_name(folder_name);
+                        remove_bookmarkFolder_in_bookmarkFolderList(folder_name);
                     } else if (!success)
                         // ** 북마크 삭제 실패시 ** //
                         Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
@@ -391,7 +414,7 @@ public class bookmark_item_list_fragment extends Fragment {
 
     // bookmarkAlarmList에서 folder_name과 일치하는 bookmarkAlarm삭제
     private void remove_bookmark_in_bookmarkAlarmList_by_folder_name(String folder_name) {
-        List<BookmarkAlarm> bookmarkAlarmList;
+        /*List<BookmarkAlarm> bookmarkAlarmList;
         if (userFile.getString("bookmarkAlarmList", null) != null) {
             String bookmarkAlarm = userFile.getString("bookmarkAlarmList", null);
             Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {
@@ -399,17 +422,18 @@ public class bookmark_item_list_fragment extends Fragment {
             bookmarkAlarmList = new GsonBuilder().create().fromJson(bookmarkAlarm, listType);
             Log.d("Get bookmarkAlarmList", "bookmarkAlarmList: Complete Getting bookmarkAlarmList");
         } else {
-            bookmarkAlarmList = null;
-        }
+            bookmarkAlarmList = new ArrayList<>();
+        }*/
 
-        for (int i = 0; i < bookmarkAlarmList.size(); i++) {
-            if (bookmarkAlarmList.get(i).getBookmark_id().equals(folder_name)) {
+        for (int i = bookmarkAlarmList.size() -1 ; i >= 0; i--) {
+            if (bookmarkAlarmList.get(i).getFolder_name().equals(folder_name)) {
+                Log.d(TAG, "remove_bookmark_in_bookmarkAlarmList_by_folder_name: "+ bookmarkAlarmList.get(i).getBookmark_id());
                 bookmarkAlarmList.remove(i);
             }
         }
 
         // List<Bookmark> 클래스 객체를 String 객체로 변환
-        Type listType = new TypeToken<ArrayList<Bookmark>>() {
+        Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {
         }.getType();
         String json = new GsonBuilder().create().toJson(bookmarkAlarmList, listType);
 
@@ -551,7 +575,7 @@ public class bookmark_item_list_fragment extends Fragment {
         }
 
         // List<Bookmark> 클래스 객체를 String 객체로 변환
-        Type listType = new TypeToken<ArrayList<Bookmark>>() {
+        Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {
         }.getType();
         String json = new GsonBuilder().create().toJson(bookmarkAlarmList, listType);
 

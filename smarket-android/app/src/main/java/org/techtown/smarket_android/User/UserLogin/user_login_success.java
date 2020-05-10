@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,6 +38,8 @@ public class user_login_success extends Fragment {
 
     private ViewGroup viewGroup;
 
+    private TextView userId_textView;
+
     private ConstraintLayout bookmark;
     private ConstraintLayout recent;
     private ConstraintLayout userinform;
@@ -55,6 +58,9 @@ public class user_login_success extends Fragment {
 
         // 현재 로그인된 아이디 가져오기
         get_userFile();
+
+        userId_textView = viewGroup.findViewById(R.id.user_tv);
+        userId_textView.setText(userID);
 
         bookmark = viewGroup.findViewById(R.id.bookmark);
 

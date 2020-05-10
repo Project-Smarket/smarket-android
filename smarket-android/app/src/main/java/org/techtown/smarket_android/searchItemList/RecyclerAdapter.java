@@ -123,18 +123,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         get_bookmarkAlarmList();
 
         View cashBtn = view.findViewById(R.id.cash_btn);
-        cashBtn.setVisibility(View.INVISIBLE);
+        cashBtn.setVisibility(View.GONE);
 
         final ItemViewHolder itemViewHolder = new ItemViewHolder(view);
-
-        ImageView cash = view.findViewById(R.id.cash_btn);
-        cash.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(v.getContext(),
-                        "cash", Toast.LENGTH_SHORT).show();
-            }
-        });
 
         return itemViewHolder;
     }
