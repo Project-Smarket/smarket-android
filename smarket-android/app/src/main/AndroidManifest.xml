@@ -23,10 +23,6 @@
         </activity>
         <activity android:name=".User.UserLogin.user_login_fragment" android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
         <activity android:name=".MainNavigation.MainNavigationActivity"></activity>
-        <activity android:name=".sharedpref.test1">
-
-        </activity>
-        <activity android:name=".sharedpref.test2"></activity>
     </application>
 
 </manifest>
