@@ -9,4 +9,11 @@
     <string name="MallName">판매처 : OOO</string>
     <string name="priceDifference"> 500 </string>
     <string name="passwordconfirmEndpoint"> http://10.0.2.2:3000/api/users/passwordconfirm</string>
+    <string name="authEndpoint"> http://10.0.2.2:3000/api/auth </string>
+    <string name="usersEndpoint"> http://10.0.2.2:3000/api/users </string>
+    <string name="bookmarksEndpoint"> http://10.0.2.2:3000/api/bookmarks </string>
+    <string name="pushEndpoint"> http://10.0.2.2:3000/api/push </string>
+    <string name="crawlingEndpoint"> http://10.0.2.2:3000/api/crawling </string>
+    <string name="naverEndpoint"> http://10.0.2.2:3000/api/naver </string>
+    <string name="youtubeEndpoint"> http://10.0.2.2:3000/api/youtube </string>
 </resources>
