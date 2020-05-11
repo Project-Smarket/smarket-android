@@ -8,4 +8,5 @@
     <string name="lowprice">33,000원</string>
     <string name="MallName">판매처 : OOO</string>
     <string name="priceDifference"> 500 </string>
+    <string name="passwordconfirmEndpoint"> http://10.0.2.2:3000/api/users/passwordconfirm</string>
 </resources>

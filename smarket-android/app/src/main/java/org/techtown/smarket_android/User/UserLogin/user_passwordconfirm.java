@@ -8,15 +8,17 @@ import android.util.Log;
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 
+import org.techtown.smarket_android.R;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class user_passwordconfirm extends StringRequest {
 
     private Map<String, String> parameters;
-    final static private String url = "http://10.0.2.2:3000/api/users/passwordconfirm" ;
-    private String userPW;
     private Activity mActivity;
+    private String userPW;
+
 
     // ** 로그인 및 토큰 정보 ** //
     private SharedPreferences userFile;
@@ -25,7 +27,7 @@ public class user_passwordconfirm extends StringRequest {
     private String refresh_token;
 
     public user_passwordconfirm(String userPW, Activity activity, Response.Listener<String> listener) {
-        super(Method.POST, url, listener, null);
+        super(Method.POST, activity.getResources().getString(R.string.passwordconfirmEndpoint), listener, null);
         this.userPW = userPW;
         mActivity = activity;
         get_userFile();
