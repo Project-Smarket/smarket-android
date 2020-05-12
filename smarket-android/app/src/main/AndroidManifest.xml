@@ -23,6 +23,7 @@
         </activity>
         <activity android:name=".User.UserLogin.user_login_fragment" android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
         <activity android:name=".MainNavigation.MainNavigationActivity"></activity>
+
     </application>
 
 </manifest>
