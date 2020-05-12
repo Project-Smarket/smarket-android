@@ -8,12 +8,13 @@ import android.util.Log;
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 
+import org.techtown.smarket_android.R;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class userinform_modify_request extends StringRequest {
 
-    final static private String url = "http://10.0.2.2:3000/api/users";
     private String userID;
     private String userNick;
     private String userPW;
@@ -28,7 +29,7 @@ public class userinform_modify_request extends StringRequest {
 
     public userinform_modify_request(Activity activity, String userID, String userPW, String userName, String userNick, String userPhoneNumber,
                                      Response .Listener<String> listener) {
-        super(Method.PUT, url + "/" + userID, listener, null);
+        super(Method.PUT, activity.getResources().getString(R.string.usersEndpoint) + "/" + userID, listener, null);
 
         mActivity = activity;
         this.userID = userID;

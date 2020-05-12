@@ -124,7 +124,7 @@ public class userinform_fragment extends Fragment {
         userinform_phoneNumber_spinner = (Spinner) viewGroup.findViewById(R.id.userinform_phoneNumber_spinner);
         userinform_phoneNumber_spinner.setAdapter(phoneNumberAdapter);
 
-        String url = "http://10.0.2.2:3000/api/users/"+user_id;
+        String url = getString(R.string.usersEndpoint) + user_id;
         Log.d(TAG, "set_viewGroup: " + url);
         StringRequest userinform_get_request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
@@ -178,7 +178,7 @@ public class userinform_fragment extends Fragment {
 
     // nickname 중복검사
     private void validate_nick() {
-        String url = "http://10.0.2.2:3000/api/auth/checknickname";
+        String url = getString(R.string.authEndpoint) + "/checknickname";
         String key = "nickname";
         String user_nickname = userinform_nick_et.getText().toString();
 

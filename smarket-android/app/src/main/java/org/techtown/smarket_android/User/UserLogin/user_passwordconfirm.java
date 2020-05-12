@@ -27,7 +27,7 @@ public class user_passwordconfirm extends StringRequest {
     private String refresh_token;
 
     public user_passwordconfirm(String userPW, Activity activity, Response.Listener<String> listener) {
-        super(Method.POST, activity.getResources().getString(R.string.passwordconfirmEndpoint), listener, null);
+        super(Method.POST, activity.getResources().getString(R.string.usersEndpoint) + "/passwordconfirm", listener, null);
         this.userPW = userPW;
         mActivity = activity;
         get_userFile();

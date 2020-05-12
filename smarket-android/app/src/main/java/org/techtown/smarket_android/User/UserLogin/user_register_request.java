@@ -8,12 +8,13 @@ import android.util.Log;
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 
+import org.techtown.smarket_android.R;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class  user_register_request extends StringRequest {
 
-    final static private String url = "http://10.0.2.2:3000/api/users";
     private Map<String, String> parameters;
     private String userID;
     private String userNick;
@@ -21,8 +22,8 @@ public class  user_register_request extends StringRequest {
     private String userName;
     private String userPhoneNumber;
 
-    public user_register_request(String userID, String userPW, String userName, String userNick, String userPhoneNumber, Response .Listener<String> listener) {
-        super(Method.POST, url, listener, null);
+    public user_register_request(Context context, String userID, String userPW, String userName, String userNick, String userPhoneNumber, Response .Listener<String> listener) {
+        super(Method.POST, context.getResources().getString(R.string.usersEndpoint), listener, null);
 
         this.userID = userID;
         this.userNick = userNick;

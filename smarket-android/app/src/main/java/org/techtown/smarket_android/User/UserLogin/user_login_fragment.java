@@ -111,7 +111,7 @@ public class user_login_fragment extends Fragment {
 
 
     private void login() {
-        String url = "http://10.0.2.2:3000/api/auth/login"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        String url = getString(R.string.authEndpoint) + "/login"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {

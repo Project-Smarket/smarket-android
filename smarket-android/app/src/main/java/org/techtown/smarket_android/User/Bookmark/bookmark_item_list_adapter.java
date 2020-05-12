@@ -164,7 +164,7 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
     }
 
     private void request_delete_bookmark(String bookmark_id) {
-        String url = "http://10.0.2.2:3000/api/bookmarks/" + bookmark_id; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        String url = mContext.getResources().getString(R.string.bookmarksEndpoint) + bookmark_id; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.DELETE, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {

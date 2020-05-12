@@ -429,7 +429,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     // 북마크 등록 요청 기능
     private void request_bookmark(final ItemViewHolder holder) {
         get_userFile();
-        String reques_url = "http://10.0.2.2:3000/api/bookmarks"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        String reques_url = mContext.getResources().getString(R.string.bookmarksEndpoint); // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.POST, reques_url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -537,7 +537,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
     // 액세스 토큰 갱신
     private void refresh() {
-        String reques_url = "http://10.0.2.2:3000/api/auth/refresh"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        String reques_url = mContext.getResources().getString(R.string.authEndpoint) + "/refresh"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.GET, reques_url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
