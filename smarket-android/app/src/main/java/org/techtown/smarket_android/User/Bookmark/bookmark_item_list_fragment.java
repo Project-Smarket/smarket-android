@@ -382,7 +382,7 @@ public class bookmark_item_list_fragment extends Fragment {
 
     // 서버로 folder_name과 일치하는 DB 북마크 삭제 요청
     private void request_remove_bookmarkFolder_to_server_by_folder_name(final String folder_name) throws UnsupportedEncodingException {
-        String url = "http://10.0.2.2:3000/api/bookmarks?foldername=" + URLEncoder.encode(folder_name, "UTF-8"); // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        String url = getString(R.string.bookmarksEndpoint) + "?foldername=" + URLEncoder.encode(folder_name, "UTF-8"); // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.DELETE, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -540,7 +540,7 @@ public class bookmark_item_list_fragment extends Fragment {
 
     // 서버로 DB 북마크 삭제 요청
     private void request_remove_bookmark_to_server(String bookmark_id) {
-        String url = "http://10.0.2.2:3000/api/bookmarks/" + bookmark_id; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        String url = getString(R.string.bookmarksEndpoint) + bookmark_id; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.DELETE, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {

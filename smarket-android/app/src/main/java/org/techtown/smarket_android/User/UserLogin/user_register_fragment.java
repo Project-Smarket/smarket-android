@@ -1,6 +1,7 @@
 package org.techtown.smarket_android.User.UserLogin;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.InputFilter;
@@ -113,7 +114,7 @@ public class user_register_fragment extends Fragment {
     }
 
     private void validate_id() {
-        String url = "http://10.0.2.2:3000/api/auth/checknickname";
+        String url = getString(R.string.authEndpoint) + "/checknickname";
         String key = "nickname";
         String user_id = register_id.getText().toString();
 
@@ -172,7 +173,7 @@ public class user_register_fragment extends Fragment {
     }
 
     private void validate_nick() {
-        String url = "http://10.0.2.2:3000/api/auth/checknickname";
+        String url = getString(R.string.authEndpoint) + "/checknickname";
         String key = "nickname";
         String user_nickname = register_nickname.getText().toString();
 
@@ -230,6 +231,7 @@ public class user_register_fragment extends Fragment {
     }
 
     private void register() {
+        Context context = getContext();
         String userID = register_id.getText().toString();
         String userPW = register_pw.getText().toString();
         String userName = register_name.getText().toString();
@@ -289,8 +291,8 @@ public class user_register_fragment extends Fragment {
             }
         };
 
-        user_register_request registerRequest = new user_register_request(userID, userPW, userName, userNick, userPhoneNumber, responseListener);
-        RequestQueue queue = Volley.newRequestQueue(getContext());
+        user_register_request registerRequest = new user_register_request(context, userID, userPW, userName, userNick, userPhoneNumber, responseListener);
+        RequestQueue queue = Volley.newRequestQueue(context);
         queue.add(registerRequest);
     }
 
