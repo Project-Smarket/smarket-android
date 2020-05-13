@@ -1,4 +1,4 @@
-package org.techtown.smarket_android.Home;
+package org.techtown.smarket_android.Hotdeal;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

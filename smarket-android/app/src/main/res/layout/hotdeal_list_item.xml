@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:background="@color/colorWhite"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/hotdeal_list_item_title"
+        android:layout_width="392dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="24dp"
+        android:layout_toEndOf="@+id/search_list_item_image"
+        android:layout_toRightOf="@+id/search_list_item_image"
+        android:inputType="textMultiLine"
+        android:text="titletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitle"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageView
+        android:id="@+id/comment_imageView"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginLeft="64dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="10dp"
+        android:src="@drawable/comment"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/hotdeal_list_item_title" />
+
+    <TextView
+        android:id="@+id/views_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="12dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center_vertical"
+        android:text="00"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/comment_imageView"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/eye_imageView"
+        app:layout_constraintTop_toBottomOf="@+id/hotdeal_list_item_title"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <ImageView
+        android:id="@+id/eye_imageView"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="10dp"
+        android:src="@drawable/eye"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/hotdeal_list_item_title"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/comment_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="12dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center_vertical"
+        android:text="00"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/comment_imageView"
+        app:layout_constraintTop_toBottomOf="@+id/hotdeal_list_item_title"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <ImageView
+        android:visibility="invisible"
+        android:id="@+id/eye_imageView2"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_marginStart="346dp"
+        android:layout_marginLeft="346dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="3dp"
+        android:src="@drawable/time"
+        app:layout_constraintBottom_toTopOf="@+id/hotdeal_list_item_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/posted_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="12dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
+        android:text="00 시간 전"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toTopOf="@+id/hotdeal_list_item_title"
+        app:layout_constraintStart_toEndOf="@+id/eye_imageView2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/category_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="16dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="4dp"
+        android:text="카테고리"
+        android:textSize="8sp"
+        android:textColor="@color/colorBlack"
+        android:background="@drawable/hotdeal_category"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/hotdeal_list_item_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
