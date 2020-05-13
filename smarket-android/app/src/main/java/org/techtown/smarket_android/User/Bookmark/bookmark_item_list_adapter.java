@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -232,6 +233,7 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
         private String bookmark_link;
         private String bookmark_image_url;
         private ImageView bookmark_image;
+        private String bookmark_lprice;
         private TextView bookmark_price;
         private BookmarkAlarm bookmark_alarm;
 
@@ -257,10 +259,9 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
                     int pos = getAdapterPosition();
                     // 리스너 객체의 메서드 호출
                     if (pos != RecyclerView.NO_POSITION) {
-                        if(mListener != null){
+                        if (mListener != null) {
                             mListener.onItemClick(v, pos, bookmark_id);
-                        }
-                        else{
+                        } else {
                             Toast.makeText(mContext, "null입니다", Toast.LENGTH_LONG).show();
                         }
                     }
@@ -276,10 +277,21 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
             bookmark_itemId = bookmark.getBookmark_itemId();
             bookmark_type = bookmark.getBookmark_type();
             bookmark_selling = bookmark.getBookmark_selling();
-            bookmark_link = bookmark.getBookmark_link();
             bookmark_image_url = bookmark.getBookmark_image_url();
-            set_bookmark_image();
-            bookmark_price.setText(bookmark.getBookmark_lprice());
+            bookmark_lprice = bookmark.getBookmark_lprice();
+            if (TextUtils.isEmpty(bookmark_image_url))
+                bookmark_image.setBackgroundResource(R.drawable.soldout);
+            else {
+                bookmark_image_url = bookmark.getBookmark_image_url();
+                set_bookmark_image();
+            }
+            if (TextUtils.isEmpty(bookmark_lprice))
+                bookmark_price.setText("판매종료");
+            else
+                bookmark_price.setText(bookmark.getBookmark_lprice());
+
+            Log.d("bookmark_data", "onBind: " + bookmark_image_url + " " + bookmark_lprice);
+            bookmark_link = bookmark.getBookmark_link();
             bookmark_alarm = bookmark.getBookmarkAlarm();
         }
 
