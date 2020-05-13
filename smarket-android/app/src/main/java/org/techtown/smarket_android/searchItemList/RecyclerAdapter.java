@@ -506,7 +506,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                         set_bookmarkAlarmList(id);
 
                     }
-                });
+                })
+                .setCancelable(false);
         builder.create();
         builder.show();
 

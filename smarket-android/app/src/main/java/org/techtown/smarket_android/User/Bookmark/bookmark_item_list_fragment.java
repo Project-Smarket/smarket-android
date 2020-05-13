@@ -89,6 +89,8 @@ public class bookmark_item_list_fragment extends Fragment {
     private String access_token;
     private String refresh_token;
 
+    // 스피너 중복 실행 방지 변수
+    int iCurrentSelection;
 
     // 실행 시간 지연
     private Handler mHandler = new Handler();
@@ -105,13 +107,11 @@ public class bookmark_item_list_fragment extends Fragment {
         get_bookmarkAlarmList(); // SharedPreference의 bookmarkAlarmList 데이터 수집
         get_bookmarkFolderList();// SharedPreference의 bookmarkFolderList 데이터 수집
 
+        set_bookmarkList_recyclerView(); // 북마크리스트 리사이클러 뷰 설정
         set_bookmark_spinner(); // 북마크 스피너 설정
 
         set_plus_btn(); // 북마크 추가 버튼 설정
         set_trashcan_btn(); // 북마크 삭제 버튼 설정
-
-        SharedPreferences mPref = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String callValue = mPref.getString(SETTINGS_BOOKMARK_JSON, "default value");
 
         return viewGroup;
     }
@@ -142,23 +142,34 @@ public class bookmark_item_list_fragment extends Fragment {
         // 스트링 객체로 변환된 데이터를 bookmarkFolderList에 저장
         SharedPreferences.Editor editor = userFile.edit();
         editor.putString("bookmarkAlarmList", json);
-        editor.commit();
+        editor.apply();
+    }
+
+    // 북마크리스트 리사이클러 뷰 설정
+    private void set_bookmarkList_recyclerView(){
+        recyclerView = viewGroup.findViewById(R.id.bookmark_itemList);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
+        recyclerView.setLayoutManager(linearLayoutManager);
     }
 
     // 북마크 폴더 스피너 설정
     private void set_bookmark_spinner() {
-
-
         spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, bookmarkFolderList);
         bookmark_spinner = (Spinner) viewGroup.findViewById(R.id.bookmark_folder);
+        iCurrentSelection = bookmark_spinner.getSelectedItemPosition();
         bookmark_spinner.setAdapter(spinnerAdapter);
         bookmark_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                // 현재 로그인된 user_id 와 스피너에 선택된 folder_name이 일치하는 북마크만 가져옴
-                set_bookmarkList(spinnerAdapter.getItem(i).toString());
+                // 중복 실행 방지
+                if(iCurrentSelection != i ) {
+                    // 현재 로그인된 user_id 와 스피너에 선택된 folder_name이 일치하는 북마크만 가져옴
+                    bookmarkList = new ArrayList<>();
+                    Log.d(TAG, "request: request");
+                    set_bookmarkList(spinnerAdapter.getItem(i).toString());
+                }
+                iCurrentSelection = i;
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
@@ -168,10 +179,6 @@ public class bookmark_item_list_fragment extends Fragment {
     // spinner에 선택된 folder_name과 일치하는 북마크 리스트 조회
     private void set_bookmarkList(String folder_name) {
         try {
-            bookmarkList = new ArrayList<>();
-            recyclerView = viewGroup.findViewById(R.id.bookmark_itemList);
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
-            recyclerView.setLayoutManager(linearLayoutManager);
             adapter = new bookmark_item_list_adapter(getContext(), getActivity(), bookmarkList);
             adapter.setOnItemClickListener(new bookmark_item_list_adapter.OnItemClickListener() {
                 @Override
@@ -182,8 +189,8 @@ public class bookmark_item_list_fragment extends Fragment {
                             .setPositiveButton("해제", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    // 북마크 제거
-                                    remove_bookmark(bookmark_id);
+                                    // 단일 북마크 제거
+                                    request_remove_bookmark_to_server(bookmark_id);
                                 }
                             })
                             .setNegativeButton("취소", null);
@@ -195,12 +202,13 @@ public class bookmark_item_list_fragment extends Fragment {
             recyclerView.setAdapter(adapter);
             // 북마크 아이템 리스트 설정
             request_bookmarkList_by_folder_name(folder_name);
+
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
     }
 
-    // 북마크 폴더 리스트 데이터셋
+    // SharedPreference의 bookmarkFolderList 데이터를 가져온다
     private void get_bookmarkFolderList() {
         if (userFile.getString("bookmarkFolderList", null) != null) {
             String bookmarkFolder = userFile.getString("bookmarkFolderList", null);
@@ -224,7 +232,7 @@ public class bookmark_item_list_fragment extends Fragment {
         // 스트링 객체로 변환된 데이터를 bookmarkFolderList에 저장
         SharedPreferences.Editor editor = userFile.edit();
         editor.putString("bookmarkFolderList", json);
-        editor.commit();
+        editor.apply();
     }
 
     // 폴더 리스트 데이터 가져오기
@@ -252,64 +260,59 @@ public class bookmark_item_list_fragment extends Fragment {
         plus_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                folder_add();  // 북마크 폴더 추가 기능
+                LayoutInflater inflater = getLayoutInflater();
+
+                final View dialogView = inflater.inflate(R.layout.bookmark_plus_dialog, null);
+                bookmark_folder_name = dialogView.findViewById(R.id.bookmark_folder_name);
+                bookmark_folder_name.setOnKeyListener(new View.OnKeyListener() {
+                    @Override
+                    public boolean onKey(View v, int keyCode, KeyEvent event) {
+                        if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                            hideKeyboard();
+                        }
+                        return false;
+                    }
+                });
+
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setView(dialogView);
+                builder.setTitle("북마크 폴더 추가");
+                builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String folder_name = bookmark_folder_name.getText().toString();
+
+                        if (folder_name.equals("")) {
+                            Toast.makeText(getContext(), "폴더명을 입력해주세요", Toast.LENGTH_LONG).show();
+                        } else if (!folder_name.equals("")) {
+                            char except_enter[] = folder_name.toCharArray();
+                            if (except_enter[except_enter.length - 1] == '\n') {
+
+                                char result_char[] = new char[except_enter.length - 1];
+                                System.arraycopy(except_enter, 0, result_char, 0, except_enter.length - 1);
+                                folder_name = String.valueOf(result_char);
+
+                            } // 한글 입력 후 엔터시 개행문자 발생하는 오류 처리
+                            bookmarkFolderList.add(folder_name); // 북마크 폴더 추가
+                            spinnerAdapter.notifyDataSetChanged(); // 어댑터 갱신
+                            //updateBookmarkFolderList(getContext(), SETTINGS_BOOKMARK_JSON, bookmarkFolderList);
+                            bookmark_spinner.setSelection(bookmarkFolderList.size() - 1); // 새로운 북마크 생성 시 생성된 북마크 페이지
+                            save_bookmarkFolderList();
+                        }
+
+
+                    }
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE); // 다이얼로그 생성시 EditText 활성화 1
+                dialog.show();
+                if (bookmark_folder_name.requestFocus())
+                    ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(bookmark_folder_name, 0); // 다이얼로그 생성시 EditText 활성화 2
+
             }
         }); // 플러스 버튼
-    }
-
-    // 북마크 폴더 추가 기능
-    private void folder_add() {
-        LayoutInflater inflater = getLayoutInflater();
-
-        final View dialogView = inflater.inflate(R.layout.bookmark_plus_dialog, null);
-        bookmark_folder_name = dialogView.findViewById(R.id.bookmark_folder_name);
-        bookmark_folder_name.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                    hideKeyboard();
-                }
-                return false;
-            }
-        });
-
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setView(dialogView);
-        builder.setTitle("북마크 폴더 추가");
-        builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String folder_name = bookmark_folder_name.getText().toString();
-
-                if (folder_name.equals("")) {
-                    Toast.makeText(getContext(), "폴더명을 입력해주세요", Toast.LENGTH_LONG).show();
-                } else if (!folder_name.equals("")) {
-                    char except_enter[] = folder_name.toCharArray();
-                    if (except_enter[except_enter.length - 1] == '\n') {
-
-                        char result_char[] = new char[except_enter.length - 1];
-                        System.arraycopy(except_enter, 0, result_char, 0, except_enter.length - 1);
-                        folder_name = String.valueOf(result_char);
-
-                    } // 한글 입력 후 엔터시 개행문자 발생하는 오류 처리
-                    bookmarkFolderList.add(folder_name); // 북마크 폴더 추가
-                    spinnerAdapter.notifyDataSetChanged(); // 어댑터 갱신
-                    //updateBookmarkFolderList(getContext(), SETTINGS_BOOKMARK_JSON, bookmarkFolderList);
-                    bookmark_spinner.setSelection(bookmarkFolderList.size() - 1); // 새로운 북마크 생성 시 생성된 북마크 페이지
-                    save_bookmarkFolderList();
-                }
-
-
-            }
-        });
-
-        AlertDialog dialog = builder.create();
-        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE); // 다이얼로그 생성시 EditText 활성화 1
-        dialog.show();
-        if (bookmark_folder_name.requestFocus())
-            ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(bookmark_folder_name, 0); // 다이얼로그 생성시 EditText 활성화 2
-
     }
 
     // 북마크 폴더 삭제 버튼 설정
@@ -318,29 +321,34 @@ public class bookmark_item_list_fragment extends Fragment {
         trashcan_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle("북마크 폴더 삭제")
-                        .setMessage("현재 북마크 폴더를 삭제 하시겠습니까?")
-                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                /*updateBookmarkFolderList(getContext(), SETTINGS_BOOKMARK_JSON, bookmarkFolderList);*/
-                                try {
-                                    remove_bookmarkFolder(bookmark_spinner.getSelectedItem().toString());
-                                } catch (UnsupportedEncodingException e) {
-                                    e.printStackTrace();
+                if(!spinnerAdapter.isEmpty()){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle("북마크 폴더 삭제")
+                            .setMessage("현재 북마크 폴더를 삭제 하시겠습니까?")
+                            .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    /*updateBookmarkFolderList(getContext(), SETTINGS_BOOKMARK_JSON, bookmarkFolderList);*/
+                                    try {
+                                        if (!spinnerAdapter.isEmpty())
+                                            remove_bookmarkFolder(bookmark_spinner.getSelectedItem().toString());
+                                    } catch (UnsupportedEncodingException e) {
+                                        e.printStackTrace();
+                                    }
+
                                 }
+                            })
+                            .setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
 
-                            }
-                        })
-                        .setNegativeButton("취소", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                            }
-                        });
-                builder.create();
-                builder.show();
+                                }
+                            });
+                    builder.create();
+                    builder.show();
+                }else{
+                    Toast.makeText(getContext(), "삭제할 폴더가 없습니다", Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
@@ -362,22 +370,29 @@ public class bookmark_item_list_fragment extends Fragment {
         editor.apply();
     }*/
 
+    // 북
     private void remove_bookmarkFolder(String folder_name) throws UnsupportedEncodingException {
         request_remove_bookmarkFolder_to_server_by_folder_name(folder_name);
-        if(bookmarkFolderList.size()==1){
-            bookmarkFolderList = new ArrayList<>();
-        }
-        else{
+
+        // 북마크 폴더가 1개일 경우
+        if (bookmarkFolderList.size() == 1) {
+            bookmarkFolderList.clear();
+            spinnerAdapter.notifyDataSetChanged();
+            bookmarkList.clear();
+            adapter.notifyDataSetChanged();
+        } else {
             if (bookmark_spinner.getSelectedItemPosition() == 0) {
                 spinnerAdapter.remove(bookmark_spinner.getSelectedItem());
-                bookmark_spinner.setSelection(bookmarkFolderList.size() - 1);
+                spinnerAdapter.notifyDataSetChanged();
+                bookmarkList.clear();
                 set_bookmarkList(bookmark_spinner.getSelectedItem().toString());
             } else {
                 spinnerAdapter.remove(bookmark_spinner.getSelectedItem());
+                spinnerAdapter.notifyDataSetChanged();
                 bookmark_spinner.setSelection(bookmark_spinner.getSelectedItemPosition() - 1);
             }
         }
-        spinnerAdapter.notifyDataSetChanged();
+
     }
 
     // 서버로 folder_name과 일치하는 DB 북마크 삭제 요청
@@ -434,6 +449,7 @@ public class bookmark_item_list_fragment extends Fragment {
                 break;
             }
         }
+        // bookmarkFolder 데이터 삭제 후 bookmarkFolderList 저장
         save_bookmarkFolderList();
     }
 
@@ -446,27 +462,20 @@ public class bookmark_item_list_fragment extends Fragment {
                 bookmarkAlarmList.remove(i);
             }
         }
-
-        // List<Bookmark> 클래스 객체를 String 객체로 변환
-        Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {
-        }.getType();
-        String json = new GsonBuilder().create().toJson(bookmarkAlarmList, listType);
-
-        // 스트링 객체로 변환된 데이터를 myBookmarks에 저장
-        SharedPreferences.Editor editor = userFile.edit();
-        editor.putString("bookmarkAlarmList", json);
-        editor.commit();
+        // bookmarkAlarm 데이터 삭제 후 bookmarkAlarmList 저장
+        save_bookmarkAlarmList();
     }
 
-    // 북마크 아이템 리스트 설정
+    // 서버로 folder_name과 일치하는 DB 북마크 조회 요청
     private void request_bookmarkList_by_folder_name(final String folder_name) throws UnsupportedEncodingException {
+
         String url = "http://10.0.2.2:3000/api/bookmarks?foldername=" + URLEncoder.encode(folder_name, "UTF-8"); // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                for (int i = 0; i < bookmarkAlarmList.size(); i++) {
+                /*for (int i = 0; i < bookmarkAlarmList.size(); i++) {
                     Log.d(TAG, "get_bookmarkAlarmList: " + bookmarkAlarmList.get(i));
-                }
+                }*/
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(response);
@@ -481,11 +490,7 @@ public class bookmark_item_list_fragment extends Fragment {
                         for (int i = 0; i < data.length(); i++) {
                             BookmarkAlarm bookmarkAlarm = null;
                             String id = data.getJSONObject(i).getString("id");
-                            for (int j = 0; j < bookmarkAlarmList.size(); j++) {
-                                if (bookmarkAlarmList.get(j).getBookmark_id().equals(id)) {
-                                    bookmarkAlarm = bookmarkAlarmList.get(i);
-                                }
-                            }
+
                             String folder_name = data.getJSONObject(i).getString("folder_name");
                             String item_title = data.getJSONObject(i).getString("item_title");
                             String item_id = data.getJSONObject(i).getString("item_id");
@@ -494,9 +499,15 @@ public class bookmark_item_list_fragment extends Fragment {
                             String item_lprice = data.getJSONObject(i).getString("item_lprice");
                             String item_link = data.getJSONObject(i).getString("item_link");
                             String item_image = data.getJSONObject(i).getString("item_image");
-                            Bookmark bookmark_client = new Bookmark(id, folder_name, item_title, item_id, item_type, item_selling, item_lprice, item_link, item_image, bookmarkAlarm);
-                            bookmarkList.add(bookmark_client);
-                            adapter.notifyDataSetChanged();
+                            for (int j = 0; j < bookmarkAlarmList.size(); j++) {
+                                if (bookmarkAlarmList.get(j).getBookmark_id().equals(id)) {
+                                    bookmarkAlarm = bookmarkAlarmList.get(j);
+                                    Bookmark bookmark_client = new Bookmark(id, folder_name, item_title, item_id, item_type, item_selling, item_lprice, item_link, item_image, bookmarkAlarm);
+                                    bookmarkList.add(bookmark_client);
+                                    adapter.notifyDataSetChanged();
+                                    break;
+                                }
+                            }
 
                         }
                     } else if (!success)
@@ -526,20 +537,8 @@ public class bookmark_item_list_fragment extends Fragment {
         requestQueue.add(stringRequest);
     }
 
-    // 북마크 삭제
-    private void remove_bookmark(String bookmark_id) {
-
-        // 서버로 DB 북마크 삭제 요청
-        request_remove_bookmark_to_server(bookmark_id);
-
-        //bookmarkAlarmList에서 bookmark_id와 일치하는 북마크 삭제
-        remove_bookmark_in_bookmarkAlarmList(bookmark_id);
-
-        remove_bookmark_in_bookmarkList(bookmark_id);
-    }
-
-    // 서버로 DB 북마크 삭제 요청
-    private void request_remove_bookmark_to_server(String bookmark_id) {
+    // 서버로 DB 단일 북마크 삭제 요청
+    private void request_remove_bookmark_to_server(final String bookmark_id) {
         String url = getString(R.string.bookmarksEndpoint) + bookmark_id; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.DELETE, url, new Response.Listener<String>() {
             @Override
@@ -553,6 +552,11 @@ public class bookmark_item_list_fragment extends Fragment {
 
                     if (success) {
                         // ** 북마크 삭제 성공시 ** //
+                        //bookmarkAlarmList에서 bookmark_id와 일치하는 북마크 삭제
+                        remove_bookmark_in_bookmarkAlarmList(bookmark_id);
+
+                        // bookmarkList에서 bookmark_id와 일치하는 bookmark 삭제
+                        remove_bookmark_in_bookmarkList(bookmark_id);
                         Toast.makeText(getContext(), "해당 북마크를 삭제했습니다.", Toast.LENGTH_LONG).show();
                     } else if (!success)
                         // ** 북마크 삭제 실패시 ** //
@@ -613,6 +617,7 @@ public class bookmark_item_list_fragment extends Fragment {
         editor.commit();
     }
 
+    // bookmarkList에서 bookmark_id와 일치하는 bookmark 삭제
     private void remove_bookmark_in_bookmarkList(String bookmark_id) {
         for (int i = 0; i < bookmarkList.size(); i++) {
             if (bookmarkList.get(i).getBookmark_id().equals(bookmark_id)) {
@@ -621,57 +626,6 @@ public class bookmark_item_list_fragment extends Fragment {
             }
         }
         adapter.notifyDataSetChanged();
-    }
-
-    private void preset_bookmarkList() {
-
-        // 현재 로그인된 user_id 와 스피너에 선택된 folder_name이 일치하는 북마크만 가져옴
-        mHandler.postDelayed(new Runnable() {
-            public void run() {
-                matchedBookmarkList = new ArrayList<>();
-                match_to_bookmarkFolder();
-                recyclerView = viewGroup.findViewById(R.id.bookmark_itemList);
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
-                recyclerView.setLayoutManager(linearLayoutManager);
-                Log.d(TAG, "matchedBookmarkList_size : " + matchedBookmarkList.size());
-                adapter = new bookmark_item_list_adapter(getContext(), getActivity(), matchedBookmarkList);
-                adapter.setOnItemClickListener(new bookmark_item_list_adapter.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(View view, int position, final String bookmark_id) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
-                                .setTitle("북마크 해제")
-                                .setMessage("북마크 등록을 해제 하시겠습니까?")
-                                .setPositiveButton("해제", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        // 북마크 제거
-                                        remove_bookmark(bookmark_id);
-                                    }
-                                })
-                                .setNegativeButton("취소", null);
-                        builder.create();
-                        builder.show();
-                        /*Toast.makeText(getContext(), bookmark_id + " 북마크 아이디 입니다.", Toast.LENGTH_LONG).show();*/
-                    }
-                });
-                recyclerView.setAdapter(adapter);
-            }
-        }, 500); // 0.5초후
-    }
-    // 현재 로그인된 user_id 와 스피너에 선택된 folder_name이 일치하는 북마크만 가져옴
-
-    // requestedBookmarkList로 부터 북마크 folder_name과 일치하는 북마크만 matchedBookmarkList에 저장
-    private void match_to_bookmarkFolder() {
-        String folder_name;
-        if (!spinnerAdapter.isEmpty()) {
-            folder_name = bookmark_spinner.getSelectedItem().toString(); // 현재 스피너에 선택된 folder_name
-            Log.d(TAG, "bookmarkList_size: " + requestedBookmarkList.size());
-            for (int i = 0; i < requestedBookmarkList.size(); i++) {
-                if (requestedBookmarkList.get(i).getFolder_name().equals(folder_name)) {
-                    matchedBookmarkList.add(requestedBookmarkList.get(i));
-                }
-            }
-        }
     }
 
 
