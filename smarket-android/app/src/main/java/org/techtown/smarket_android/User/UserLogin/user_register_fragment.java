@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.Spanned;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,16 +22,27 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.android.volley.NetworkResponse;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.smarket_android.R;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
+
+import static com.android.volley.VolleyLog.TAG;
 
 
 public class user_register_fragment extends Fragment {
@@ -40,15 +52,15 @@ public class user_register_fragment extends Fragment {
         return new user_register_fragment();
     }
 
-    EditText register_id;
-    EditText register_pw;
-    EditText register_name;
-    EditText register_nickname;
-    Spinner register_phoneNumber_spinner;
-    ArrayList<String> phoneNumber_list;
-    ArrayAdapter<String> phoneNumberAdapter;
-    EditText register_phoneNumber1;
-    EditText register_phoneNumber2;
+    private EditText register_id;
+    private EditText register_pw;
+    private EditText register_name;
+    private EditText register_nickname;
+    private Spinner register_phoneNumber_spinner;
+    private ArrayList<String> phoneNumber_list;
+    private ArrayAdapter<String> phoneNumberAdapter;
+    private EditText register_phoneNumber1;
+    private EditText register_phoneNumber2;
 
     private AlertDialog dialog;
     private boolean validate_id = false;
@@ -70,31 +82,29 @@ public class user_register_fragment extends Fragment {
         register_name = viewGroup.findViewById(R.id.register_name_et); // 사용자 이름
         register_name.setFilters(new InputFilter[] {filterKor});
 
-
-
-        validate_id_btn = viewGroup.findViewById(R.id.validate_id_btn);
-        validate_id_btn.setOnClickListener(new View.OnClickListener() {
+        register_id.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onClick(View v) {
-                validate_id();
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(!hasFocus) {
+                    validate_id();
+                }else{
+                    return;
+                }
             }
         });
 
-        validate_nickname_btn = viewGroup.findViewById(R.id.validate_nick_btn);
-        validate_nickname_btn.setOnClickListener(new View.OnClickListener() {
+        register_nickname.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onClick(View v) {
-                validate_nick();
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(!hasFocus)
+                    validate_nick();
+                else
+                    return;
             }
         });
-
         phoneNumber_list = new ArrayList<>();
         phoneNumber_list.add("010");
         phoneNumber_list.add("011");
-        phoneNumber_list.add("012");
-        phoneNumber_list.add("013");
-        phoneNumber_list.add("014");
-        phoneNumber_list.add("015");
 
         phoneNumberAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, phoneNumber_list);
 
@@ -114,21 +124,9 @@ public class user_register_fragment extends Fragment {
     }
 
     private void validate_id() {
-        String url = getString(R.string.authEndpoint) + "/checknickname";
-        String key = "nickname";
+        String url = getString(R.string.authEndpoint) + "/checkid";
+        String key = "user_id";
         String user_id = register_id.getText().toString();
-
-        if (validate_id) {
-            return;
-        }
-        if (user_id.equals("")) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            dialog = builder.setMessage("아이디는 빈 칸 일 수 없습니다.")
-                    .setPositiveButton("확인", null)
-                    .create();
-            dialog.show();
-            return;
-        }
 
         Response.Listener<String> responseListener = new Response.Listener<String>() {
             @Override
@@ -164,8 +162,35 @@ public class user_register_fragment extends Fragment {
         user_validate validateRequest = new user_validate(url, key, user_id, responseListener, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), "errorListener", Toast.LENGTH_LONG).show();
+                NetworkResponse response = error.networkResponse;
+                if(error instanceof ServerError && response != null){
+                    try{
+                        String res = new String(response.data, HttpHeaderParser.parseCharset(response.headers, "utf-8"));
 
+                        JsonParser parser = new JsonParser();
+                        JsonElement element = parser.parse(res);
+                        JsonObject data = null;
+                        String comment = null;
+
+                        // ID는 6자리 이상입니다.
+                        if(!element.getAsJsonObject().get("data").isJsonNull()){
+                            data = element.getAsJsonObject().get("data").getAsJsonObject();
+                            JsonArray errors = data.getAsJsonArray("errors");
+                            JsonObject error_object = errors.get(0).getAsJsonObject();
+                            String msg = error_object.get("msg").getAsString();
+                            Log.d(TAG, "onErrorResponse: " + msg);
+                        }// 이미 존재하는 ID 입니다.
+                        else {
+                            comment = element.getAsJsonObject().get("comment").getAsString();
+                            Log.d(TAG, "onErrorResponse: "+ comment);
+                        }
+
+
+
+                    }catch (UnsupportedEncodingException e){
+                        e.printStackTrace();
+                    }
+                }
             }
         });
         RequestQueue queue = Volley.newRequestQueue(getContext());
@@ -177,17 +202,6 @@ public class user_register_fragment extends Fragment {
         String key = "nickname";
         String user_nickname = register_nickname.getText().toString();
 
-        if (validate_nickname) {
-            return;
-        }
-        if (user_nickname.equals("")) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            dialog = builder.setMessage("닉네임은 빈 칸 일 수 없습니다.")
-                    .setPositiveButton("확인", null)
-                    .create();
-            dialog.show();
-            return;
-        }
         Response.Listener<String> responseListener = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {

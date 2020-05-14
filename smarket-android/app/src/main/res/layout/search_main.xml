@@ -33,7 +33,9 @@
         android:background="@drawable/border"
         android:hint="제품을 검색하세요"
         android:paddingLeft="24dp"
-        android:paddingRight="24dp"/>
+        android:paddingRight="24dp"
+        android:imeOptions="actionSearch"
+        android:inputType="text"/>
 
 
 

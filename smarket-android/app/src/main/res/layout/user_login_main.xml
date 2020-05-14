@@ -33,7 +33,7 @@
         android:layout_marginRight="50dp"
         android:ems="10"
         android:hint="비밀번호"
-        android:inputType="textPersonName" />
+        android:inputType="textPassword" />
 
     <Button
         android:id="@+id/login_btn"
