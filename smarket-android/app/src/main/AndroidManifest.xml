@@ -30,7 +30,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".User.UserLogin.user_login_fragment" android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
-        <activity android:name=".MainNavigation.MainNavigationActivity"></activity>
+        <activity android:name=".MainNavigation.MainNavigationActivity"
+            android:windowSoftInputMode="adjustPan"></activity>
+        <activity android:name=".Hotdeal.hotdeal_webView"/>
 
         <service
             android:name=".AppOnpage.MyFirebaseMessagingService"

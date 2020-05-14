@@ -2,6 +2,7 @@ package org.techtown.smarket_android.Hotdeal;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,14 @@ public class hotdealListAdapter extends RecyclerView.Adapter<hotdealListAdapter.
         mContext = context;
         hotdealList = list;
     }
+
+    public interface OnItemLinkSetListener {
+
+        void OnItemLinkSet(String url);
+
+    }
+
+
     @NonNull
     @Override
     public hotdealListAdapter.hdViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -66,17 +75,32 @@ public class hotdealListAdapter extends RecyclerView.Adapter<hotdealListAdapter.
             views_textView = itemView.findViewById(R.id.views_textView);
             comment_textView = itemView.findViewById(R.id.comment_textView);
             posted_textView = itemView.findViewById(R.id.posted_textView);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = getAdapterPosition();
+                    if(pos != RecyclerView.NO_POSITION){
+                        String url = hotdealList.get(pos).getUrl();
+                        Intent intent = new Intent(mActivity, hotdeal_webView.class);
+                        intent.putExtra("url", url);
+                        mContext.startActivity(intent);
+                    }
+                }
+            });
         }
 
         public void onBind(Hotdeal hotdeal){
             category_textView.setText(hotdeal.getCategory());
             title_textView.setText(hotdeal.getTitle());
-            views_textView.setText("00");
+            views_textView.setText(hotdeal.getHit());
             comment_textView.setText(hotdeal.getReplyCount());
             posted_textView.setText(hotdeal.getTime());
             id = hotdeal.getId();
             url = hotdeal.getUrl();
         }
     }
+
+
 
 }

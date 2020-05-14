@@ -2,20 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/smarketyello"
-    android:gravity="center_vertical"
     android:orientation="vertical">
 
-    <TextView
+    <ImageView
         android:id="@+id/login_smarket_logo"
-        android:layout_width="match_parent"
+        android:layout_marginTop="70dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:gravity="center"
-        android:text="스마켓"
-        android:textStyle="bold"
-        android:textColor="@color/colorBlack"
-        android:textSize="60dp" />
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp"
+        android:src="@drawable/smarket_title" />
 
     <EditText
         android:id="@+id/login_id_et"
@@ -37,8 +33,7 @@
         android:layout_marginRight="50dp"
         android:ems="10"
         android:hint="비밀번호"
-        android:inputType="textPersonName"
-        android:password="true" />
+        android:inputType="textPersonName" />
 
     <Button
         android:id="@+id/login_btn"
@@ -48,7 +43,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginRight="50dp"
         android:background="@drawable/button_smarket"
-        android:textColor="@color/colorWhite"
+        android:textColor="@color/colorBlack"
         android:text="로그인" />
 
     <TextView

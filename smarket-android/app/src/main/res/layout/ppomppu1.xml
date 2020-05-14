@@ -8,10 +8,12 @@
 
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/hotdeal_item_list"
+        android:id="@+id/ppomppu1_item_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical"
         android:background="@color/color_lite_gray" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,6 +5,8 @@
     <solid
         android:color="@color/colorWhite"/>
 
+    <stroke
+        android:color="@color/graphColor"/>
     <size
         android:width="30dp"
         android:height="30dp" />
