@@ -119,6 +119,7 @@ public class bookmark_item_list_fragment extends Fragment {
 
     // SharedPreference의 bookmarkAlarmList 데이터를 가져온다
     private void get_bookmarkAlarmList() {
+        // 저장된 bookmarkAlarmList가 있을 경우
         if (userFile.getString("bookmarkAlarmList", null) != null) {
             String bookmarkAlarm = userFile.getString("bookmarkAlarmList", null);
             Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {
@@ -126,7 +127,8 @@ public class bookmark_item_list_fragment extends Fragment {
             bookmarkAlarmList = new GsonBuilder().create().fromJson(bookmarkAlarm, listType);
 
             Log.d("Get bookmarkAlarmList", "bookmarkAlarmList: Complete Getting bookmarkAlarmList");
-        } else {
+        }// 저장된 bookmarkAlarmList가 없을 경우
+        else {
             bookmarkAlarmList = new ArrayList<>();
             save_bookmarkAlarmList();
         }

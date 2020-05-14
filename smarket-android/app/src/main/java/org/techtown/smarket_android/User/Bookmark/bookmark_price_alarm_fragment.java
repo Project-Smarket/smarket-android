@@ -98,10 +98,10 @@ public class bookmark_price_alarm_fragment extends Fragment {
         timeSet_view = viewGroup.findViewById(R.id.timeSet_view);
         timeSet_tv = viewGroup.findViewById(R.id.timeSet_tv2);
         switch (this_alarm_time){
-            case 0 : timeSet_tv.setText(1+"시간 마다");break;
-            case 1 : timeSet_tv.setText(6+"시간 마다");break;
-            case 2 : timeSet_tv.setText(12+"시간 마다");break;
-            case 3 : timeSet_tv.setText(24+"시간 마다");break;
+            case 0 : timeSet_tv.setText(12+"시");break;
+            case 1 : timeSet_tv.setText(15+"시");break;
+            case 2 : timeSet_tv.setText(18+"시");break;
+            case 3 : timeSet_tv.setText(21+"시");break;
         }
 
 

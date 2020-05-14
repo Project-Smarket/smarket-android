@@ -48,6 +48,8 @@ public class recent_fragment extends Fragment {
     private Button remove_bookmarkAlarmList;
     private TextView bookmarkAlarmList_id;
     private TextView bookmarkAlarmList_foldername;
+    private TextView bookmarkAlarmList_userId;
+    private TextView bookmarkAlarmList_price;
 
     private Button remove_bookmarkList;
     private TextView bookmarkList_foldername;
@@ -63,8 +65,10 @@ public class recent_fragment extends Fragment {
         get_userFile();
         viewGroup = (ViewGroup) inflater.inflate(R.layout.recent_main, container, false);
         remove_bookmarkAlarmList = viewGroup.findViewById(R.id.remove_bookmarkalarm);
-        bookmarkAlarmList_id = viewGroup.findViewById(R.id.check_bookmarkalarm);
-        bookmarkAlarmList_foldername = viewGroup.findViewById(R.id.check_bookmarkalarm2);
+        bookmarkAlarmList_userId = viewGroup.findViewById(R.id.check_bookmarkalarm);
+        bookmarkAlarmList_id = viewGroup.findViewById(R.id.check_bookmarkalarm2);
+        bookmarkAlarmList_foldername = viewGroup.findViewById(R.id.check_bookmarkalarm3);
+        bookmarkAlarmList_price = viewGroup.findViewById(R.id.check_bookmarkalarm4);
         bookmarkList_foldername = viewGroup.findViewById(R.id.check_bookmarklist);
         remove_bookmarkList = viewGroup.findViewById(R.id.remove_bookmarkList);
 
@@ -117,21 +121,35 @@ public class recent_fragment extends Fragment {
             bookmarks = null;
         }
 
-        String setT = "";
-        String setA = "";
+        String set1 = "";
+        String set2 = "";
+        String set3 = "";
+        String set4 = "";
         if (bookmarks == null) {
             bookmarkAlarmList_id.setText("북마크가 없습니다");
             bookmarkAlarmList_foldername.setText("북마크가 없습니다");
+            bookmarkAlarmList_userId.setText("북마크가 없습니다");
+            bookmarkAlarmList_price.setText("북마크가 없습니다");
         } else {
             for (int i = 0; i < bookmarks.size(); i++) {
-                setT += bookmarks.get(i).getBookmark_id() + "\n";
+                set1 += bookmarks.get(i).getBookmark_id() + "\n";
             }
-            bookmarkAlarmList_id.setText(setT);
+            bookmarkAlarmList_id.setText(set1);
 
             for (int i = 0; i < bookmarks.size(); i++) {
-                setA += bookmarks.get(i).getFolder_name() + "\n";
+                set2 += bookmarks.get(i).getFolder_name() + "\n";
             }
-            bookmarkAlarmList_foldername.setText(setA);
+            bookmarkAlarmList_foldername.setText(set2);
+
+            for (int i = 0; i < bookmarks.size(); i++) {
+                set3 += bookmarks.get(i).getUser_id() + "\n";
+            }
+            bookmarkAlarmList_userId.setText(set3);
+
+            for (int i = 0; i < bookmarks.size(); i++) {
+                set4 += bookmarks.get(i).getBookmark_price() + "\n";
+            }
+            bookmarkAlarmList_price.setText(set4);
 
         }
     }

@@ -437,13 +437,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     boolean success = jsonObject.getBoolean("success");
-                    JSONObject data = jsonObject.getJSONObject("data");
-                    String id = data.getString("id");
+
                     if (success) {
                         // ** 북마크 등록 성공 시 ** //
                         Toast.makeText(mContext, folder_name+" 폴더에 북마크 등록 되었습니다.", Toast.LENGTH_LONG).show();
                         // 최저가 알림 설정
-                        set_lpriceAlarm(id);
+                        String item_id = holder.item_id;
+                        String item_price = holder.item_price.getText().toString();
+                        set_lpriceAlarm(item_id, item_price);
                     } else if (!success)
                         // ** 북마크 등록 실패 시 ** //
                         Toast.makeText(mContext, jsonObject.toString(), Toast.LENGTH_LONG).show();
@@ -487,7 +488,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     }
 
     // 북마크 등록 시 클라이언트에 북마크 저장
-    private void set_lpriceAlarm(final String id) {
+    private void set_lpriceAlarm(final String item_id, final String item_price) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
                 .setTitle("최저가 알람 등록")
@@ -496,14 +497,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         alarm_check = true;
-                        set_bookmarkAlarmList(id);
+                        set_bookmarkAlarmList(item_id, item_price);
                     }
                 })
                 .setNegativeButton("아니오", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         alarm_check = false;
-                        set_bookmarkAlarmList(id);
+                        set_bookmarkAlarmList(item_id, item_price);
 
                     }
                 })
@@ -513,8 +514,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
     }
 
-    private void set_bookmarkAlarmList(String id){
-        BookmarkAlarm bookmarkAlarm = new BookmarkAlarm(folder_name, id, alarm_time, alarm_check);
+    private void set_bookmarkAlarmList(String item_id, String item_price){
+        BookmarkAlarm bookmarkAlarm = new BookmarkAlarm(user_id, folder_name, item_id, item_price, alarm_time, alarm_check);
         bookmarkAlarmList.add(bookmarkAlarm);
 
         // List<BookmarkAlarm> 클래스 객체를 String 객체로 변환
