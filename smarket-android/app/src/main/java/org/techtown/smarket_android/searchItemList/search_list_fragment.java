@@ -165,7 +165,6 @@ public class search_list_fragment extends Fragment {
                         SearchedItem item = new SearchedItem(item_title, item_id, item_type, item_lprice, item_image, item_mallName);
 
                         itemList.add(item);
-                        count++;
                     }
                     adapter.notifyDataSetChanged();
                     isUpdate = false;
