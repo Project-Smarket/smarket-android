@@ -106,18 +106,16 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
 
     @Override
     public void onBindViewHolder(@NonNull final bookmark_item_list_adapter.bmViewHolder holder, final int position) {
-        // Item을 하나, 하나 보여주는(bind 되는) 함수입니다.
+        // bookmarkList의 item_selling값 검사
+        // item_selling == 1
         if (bookmarkList.get(position).getBookmark_selling()){
             holder.onBind(bookmarkList.get(position));
             holder.setPriceAlarm(holder);
         }
+        // item_selling == 0
         else{
             holder.onSoldOut(bookmarkList.get(position));
         }
-
-
-        // 최저가 알람 버튼 색상 설정
-
 
         // 최저가 알람 버튼 기능 설정
         holder.cash_btn.setOnClickListener(new View.OnClickListener() {
@@ -207,6 +205,7 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
             bookmark_lprice = bookmark.getBookmark_lprice();
             bookmark_price.setText(bookmark.getBookmark_lprice());
             bookmark_image_url = bookmark.getBookmark_image_url();
+            //bookmark_image.setBackgroundResource(R.drawable.smarket_cat);
             set_bookmark_image();
 
             bookmark_link = bookmark.getBookmark_link();
