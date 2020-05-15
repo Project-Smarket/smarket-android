@@ -539,7 +539,7 @@ public class bookmark_item_list_fragment extends Fragment {
 
     // 서버로 DB 단일 북마크 삭제 요청
     private void request_remove_bookmark_to_server(final String bookmark_id) {
-        String url = getString(R.string.bookmarksEndpoint) + bookmark_id; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        String url = getString(R.string.bookmarksEndpoint) + "/"+bookmark_id; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.DELETE, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
