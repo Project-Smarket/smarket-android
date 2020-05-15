@@ -42,6 +42,8 @@ public class hotdeal_webView extends AppCompatActivity {
             mUrl = url;
         else if(url.contains("https://www.fmkorea.com"))
             mUrl = url;
+        else if(url.contains("https://www.clien.net"))
+            mUrl = url;
         else if(url.contains("http://www.coolenjoy.net"))
             mUrl = url;
         else if(url.contains("https://post.malltail.com"))

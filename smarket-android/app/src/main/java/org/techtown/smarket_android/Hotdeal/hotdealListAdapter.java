@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -17,7 +18,10 @@ import org.techtown.smarket_android.Class.Hotdeal;
 import org.techtown.smarket_android.R;
 import org.w3c.dom.Text;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class hotdealListAdapter extends RecyclerView.Adapter<hotdealListAdapter.hdViewHolder>{
 
@@ -94,6 +98,18 @@ public class hotdealListAdapter extends RecyclerView.Adapter<hotdealListAdapter.
             title_textView.setText(hotdeal.getTitle());
             views_textView.setText(hotdeal.getHit());
             comment_textView.setText(hotdeal.getReplyCount());
+
+            /*String format_hour = new String("HH");
+            SimpleDateFormat simpleDateFormat_hour = new SimpleDateFormat(format_hour, Locale.KOREA);
+            String hour = simpleDateFormat_hour.format(new Date());
+            String format_minute = new String("mm");
+            SimpleDateFormat simpleDateFormat_minute = new SimpleDateFormat(format_minute, Locale.KOREA);
+            String minute = simpleDateFormat_minute.format(new Date());
+
+            String time = hotdeal.getTime();
+            if(time.contains(":")){
+
+            }*/
             posted_textView.setText(hotdeal.getTime());
             url = hotdeal.getUrl();
         }
