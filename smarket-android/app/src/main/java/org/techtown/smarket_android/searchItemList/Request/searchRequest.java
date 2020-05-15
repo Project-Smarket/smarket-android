@@ -20,8 +20,9 @@ public class searchRequest extends StringRequest {
     private Response.Listener<String> responseListener;
     private Response.ErrorListener errorListener;
 
-    public searchRequest(String searchItemName, Response.Listener<String> responseListener, Response.ErrorListener errorListener) throws UnsupportedEncodingException {
-        super(Method.GET, urlRouter+URLEncoder.encode(searchItemName, "UTF-8"), responseListener, errorListener);
+    public searchRequest(int start, int display, String searchItemName, Response.Listener<String> responseListener, Response.ErrorListener errorListener) throws UnsupportedEncodingException {
+        super(Method.GET, urlRouter+URLEncoder.encode(searchItemName, "UTF-8") + "&start=" + start + "&display=" + display
+                , responseListener, errorListener);
         this.responseListener = responseListener;
         this.errorListener = errorListener;
     }

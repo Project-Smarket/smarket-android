@@ -157,7 +157,7 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
         private String bookmark_link;
         private String bookmark_image_url;
         private ImageView bookmark_image;
-        private String bookmark_lprice;
+        private int bookmark_lprice;
         private TextView bookmark_price;
         private BookmarkAlarm bookmark_alarm;
 
@@ -202,7 +202,7 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
             bookmark_type = bookmark.getBookmark_type();
             bookmark_selling = bookmark.getBookmark_selling();
             bookmark_image_url = bookmark.getBookmark_image_url();
-            bookmark_lprice = bookmark.getBookmark_lprice();
+            bookmark_lprice = Integer.parseInt(bookmark.getBookmark_lprice());
             String price = String.format("%,d", bookmark_lprice);
             bookmark_price.setText(price+"원");
             bookmark_image_url = bookmark.getBookmark_image_url();
