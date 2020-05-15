@@ -203,7 +203,8 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
             bookmark_selling = bookmark.getBookmark_selling();
             bookmark_image_url = bookmark.getBookmark_image_url();
             bookmark_lprice = bookmark.getBookmark_lprice();
-            bookmark_price.setText(bookmark.getBookmark_lprice());
+            String price = String.format("%,d", bookmark_lprice);
+            bookmark_price.setText(price+"원");
             bookmark_image_url = bookmark.getBookmark_image_url();
             //bookmark_image.setBackgroundResource(R.drawable.smarket_cat);
             set_bookmark_image();
@@ -221,8 +222,8 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
             bookmark_selling = bookmark.getBookmark_selling();
             bookmark_image_url = bookmark.getBookmark_image_url();
             bookmark_price.setText("판매종료");
-            bookmark_image.setBackgroundResource(R.drawable.soldout);
-
+            //bookmark_image.setBackgroundResource(R.drawable.soldout);
+            set_bookmark_image();
             cash_btn.setVisibility(View.GONE);
 
         }

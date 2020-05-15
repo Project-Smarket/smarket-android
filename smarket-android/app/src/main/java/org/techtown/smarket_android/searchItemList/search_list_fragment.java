@@ -107,6 +107,14 @@ public class search_list_fragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
         adapter = new RecyclerAdapter(getContext(), getActivity(), itemList);
         recyclerView.setAdapter(adapter);
+
+        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                Toast.makeText(getContext(), "loading", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
 

@@ -338,7 +338,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             item_title.setText(data.getItem_title());
             item_id = data.getItem_id();
             item_type = data.getItem_type();
-            item_price.setText(data.getItem_price());
+            item_price.setText(data.getItem_price()+"원");
             item_image_url = data.getItem_image();
             item_mall_url.setText(data.getItem_mall());
 
