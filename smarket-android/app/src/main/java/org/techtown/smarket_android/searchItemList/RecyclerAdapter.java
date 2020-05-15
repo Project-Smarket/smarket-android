@@ -2,6 +2,7 @@ package org.techtown.smarket_android.searchItemList;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -24,17 +25,25 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
@@ -45,9 +54,11 @@ import org.techtown.smarket_android.Class.SearchedItem;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.User.Bookmark.bookmark_dialog;
 import org.techtown.smarket_android.User.Bookmark.bookmark_recyclerview_adapater;
+import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -158,14 +169,15 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     }
 
     // SharedPreference의 bookmarkAlarmList 데이터를 가져옴
-    private void get_bookmarkAlarmList(){
+    private void get_bookmarkAlarmList() {
         // userFile에 myBookmarks 요소 유효성 검사 - 유효하지 않을 경우 myBookmarks 데이터 생성(한 번만 실행)
         if (userFile.getString("bookmarkAlarmList", null) == null) {
             bookmarkAlarmList = new ArrayList<>(); // bookmarks 리스트 생성
 
             // gson을 통해 타 클래스 객체를 스트링으로 변경
             Gson gson = new GsonBuilder().create();
-            Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {}.getType();
+            Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {
+            }.getType();
             String json = gson.toJson(bookmarkAlarmList, listType);
 
             // 스트링 객체로 변환된 데이터를 myBookmarks에 저장
@@ -175,7 +187,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             Log.d("New bookmarkAlarmList", "bookmarkAlarmList: Complete setting bookmarkAlarmList");
         } else {
             String bookmarkAlarm = userFile.getString("bookmarkAlarmList", null);
-            Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {}.getType();
+            Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {
+            }.getType();
             bookmarkAlarmList = new GsonBuilder().create().fromJson(bookmarkAlarm, listType);
             Log.d("Get bookmarkAlarmList", "bookmarkAlarmList: Complete Getting bookmarkAlarmList");
         }
@@ -190,28 +203,37 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         holder.heart_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View itemView) {
+                // 비로그인 시 로그인 창으로 이동
+                if (user_id == null && access_token == null) {
+                    goto_login();
+                } else {
+                    bookmarkRecyclerviewAdapter = new bookmark_recyclerview_adapater(bookmarkFolderList, mActivity);
+                    bookmarkDialog = new bookmark_dialog(mActivity, "북마크 폴더 리스트", bookmarkRecyclerviewAdapter, bookmarkFolderList, mClickAddListener);
 
-                bookmarkRecyclerviewAdapter = new bookmark_recyclerview_adapater(bookmarkFolderList, mActivity);
-                bookmarkDialog = new bookmark_dialog(mActivity, "북마크 폴더 리스트", bookmarkRecyclerviewAdapter, bookmarkFolderList, mClickAddListener);
+                    bookmarkRecyclerviewAdapter.setOnItemClickListener(new bookmark_recyclerview_adapater.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(View v, int position, List<String> list) {
 
-                bookmarkRecyclerviewAdapter.setOnItemClickListener(new bookmark_recyclerview_adapater.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(View v, int position, List<String> list) {
-                        folder_name = list.get(position); // 북마크 폴더 이름
-                        item_title = String.valueOf(holder.item_title.getText());
-                        item_id = holder.item_id;
-                        item_type = holder.item_type;
+                            folder_name = list.get(position); // 북마크 폴더 이름
+                            item_title = String.valueOf(holder.item_title.getText());
+                            item_id = holder.item_id;
+                            item_type = holder.item_type;
 
-                        // DB에 북마크 등록 요청
-                        request_bookmark(holder);
-                        bookmarkDialog.dismiss();
+                            // DB에 북마크 등록 요청
+                            request_bookmark(holder);
+                            bookmarkDialog.dismiss();
 
-                    }
-                });
-                bookmarkDialog.show();
-
+                        }
+                    });
+                    bookmarkDialog.show();
+                }
             }
         });
+    }
+
+    private void goto_login() {
+        FragmentManager fragmentManager = ((AppCompatActivity) mContext).getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.main_layout, user_login_fragment.newInstance()).commit();
     }
 
     Button.OnClickListener mClickAddListener = new View.OnClickListener() {
@@ -441,7 +463,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                     String id = data.getString("id");
                     if (success) {
                         // ** 북마크 등록 성공 시 ** //
-                        Toast.makeText(mContext, folder_name+" 폴더에 북마크 등록 되었습니다.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(mContext, folder_name + " 폴더에 북마크 등록 되었습니다.", Toast.LENGTH_LONG).show();
                         // 최저가 알림 설정
                         set_lpriceAlarm(id);
                     } else if (!success)
@@ -456,8 +478,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(mContext, "errorListener" + "fail to request_bookmark()", Toast.LENGTH_LONG).show();
-                refresh();
+                // ** 북마크 등록 실패시 ** //
+                // Error Handling - request 오류(토큰만료) 처리
+                String request_type = "request_bookmark";
+                error_handling(error, request_type, holder);
             }
         }
         ) {
@@ -484,6 +508,135 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         RequestQueue requestQueue = Volley.newRequestQueue(mContext);
         requestQueue.add(stringRequest);
 
+    }
+
+    // Error Handling - request 오류(bookmark 등록 오류) 처리 - 실패 시 access-token 갱신 요청
+    private void error_handling(VolleyError error, String request_type,
+                                final ItemViewHolder holder) {
+        NetworkResponse response = error.networkResponse;
+        if (error instanceof AuthFailureError && response != null) {
+            try {
+                String res = new String(response.data, HttpHeaderParser.parseCharset(response.headers, "utf-8"));
+
+                Log.d(TAG, "onErrorResponse: " + res);
+                JsonParser parser = new JsonParser();
+                JsonElement element = parser.parse(res);
+                JsonObject data = element.getAsJsonObject().get("data").getAsJsonObject();
+                String name = data.get("name").getAsString();
+                String msg = data.get("msg").getAsString();
+
+                // access-token 만료 시 refresh-token을 통해 토큰 갱신
+                if (name.equals("TokenExpiredError") && msg.equals("jwt expired"))
+                    refresh_accessToken(request_type, holder);
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // access-token 갱신 요청 후 폴더 목록 재요청 - 실패 시 logout
+    private void refresh_accessToken(final String request_type, final ItemViewHolder holder) {
+        Log.d(TAG, "refresh_accessToken: access-token을 갱신합니다.");
+        String url = "http://10.0.2.2:3000/api/auth/refresh"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(response);
+                    boolean success = jsonObject.getBoolean("success");
+                    if (success) {
+                        // ** access-token 갱신 성공 시 ** // access-token 업데이트
+                        String data = jsonObject.getString("data");
+                        // SharedPreference 의 access-token 갱신
+                        update_accessToken(data);
+                        switch (request_type) {
+                            // 북마크 삭제 재요청
+                            case "request_bookmark":
+                                request_bookmark(holder);
+                                break;
+                        }
+
+                    } else if (!success)
+                        Toast.makeText(mContext, jsonObject.toString(), Toast.LENGTH_LONG).show();
+
+                } catch (
+                        JSONException e) {
+                    e.printStackTrace();
+
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // ** access-token 갱신 실패 시 ** // refresh-token 만료로 인해 logout
+                Log.d("REQUESTERROR", "onErrorResponse: refresh-toke이 만료되었습니다");
+                NetworkResponse response = error.networkResponse;
+                if (error instanceof AuthFailureError && response != null) {
+                    try {
+                        String res = new String(response.data, HttpHeaderParser.parseCharset(response.headers, "utf-8"));
+                        JsonParser parser = new JsonParser();
+                        JsonElement element = parser.parse(res);
+                        JsonObject data = element.getAsJsonObject().get("data").getAsJsonObject();
+                        String name = data.get("name").getAsString();
+                        String msg = data.get("msg").getAsString();
+
+                        // refresh-token 만료되어 logout
+                        if (name.equals("TokenExpiredError") && msg.equals("jwt expired"))
+                            logout();
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        ) {
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("x-refresh-token", refresh_token);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+        requestQueue.add(stringRequest);
+    }
+
+    // 만료된 access-token을 새로 갱신한 access-token으로 교체
+    private void update_accessToken(String new_token) {
+        access_token = new_token;
+        SharedPreferences.Editor editor = userFile.edit();
+        editor.putString("access_token", access_token); //Second라는 key값으로 infoSecond 데이터를 저장한다.
+        editor.commit();
+    }
+
+    // 사용자 정보를 지우고 로그인 화면으로 이동
+    private void logout() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
+                .setTitle("로그아웃")
+                .setMessage("재로그인이 필요합니다.")
+                .setCancelable(false)
+                .setPositiveButton("로그아웃", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        null_userFile();
+                        FragmentManager fragmentManager = ((AppCompatActivity) mContext).getSupportFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.main_layout, user_login_fragment.newInstance()).commit();
+                    }
+                });
+        builder.create();
+        builder.show();
+    }
+
+    // 현재 로그인된 id와 access_token 제거
+    private void null_userFile() {
+        SharedPreferences.Editor editor = userFile.edit();
+        editor.putString("user_id", null);
+        editor.putString("access_token", null);
+        editor.putString("refresh_token", null);
+        editor.apply();
     }
 
     // 북마크 등록 시 클라이언트에 북마크 저장
@@ -513,7 +666,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
     }
 
-    private void set_bookmarkAlarmList(String id){
+    private void set_bookmarkAlarmList(String id) {
         BookmarkAlarm bookmarkAlarm = new BookmarkAlarm(folder_name, id, alarm_time, alarm_check);
         bookmarkAlarmList.add(bookmarkAlarm);
 
@@ -534,58 +687,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         user_id = userFile.getString("user_id", null);
         access_token = userFile.getString("access_token", null);
         refresh_token = userFile.getString("refresh_token", null);
-    }
-
-    // 액세스 토큰 갱신
-    private void refresh() {
-        String reques_url = mContext.getResources().getString(R.string.authEndpoint) + "/refresh"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, reques_url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    boolean success = jsonObject.getBoolean("success");
-                    String re_access_token = jsonObject.getString("data");
-                    if (success) {
-                        // ** 액세스 토큰 갱신 성공 시 ** //
-                        userFile = mContext.getSharedPreferences("userFile", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = userFile.edit();
-                        editor.putString("access_token", re_access_token);
-                    } else if (!success)
-                        // ** 액세스 토큰 갱신 실패 시 ** //
-
-                        Toast.makeText(mContext, jsonObject.toString(), Toast.LENGTH_LONG).show();
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                // ** 리프레시 토큰 만료, 사용자 재로그인 및 새 토큰 발급 필요 ** //
-                SharedPreferences.Editor editor = userFile.edit();
-                editor.putString("user_id", null);
-                editor.putString("access_token", null);
-                editor.putString("refresh_token", null);
-                editor.commit();
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
-                        .setTitle("등록 실패")
-                        .setMessage("로그인이 필요합니다.")
-                        .setPositiveButton("확인", null);
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap();
-                Log.d("TOKEN", "token: " + refresh_token);
-                params.put("x-refresh-token", refresh_token);
-                return params;
-            }
-        };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
-        requestQueue.add(stringRequest);
     }
 
     // 키보드 입력 후 엔터 입력시 키보드 창 내림

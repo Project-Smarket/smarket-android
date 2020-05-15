@@ -3,6 +3,7 @@ package org.techtown.smarket_android.User.UserLogin;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,18 +21,23 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.ClientError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.User.Bookmark.bookmark_item_list_fragment;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -144,8 +150,7 @@ public class user_login_fragment extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), "errorListener", Toast.LENGTH_LONG).show();
-
+                error_handling(error);
             }
         }
         ) {
@@ -161,6 +166,29 @@ public class user_login_fragment extends Fragment {
 
         RequestQueue requestQueue = Volley.newRequestQueue(getContext());
         requestQueue.add(stringRequest);
+    }
+
+    private void error_handling(VolleyError error){
+        NetworkResponse response = error.networkResponse;
+        if (error instanceof ClientError && response != null) {
+            try {
+                String res = new String(response.data, HttpHeaderParser.parseCharset(response.headers, "utf-8"));
+
+                Log.d("error", "onErrorResponse: " + res);
+                JsonParser parser = new JsonParser();
+                JsonElement element = parser.parse(res);
+                JsonElement comment_element = element.getAsJsonObject().get("comment");
+                String comment = " ";
+                if(!comment_element.isJsonNull())
+                    comment = comment_element.getAsString();
+                Toast.makeText(getContext(), comment,  Toast.LENGTH_LONG).show();
+                //String name = data.get("name").getAsString();
+               // String msg = data.get("msg").getAsString();
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void generate_userFile(){

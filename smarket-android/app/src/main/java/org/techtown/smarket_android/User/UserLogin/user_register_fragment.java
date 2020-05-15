@@ -184,9 +184,6 @@ public class user_register_fragment extends Fragment {
                             comment = element.getAsJsonObject().get("comment").getAsString();
                             Log.d(TAG, "onErrorResponse: "+ comment);
                         }
-
-
-
                     }catch (UnsupportedEncodingException e){
                         e.printStackTrace();
                     }

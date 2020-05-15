@@ -165,12 +165,13 @@ public class user_login_success extends Fragment {
 
     }
 
-    // 현재 로그인된 id와 access_token 제거
+    // 현재 로그인된 id와 access_token, refresh_token 제거
     private void null_userFile() {
         userFile = getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = userFile.edit();
         editor.putString("user_id", null);
         editor.putString("access_token", null);
+        editor.putString("refresh_token", null);
         editor.commit();
     }
 
@@ -180,6 +181,7 @@ public class user_login_success extends Fragment {
         userID = userFile.getString("user_id", null);
         access_token = userFile.getString("access_token", null);
         refresh_token = userFile.getString("refresh_token", null);
-        Log.d("TOKEN", "get_userFile: " + access_token);
+        Log.d("TOKEN", "access_token: " + access_token);
+        Log.d("TOKEN", "refresh_token: " + refresh_token);
     }
 }
