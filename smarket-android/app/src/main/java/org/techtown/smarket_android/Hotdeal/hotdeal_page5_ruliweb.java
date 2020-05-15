@@ -26,7 +26,7 @@ import org.techtown.smarket_android.R;
 
 import java.util.ArrayList;
 
-public class ruliweb_fragment extends Fragment {
+public class hotdeal_page5_ruliweb extends Fragment {
 
     private ViewGroup viewGroup;
     private RecyclerView recyclerView;
@@ -35,11 +35,11 @@ public class ruliweb_fragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        viewGroup = (ViewGroup) inflater.inflate(R.layout.ruliweb, container, false);
+        viewGroup = (ViewGroup) inflater.inflate(R.layout.hotdeal_list, container, false);
 
         hotdealList = new ArrayList<>();
 
-        recyclerView = viewGroup.findViewById(R.id.ruliweb_item_list);
+        recyclerView = viewGroup.findViewById(R.id.hotdeal_list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
         hotdealListAdapter = new hotdealListAdapter(getActivity(), getContext(), hotdealList);
@@ -64,7 +64,6 @@ public class ruliweb_fragment extends Fragment {
                     if (success) {
                         // ** 뽐뿌 조회 성공시 ** //
                         for (int i = 0; i < data.length(); i++) {
-                            String id = data.getJSONObject(i).getString("id");
                             String category = data.getJSONObject(i).getString("category");
                             String title = data.getJSONObject(i).getString("title");
                             String url = data.getJSONObject(i).getString("Url");
@@ -73,7 +72,7 @@ public class ruliweb_fragment extends Fragment {
                                 replyCount = "0";
                             String hit = data.getJSONObject(i).getString("hit");
                             String time = data.getJSONObject(i).getString("time");
-                            Hotdeal hotdeal = new Hotdeal(id, category,title, url, replyCount, hit, time);
+                            Hotdeal hotdeal = new Hotdeal(category,title, url, replyCount, hit, time);
                             hotdealList.add(hotdeal);
                             hotdealListAdapter.notifyDataSetChanged();
                         }

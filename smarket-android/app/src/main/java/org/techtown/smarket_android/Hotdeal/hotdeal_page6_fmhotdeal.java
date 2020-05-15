@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,35 +28,32 @@ import org.techtown.smarket_android.R;
 
 import java.util.ArrayList;
 
-// Instances of this class are fragments representing a single
-// object in our collection.
-public class ppomppu1_fragment extends Fragment {
+public class hotdeal_page6_fmhotdeal extends Fragment {
 
     private ViewGroup viewGroup;
     private RecyclerView recyclerView;
     private hotdealListAdapter hotdealListAdapter;
     private ArrayList<Hotdeal> hotdealList;
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        viewGroup = (ViewGroup) inflater.inflate(R.layout.ppomppu1, container, false);
+        viewGroup = (ViewGroup) inflater.inflate(R.layout.hotdeal_list, container, false);
 
         hotdealList = new ArrayList<>();
 
-        recyclerView = viewGroup.findViewById(R.id.ppomppu1_item_list);
+        recyclerView = viewGroup.findViewById(R.id.hotdeal_list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
         hotdealListAdapter = new hotdealListAdapter(getActivity(), getContext(), hotdealList);
         recyclerView.setAdapter(hotdealListAdapter);
 
-        request_ppomppu();
+        request_ruliweb();
 
         return viewGroup;
     }
 
-    private void request_ppomppu(){
-        String url = "http://10.0.2.2:3000/api/crawling/ppomppu?id=ppomppu5&page=1"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+    private void request_ruliweb() {
+        String url = "http://10.0.2.2:3000/api/crawling/fmhotdeal/1"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -67,16 +66,15 @@ public class ppomppu1_fragment extends Fragment {
                     if (success) {
                         // ** 뽐뿌 조회 성공시 ** //
                         for (int i = 0; i < data.length(); i++) {
-                            String id = data.getJSONObject(i).getString("id");
                             String category = data.getJSONObject(i).getString("category");
                             String title = data.getJSONObject(i).getString("title");
                             String url = data.getJSONObject(i).getString("Url");
                             String replyCount = data.getJSONObject(i).getString("replyCount");
-                            if(replyCount.equals(""))
+                            if (replyCount.equals(""))
                                 replyCount = "0";
                             String hit = data.getJSONObject(i).getString("hit");
                             String time = data.getJSONObject(i).getString("time");
-                            Hotdeal hotdeal = new Hotdeal(id, category,title, url, replyCount, hit, time);
+                            Hotdeal hotdeal = new Hotdeal(category, title, url, replyCount, hit, time);
                             hotdealList.add(hotdeal);
                             hotdealListAdapter.notifyDataSetChanged();
                         }
@@ -99,5 +97,5 @@ public class ppomppu1_fragment extends Fragment {
         RequestQueue requestQueue = Volley.newRequestQueue(getContext());
         requestQueue.add(stringRequest);
     }
-
 }
+

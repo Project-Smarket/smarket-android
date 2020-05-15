@@ -2,7 +2,6 @@ package org.techtown.smarket_android.Class;
 
 public class Hotdeal {
 
-    private String id;
     private String category;
     private String title;
     private String url;
@@ -10,22 +9,13 @@ public class Hotdeal {
     private String hit;
     private String time;
 
-    public Hotdeal(String id, String category, String title, String url, String replyCount, String hit, String time) {
-        this.id = id;
+    public Hotdeal( String category, String title, String url, String replyCount, String hit, String time) {
         this.category = category;
         this.title = title;
         this.url = url;
         this.replyCount = replyCount;
         this.hit = hit;
         this.time = time;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getCategory() {

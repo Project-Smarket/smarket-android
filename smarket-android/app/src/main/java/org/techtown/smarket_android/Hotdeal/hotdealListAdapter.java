@@ -65,7 +65,6 @@ public class hotdealListAdapter extends RecyclerView.Adapter<hotdealListAdapter.
         private TextView views_textView;
         private TextView comment_textView;
         private TextView posted_textView;
-        private String id;
         private String url;
 
         public hdViewHolder(View itemView){
@@ -96,7 +95,6 @@ public class hotdealListAdapter extends RecyclerView.Adapter<hotdealListAdapter.
             views_textView.setText(hotdeal.getHit());
             comment_textView.setText(hotdeal.getReplyCount());
             posted_textView.setText(hotdeal.getTime());
-            id = hotdeal.getId();
             url = hotdeal.getUrl();
         }
     }

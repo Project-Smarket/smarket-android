@@ -18,17 +18,17 @@ public class hotdealViewPagerAdapter extends FragmentPagerAdapter {
     public hotdealViewPagerAdapter(@NonNull FragmentManager fm) {
         super(fm);
         pages = new ArrayList<>();
-        pages.add(new ppomppu1_fragment());
-        pages.add(new ppomppu2_fragment());
-        pages.add(new ppomppu3_fragment());
-        pages.add(new ppomppu4_fragment());
-        pages.add(new ruliweb_fragment());
-        pages.add(new fmkorea_fragment());
+        pages.add(new hotdeal_page3_ppomppu3());
+        pages.add(new hotdeal_page1_ppomppu1());
+        pages.add(new hotdeal_page2_ppomppu2());
+        pages.add(new hotdeal_page4_ppomppu4());
+        pages.add(new hotdeal_page5_ruliweb());
+        pages.add(new hotdeal_page6_fmhotdeal());
 
-        titles.add("뽐뿌1");
-        titles.add("뽐뿌2");
-        titles.add("뽐뿌3");
-        titles.add("뽐뿌4");
+        titles.add("뽐뿌게시판");
+        titles.add("해외뽐뿌");
+        titles.add("오프라인뽐뿌");
+        titles.add("쇼핑특가");
         titles.add("루리웹게시판");
         titles.add("FM핫딜");
 
