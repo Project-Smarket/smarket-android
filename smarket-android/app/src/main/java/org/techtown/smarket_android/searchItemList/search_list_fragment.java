@@ -58,7 +58,7 @@ public class search_list_fragment extends Fragment {
     private int display = 10;
 
     private boolean isUpdate = false;
-
+    private boolean isItemList = false;
     // 검색한 데이터 가져오기
     private List<SearchedItem> itemList = new ArrayList<>();
 
@@ -69,19 +69,22 @@ public class search_list_fragment extends Fragment {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.search_list, container, false);
         search_progressBar = viewGroup.findViewById(R.id.search_progressBar);
         search_progressBar.setVisibility(View.GONE);
-        getBundle();
+
+        // 검색한 내용 불러옴
+        get_searchedName();
 
         // 검색 데이터 가져오기
         CreateList();
 
-        try {
-            search_progressBar.setVisibility(View.VISIBLE);
-            getJson();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+        if (!isItemList) {
+            try {
+                search_progressBar.setVisibility(View.VISIBLE);
+                getJson();
+                isItemList = true;
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
         }
-
-        Log.d(TAG, "CreateList: " + itemList.isEmpty());
 
         settingToolbar();
 
@@ -103,6 +106,13 @@ public class search_list_fragment extends Fragment {
 
 
         return viewGroup;
+    }
+
+    // 검색한 내용 불러옴
+    private void get_searchedName() {
+        if (getArguments() != null) {
+            txt = getArguments().getString("searchName");
+        }
     }
 
 
@@ -187,7 +197,6 @@ public class search_list_fragment extends Fragment {
         RequestQueue queue = Volley.newRequestQueue(getContext());
         queue.add(searchRequest);
     }
-
 
 
     /**
@@ -283,12 +292,6 @@ public class search_list_fragment extends Fragment {
         adapter.clear();
     }
 
-    private void getBundle() {
-        if (getArguments() != null) {
-            txt = getArguments().getString("searchName");
-        }
-
-    }
 
     private Bundle settingBundle(View v) {
         Bundle bundle = new Bundle();
