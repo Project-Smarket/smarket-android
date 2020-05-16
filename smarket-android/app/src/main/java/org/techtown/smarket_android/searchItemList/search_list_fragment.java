@@ -125,12 +125,8 @@ public class search_list_fragment extends Fragment {
                         String item_title = removeTag(title);
                         String item_id = key.getJSONObject(index).getString("productId");
                         String item_type = key.getJSONObject(index).getString("productType");
-                        String price = key.getJSONObject(index).getString("lprice");
-                        int item_price = Integer.parseInt(price);
-                        String item_lprice = String.format("%,d", item_price);
-
+                        String item_lprice = key.getJSONObject(index).getString("lprice");
                         String item_image = key.getJSONObject(index).getString("image");
-
                         String item_mallName = key.getJSONObject(index).getString("mallName");
 
                         SearchedItem item = new SearchedItem(item_title, item_id, item_type, item_lprice, item_image, item_mallName);
@@ -155,12 +151,7 @@ public class search_list_fragment extends Fragment {
         queue.add(searchRequest);
     }
 
-    /**
-     * 모든 HTML 태그를 제거하고 반환한다.
-     *
-     * @param html
-     * @throws Exception
-     */
+
     public String removeTag(String html) throws Exception {
         return html.replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", "");
     }

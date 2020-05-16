@@ -154,7 +154,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         // 스트링 객체로 변환된 데이터를 bookmarkFolderList에 저장
         SharedPreferences.Editor editor = userFile.edit();
         editor.putString("bookmarkFolderList", json);
-        editor.commit();
+        editor.apply();
     }
 
     // SharedPreference의 bookmarkAlarmList 데이터를 가져옴
@@ -171,7 +171,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             // 스트링 객체로 변환된 데이터를 myBookmarks에 저장
             SharedPreferences.Editor editor = userFile.edit();
             editor.putString("bookmarkAlarmList", json);
-            editor.commit();
+            editor.apply();
             Log.d("New bookmarkAlarmList", "bookmarkAlarmList: Complete setting bookmarkAlarmList");
         } else {
             String bookmarkAlarm = userFile.getString("bookmarkAlarmList", null);
@@ -302,6 +302,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         private TextView item_title;
         private String item_id;
         private String item_type;
+        private int item_lprice;
         private TextView item_price;
 
         private String item_image_url;
@@ -338,7 +339,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             item_title.setText(data.getItem_title());
             item_id = data.getItem_id();
             item_type = data.getItem_type();
-            item_price.setText(data.getItem_price());
+            item_lprice = Integer.parseInt(data.getItem_price());
+            item_price.setText(String.format("%,d", item_lprice)+"원");
             item_image_url = data.getItem_image();
             item_mall_url.setText(data.getItem_mall());
 
@@ -437,14 +439,15 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     boolean success = jsonObject.getBoolean("success");
-
+                    JSONObject data = jsonObject.getJSONObject("data");
+                    String id = data.getString("id");
                     if (success) {
                         // ** 북마크 등록 성공 시 ** //
                         Toast.makeText(mContext, folder_name+" 폴더에 북마크 등록 되었습니다.", Toast.LENGTH_LONG).show();
                         // 최저가 알림 설정
                         String item_id = holder.item_id;
-                        String item_price = holder.item_price.getText().toString();
-                        set_lpriceAlarm(item_id, item_price);
+                        String item_price = String.valueOf(holder.item_lprice);
+                        set_lpriceAlarm(id, item_price);
                     } else if (!success)
                         // ** 북마크 등록 실패 시 ** //
                         Toast.makeText(mContext, jsonObject.toString(), Toast.LENGTH_LONG).show();
@@ -488,7 +491,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     }
 
     // 북마크 등록 시 클라이언트에 북마크 저장
-    private void set_lpriceAlarm(final String item_id, final String item_price) {
+    private void set_lpriceAlarm(final String id, final String item_price) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
                 .setTitle("최저가 알람 등록")
@@ -497,14 +500,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         alarm_check = true;
-                        set_bookmarkAlarmList(item_id, item_price);
+                        set_bookmarkAlarmList(id, item_price);
                     }
                 })
                 .setNegativeButton("아니오", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         alarm_check = false;
-                        set_bookmarkAlarmList(item_id, item_price);
+                        set_bookmarkAlarmList(id, item_price);
 
                     }
                 })
@@ -514,8 +517,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
     }
 
-    private void set_bookmarkAlarmList(String item_id, String item_price){
-        BookmarkAlarm bookmarkAlarm = new BookmarkAlarm(user_id, folder_name, item_id, item_price, alarm_time, alarm_check);
+    private void set_bookmarkAlarmList(String id, String item_price){
+        BookmarkAlarm bookmarkAlarm = new BookmarkAlarm(user_id, folder_name, id, item_price, alarm_time, alarm_check);
         bookmarkAlarmList.add(bookmarkAlarm);
 
         // List<BookmarkAlarm> 클래스 객체를 String 객체로 변환
