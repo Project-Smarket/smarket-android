@@ -24,13 +24,20 @@ public class hotdealViewPagerAdapter extends FragmentPagerAdapter {
         pages.add(new hotdeal_page4_ppomppu4());
         pages.add(new hotdeal_page5_ruliweb());
         pages.add(new hotdeal_page6_fmhotdeal());
+        pages.add(new hotdeal_page7_clienhotdeal());
+        pages.add(new hotdeal_page8_coolenjoy());
+        pages.add(new hotdeal_page9_malltail());
 
         titles.add("뽐뿌게시판");
         titles.add("해외뽐뿌");
         titles.add("오프라인뽐뿌");
-        titles.add("쇼핑특가");
+        titles.add("뽐뿌쇼핑특가");
         titles.add("루리웹게시판");
         titles.add("FM핫딜");
+        titles.add("클리엔핫딜");
+        titles.add("쿨엔조이");
+        titles.add("몰테일");
+
 
     }
 
