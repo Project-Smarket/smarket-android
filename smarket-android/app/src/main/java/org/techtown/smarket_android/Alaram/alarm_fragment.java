@@ -52,6 +52,7 @@ public class alarm_fragment extends Fragment {
     private String access_token;
     private String refresh_token;
     private ArrayList<String> bookmarkIdList;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -68,12 +69,12 @@ public class alarm_fragment extends Fragment {
         return viewGroup;
     }
 
-    private void sort_bookmarkAlarmList(){
-        if(time==15){
+    private void sort_bookmarkAlarmList() {
+        if (time == 15) {
             // 15시로 선택된 bookmarkAlarmList만 조회
             List<BookmarkAlarm> sortedBookmarkAlarmList = new ArrayList<>();
             for (int i = 0; i < myBookmarkAlarmList.size(); i++) {
-                if(myBookmarkAlarmList.get(i).getAlarm_time() == 2){
+                if (myBookmarkAlarmList.get(i).getAlarm_time() == 2) {
                     sortedBookmarkAlarmList.add(myBookmarkAlarmList.get(i));
                 }
             }
@@ -83,12 +84,10 @@ public class alarm_fragment extends Fragment {
             }
 
 
-
-
         }
     }
 
-    private void request_getting_item_price(final BookmarkAlarm bookmarkAlarm ){
+    private void request_getting_item_price(final BookmarkAlarm bookmarkAlarm) {
         String url = "http://10.0.2.2:3000/api/bookmarks/lprice"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
@@ -108,19 +107,26 @@ public class alarm_fragment extends Fragment {
                         int updated_price = Integer.parseInt(item_lprice);
                         Log.d(TAG, "onResponse: " + data.toString());
                         // 갱신된 가격이 더 낮은 경우
-                        if(past_price > updated_price){
+                        String alarm_type="";
+                        if (past_price > updated_price) {
                             updated_price = past_price - updated_price;
-                            String title = data.getString("title");
-                            String item_title = removeTag(title);
-                            String item_id = data.getString("productId");
-                            String item_type = data.getString("productType");
-                            item_lprice = String.valueOf(updated_price);
-                            String item_image = data.getString("image");
-                            String item_mallName = data.getString("mallName");
-
-                            SearchedItem item = new SearchedItem(item_title, item_id, item_type, item_lprice, item_image, item_mallName);
+                            alarm_type = "하락";
+                        }
+                        // 갱신된 가격이 더 높은 경우
+                        else if (past_price < updated_price) {
+                            updated_price = past_price - updated_price;
+                            alarm_type = "상승";
                         }
 
+                        String title = data.getString("title");
+                        String item_title = removeTag(title);
+                        String item_id = data.getString("productId");
+                        String item_type = data.getString("productType");
+                        String item_image = data.getString("image");
+                        String item_mallName = data.getString("mallName");
+                        String updated_price_string = String.valueOf(updated_price);
+
+                        SearchedItem item = new SearchedItem(item_title, item_id, item_type, item_lprice, item_image, item_mallName, alarm_type, updated_price_string);
 
 
                     } else if (!success)
@@ -194,10 +200,10 @@ public class alarm_fragment extends Fragment {
     }
 
     // 현재 로그인한 user_id와 일치하고 alarm_check이 True인 bookmarkAlarm만 조회
-    private void get_myBookmarkAlarmList(){
-        myBookmarkAlarmList= new ArrayList<>();
+    private void get_myBookmarkAlarmList() {
+        myBookmarkAlarmList = new ArrayList<>();
         for (int i = 0; i < bookmarkAlarmList.size(); i++) {
-            if(bookmarkAlarmList.get(i).getUser_id().equals(user_id) && bookmarkAlarmList.get(i).getAlarm_check()){
+            if (bookmarkAlarmList.get(i).getUser_id().equals(user_id) && bookmarkAlarmList.get(i).getAlarm_check()) {
                 myBookmarkAlarmList.add(bookmarkAlarmList.get(i));
             }
         }

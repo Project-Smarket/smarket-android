@@ -15,6 +15,12 @@ public class SearchedItem {
     private String item_image;
     private String item_mall;
 
+    // alarm 에서 사용하는 데이터
+    private String alarm_type;
+    private String updated_price;
+    private String alarm_message;
+
+
 
     public SearchedItem(String item_title, String item_id, String item_type, String item_price, String item_image, String item_mall) {
         this.item_title = item_title;
@@ -23,6 +29,18 @@ public class SearchedItem {
         this.item_price = item_price;
         this.item_image = item_image;
         this.item_mall = item_mall;
+    }
+
+    public SearchedItem(String item_title, String item_id, String item_type, String item_price, String item_image, String item_mall, String alarm_type, String updated_price) {
+        this.item_title = item_title;
+        this.item_id = item_id;
+        this.item_type = item_type;
+        this.item_price = item_price;
+        this.item_image = item_image;
+        this.item_mall = item_mall;
+        this.alarm_type = alarm_type;
+        this.updated_price = updated_price;
+        alarm_message = updated_price + alarm_type + "했습니다";
     }
 
     public String getItem_title() {
@@ -71,5 +89,29 @@ public class SearchedItem {
 
     public void setItem_mall(String item_mall) {
         this.item_mall = item_mall;
+    }
+
+    public String getAlarm_type() {
+        return alarm_type;
+    }
+
+    public void setAlarm_type(String alarm_type) {
+        this.alarm_type = alarm_type;
+    }
+
+    public String getUpdated_price() {
+        return updated_price;
+    }
+
+    public void setUpdated_price(String updated_price) {
+        this.updated_price = updated_price;
+    }
+
+    public String getAlarm_message() {
+        return alarm_message;
+    }
+
+    public void setAlarm_message(String alarm_message) {
+        this.alarm_message = alarm_message;
     }
 }
