@@ -69,7 +69,7 @@ public class alarm_fragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        viewGroup = (ViewGroup) inflater.inflate(R.layout.search_main, container, false);
+        viewGroup = (ViewGroup) inflater.inflate(R.layout.alarm_main, container, false);
         get_userFile();
         get_bookmarkAlarmList();
         // 현재 로그인한 user_id와 일치하고 alarm_check이 True인 bookmarkAlarm만 조회
