@@ -446,7 +446,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                         Toast.makeText(mContext, folder_name+" 폴더에 북마크 등록 되었습니다.", Toast.LENGTH_LONG).show();
                         // 최저가 알림 설정
                         String item_id = holder.item_id;
-                        String item_price = String.valueOf(holder.item_lprice);
+                        //String item_price = String.valueOf(holder.item_lprice);
+                        String item_price = "1000";
                         set_lpriceAlarm(id, item_price);
                     } else if (!success)
                         // ** 북마크 등록 실패 시 ** //
@@ -500,14 +501,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         alarm_check = true;
-                        set_bookmarkAlarmList(id, item_price);
+                        save_bookmarkAlarmList(id, item_price);
                     }
                 })
                 .setNegativeButton("아니오", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         alarm_check = false;
-                        set_bookmarkAlarmList(id, item_price);
+                        save_bookmarkAlarmList(id, item_price);
 
                     }
                 })
@@ -517,7 +518,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
     }
 
-    private void set_bookmarkAlarmList(String id, String item_price){
+    private void save_bookmarkAlarmList(String id, String item_price){
         BookmarkAlarm bookmarkAlarm = new BookmarkAlarm(user_id, folder_name, id, item_price, alarm_time, alarm_check);
         bookmarkAlarmList.add(bookmarkAlarm);
 

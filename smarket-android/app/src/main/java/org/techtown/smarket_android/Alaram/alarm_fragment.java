@@ -11,6 +11,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -29,6 +31,7 @@ import org.json.JSONObject;
 import org.techtown.smarket_android.Class.BookmarkAlarm;
 import org.techtown.smarket_android.Class.SearchedItem;
 import org.techtown.smarket_android.R;
+import org.techtown.smarket_android.searchItemList.RecyclerAdapter;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -45,6 +48,10 @@ public class alarm_fragment extends Fragment {
     private List<BookmarkAlarm> bookmarkAlarmList;
     private List<BookmarkAlarm> myBookmarkAlarmList;
     private int time = 15;
+
+    private RecyclerView alarmRecyclerView;
+    private alarmListAdapter alarmListAdapter;
+    private List<SearchedItem> alarmList;
 
     // ** 로그인 및 토큰 정보 ** //
     private SharedPreferences userFile;
@@ -63,8 +70,13 @@ public class alarm_fragment extends Fragment {
         // 현재 로그인한 user_id와 일치하고 alarm_check이 True인 bookmarkAlarm만 조회
         get_myBookmarkAlarmList();
 
+        // alarmList recyclerView 설정
+        set_recyclerView();
+
         // bookmarkAlarm의 시간에 따라 list 분류
         sort_bookmarkAlarmList();
+
+
 
         return viewGroup;
     }
@@ -80,14 +92,14 @@ public class alarm_fragment extends Fragment {
             }
             // 임의 시간으로 분류된 bookmarkAlarmList로 상품 조회
             for (int i = 0; i < sortedBookmarkAlarmList.size(); i++) {
-                request_getting_item_price(sortedBookmarkAlarmList.get(i));
+                request_get_item_price(sortedBookmarkAlarmList.get(i));
             }
 
 
         }
     }
 
-    private void request_getting_item_price(final BookmarkAlarm bookmarkAlarm) {
+    private void request_get_item_price(final BookmarkAlarm bookmarkAlarm) {
         String url = "http://10.0.2.2:3000/api/bookmarks/lprice"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
@@ -114,21 +126,22 @@ public class alarm_fragment extends Fragment {
                         }
                         // 갱신된 가격이 더 높은 경우
                         else if (past_price < updated_price) {
-                            updated_price = past_price - updated_price;
+                            updated_price = updated_price - past_price;
                             alarm_type = "상승";
                         }
 
-                        String title = data.getString("title");
+                        String title = data.getString("item_title");
                         String item_title = removeTag(title);
-                        String item_id = data.getString("productId");
-                        String item_type = data.getString("productType");
-                        String item_image = data.getString("image");
-                        String item_mallName = data.getString("mallName");
+                        String item_id = data.getString("item_id");
+                        String item_type = data.getString("item_type");
+                        String item_image = data.getString("item_image");
+                        String item_mallName = data.getString("item_link");
                         String updated_price_string = String.valueOf(updated_price);
 
-                        SearchedItem item = new SearchedItem(item_title, item_id, item_type, item_lprice, item_image, item_mallName, alarm_type, updated_price_string);
-
-
+                        SearchedItem alarm = new SearchedItem(item_title, item_id, item_type, item_lprice, item_image, item_mallName, alarm_type, updated_price_string);
+                        Log.d(TAG, "alarm: " + alarm.toString());
+                        alarmList.add(alarm);
+                        alarmListAdapter.notifyDataSetChanged();
                     } else if (!success)
                         // ** 북마크 조회 실패시 ** //
                         Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
@@ -167,6 +180,15 @@ public class alarm_fragment extends Fragment {
 
     public String removeTag(String html) throws Exception {
         return html.replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", "");
+    }
+
+    private void set_recyclerView() {
+        alarmList = new ArrayList<>();
+        alarmRecyclerView = viewGroup.findViewById(R.id.alarm_list_recyclerView);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
+        alarmRecyclerView.setLayoutManager(linearLayoutManager);
+        alarmListAdapter = new alarmListAdapter(getActivity(), getContext(), alarmList);
+        alarmRecyclerView.setAdapter(alarmListAdapter);
     }
 
     // SharedPreference의 bookmarkAlarmList 데이터를 가져온다

@@ -104,26 +104,6 @@
         app:layout_constraintStart_toEndOf="@+id/alarm_item_imageView" />
 
     <TextView
-        android:id="@+id/search_mallName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="91dp"
-        android:layout_marginLeft="91dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="110dp"
-        android:layout_marginRight="110dp"
-        android:layout_marginBottom="15dp"
-        android:text="hi"
-        android:textColor="@color/colorWhite"
-        android:textSize="1sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.437"
-        app:layout_constraintStart_toEndOf="@+id/alarm_message_textView"
-        app:layout_constraintTop_toBottomOf="@+id/alamr_item_title_textView"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <TextView
         android:id="@+id/alarm_type_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

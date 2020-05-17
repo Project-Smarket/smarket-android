@@ -1,13 +1,22 @@
 package org.techtown.smarket_android.Alaram;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
+import android.os.Build;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.techtown.smarket_android.Class.SearchedItem;
@@ -18,22 +27,37 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alViewHolder> {
+
+    private List<SearchedItem> alarmList;
+    private Context mContext;
+    private Activity mActivity;
+
+    alarmListAdapter(Activity activity, Context context, List<SearchedItem> list ){
+        mActivity = activity;
+        mContext = context;
+        alarmList = list;
+    }
     @NonNull
     @Override
     public alViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return null;
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.alarm_list_item, parent, false);
+
+        final alViewHolder alViewHolder = new alViewHolder(view);
+
+        return alViewHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull alViewHolder holder, int position) {
-
+        holder.onBind(alarmList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return alarmList.size();
     }
 
     public class alViewHolder extends RecyclerView.ViewHolder {
@@ -44,32 +68,44 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
         private int item_lprice;
         private TextView alarm_message;
         private TextView item_price;
+        private TextView alarm_type;
+        private ImageView direction;
+        //private TextView alarm_posted;
 
         private String item_image_url;
         private ImageView item_image;
 
-        private TextView item_mall_url;
         private Bitmap bitmap;
+
+        private Drawable alarm_type_background;
 
         alViewHolder(View itemView){
             super(itemView);
 
-            item_title = itemView.findViewById(R.id.search_list_item_name);
-            alarm_message = item_mall_url.findViewById(R.id.alarm_message_textView);
-            item_price = itemView.findViewById(R.id.search_list_item_value);
-            item_image = itemView.findViewById(R.id.search_list_item_image);
-            item_mall_url = itemView.findViewById(R.id.search_mallName);
+            item_title = itemView.findViewById(R.id.alamr_item_title_textView);
+            item_image = itemView.findViewById(R.id.alarm_item_imageView);
+            item_price = itemView.findViewById(R.id.alarm_item_price_textView);
+            alarm_message = itemView.findViewById(R.id.alarm_message_textView);
+            alarm_type = itemView.findViewById(R.id.alarm_type_textView);
+            direction = itemView.findViewById(R.id.direction_imageView);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+            ) {
+                alarm_type_background = mContext.getDrawable(R.drawable.alarm_type);
+            }
+            //alarm_posted = itemView.findViewById(R.id.alarm_posted_textView);
         }
 
         public void onBind(SearchedItem data){
             item_title.setText(data.getItem_title());
-            alarm_message.setText(data.getAlarm_message());
+            item_image_url = data.getItem_image();
+            set_item_image();
             item_lprice = Integer.parseInt(data.getItem_price());
             item_price.setText(String.format("%,d", item_lprice)+"원");
-            item_image_url = data.getItem_image();
-            item_mall_url.setText(data.getItem_mall());
 
-            set_item_image();
+            alarm_message.setText(data.getAlarm_message());
+            alarm_type.setText(data.getAlarm_type());
+            set_alarmType();
 
         }
 
@@ -114,6 +150,23 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
                 item_image.setImageBitmap(bitmap);
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            }
+        }
+
+        // direction ImageView 설정정
+       void set_alarmType(){
+            if(alarm_type.getText().equals("하락")){
+                alarm_type.setBackgroundColor(mContext.getResources().getColor(R.color.red));
+                alarm_type_background.setColorFilter(itemView.getResources().getColor(R.color.red), PorterDuff.Mode.SRC_IN);
+                direction.setColorFilter(itemView.getResources().getColor(R.color.red), PorterDuff.Mode.SRC_IN);
+            }
+
+            else if(alarm_type.getText().equals("상승")){
+                alarm_type.(mContext.getResources().getColor(R.color.blue));
+                direction.setColorFilter(itemView.getResources().getColor(R.color.blue), PorterDuff.Mode.SRC_IN);
+                alarm_message.setTextColor(mContext.getResources().getColor(R.color.blue));
+                item_price.setTextColor(mContext.getResources().getColor(R.color.blue));
+                direction.setRotationX(180);
             }
         }
     }

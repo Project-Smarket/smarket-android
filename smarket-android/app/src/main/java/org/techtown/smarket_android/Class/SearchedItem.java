@@ -40,7 +40,7 @@ public class SearchedItem {
         this.item_mall = item_mall;
         this.alarm_type = alarm_type;
         this.updated_price = updated_price;
-        alarm_message = updated_price + alarm_type + "했습니다";
+        alarm_message = updated_price + "원" + alarm_type + "했습니다";
     }
 
     public String getItem_title() {
@@ -113,5 +113,14 @@ public class SearchedItem {
 
     public void setAlarm_message(String alarm_message) {
         this.alarm_message = alarm_message;
+    }
+
+    @Override
+    public String toString() {
+        return "SearchedItem{" +
+                "item_title='" + item_title + '\'' +
+                ", item_price='" + item_price + '\'' +
+                ", updated_price='" + updated_price + '\'' +
+                '}';
     }
 }
