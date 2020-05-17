@@ -6,17 +6,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
-import android.os.Build;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.techtown.smarket_android.Class.SearchedItem;
@@ -77,8 +75,6 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
 
         private Bitmap bitmap;
 
-        private Drawable alarm_type_background;
-
         alViewHolder(View itemView){
             super(itemView);
 
@@ -89,10 +85,6 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
             alarm_type = itemView.findViewById(R.id.alarm_type_textView);
             direction = itemView.findViewById(R.id.direction_imageView);
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-            ) {
-                alarm_type_background = mContext.getDrawable(R.drawable.alarm_type);
-            }
             //alarm_posted = itemView.findViewById(R.id.alarm_posted_textView);
         }
 
@@ -156,13 +148,11 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
         // direction ImageView 설정정
        void set_alarmType(){
             if(alarm_type.getText().equals("하락")){
-                alarm_type.setBackgroundColor(mContext.getResources().getColor(R.color.red));
-                alarm_type_background.setColorFilter(itemView.getResources().getColor(R.color.red), PorterDuff.Mode.SRC_IN);
                 direction.setColorFilter(itemView.getResources().getColor(R.color.red), PorterDuff.Mode.SRC_IN);
             }
 
             else if(alarm_type.getText().equals("상승")){
-                alarm_type.(mContext.getResources().getColor(R.color.blue));
+                alarm_type.setBackground(mContext.getResources().getDrawable(R.drawable.alarm_type_up));
                 direction.setColorFilter(itemView.getResources().getColor(R.color.blue), PorterDuff.Mode.SRC_IN);
                 alarm_message.setTextColor(mContext.getResources().getColor(R.color.blue));
                 item_price.setTextColor(mContext.getResources().getColor(R.color.blue));
