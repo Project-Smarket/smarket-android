@@ -126,7 +126,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_list_item, parent, false);
         imm = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
         userFile = mContext.getSharedPreferences("userFile", Context.MODE_PRIVATE);
-
+        get_userFile();
         // SharedPreference의 bookmarkFolderList 데이터를 가져옴
         get_bookmarkFolderList();
 
@@ -450,7 +450,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
     // 북마크 등록 요청 기능
     private void request_bookmark(final ItemViewHolder holder) {
-        get_userFile();
         String reques_url = mContext.getResources().getString(R.string.bookmarksEndpoint); // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.POST, reques_url, new Response.Listener<String>() {
             @Override
@@ -553,7 +552,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                         // SharedPreference 의 access-token 갱신
                         update_accessToken(data);
                         switch (request_type) {
-                            // 북마크 삭제 재요청
+                            // 북마크 등록 재요청
                             case "request_bookmark":
                                 request_bookmark(holder);
                                 break;

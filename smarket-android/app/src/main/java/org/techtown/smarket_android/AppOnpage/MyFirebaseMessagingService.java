@@ -123,7 +123,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
         Intent intent = new Intent(this, MainActivity.class);//Intent는 아직 모름ㅠ
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, (int)(System.currentTimeMillis()/1000), intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         String channelId = "채널 ID";
@@ -149,6 +149,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             notificationManager.createNotificationChannel(channel);
         }
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());;
+        notificationManager.notify((int)(System.currentTimeMillis()/1000), notificationBuilder.build());;
+        //(int)(System.currentTimeMillis()/1000) 푸시메세지 쌓게 만들기
     }
 }
