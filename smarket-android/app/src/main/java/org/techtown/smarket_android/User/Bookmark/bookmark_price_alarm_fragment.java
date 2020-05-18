@@ -98,10 +98,10 @@ public class bookmark_price_alarm_fragment extends Fragment {
         timeSet_view = viewGroup.findViewById(R.id.timeSet_view);
         timeSet_tv = viewGroup.findViewById(R.id.timeSet_tv2);
         switch (this_alarm_time){
-            case 0 : timeSet_tv.setText(1+"시간 마다");break;
-            case 1 : timeSet_tv.setText(6+"시간 마다");break;
-            case 2 : timeSet_tv.setText(12+"시간 마다");break;
-            case 3 : timeSet_tv.setText(24+"시간 마다");break;
+            case 0 : timeSet_tv.setText("오후 12시");break;
+            case 1 : timeSet_tv.setText("오후 3시");break;
+            case 2 : timeSet_tv.setText("오후 6시");break;
+            case 3 : timeSet_tv.setText("오후 9시");break;
         }
 
 
@@ -149,7 +149,7 @@ public class bookmark_price_alarm_fragment extends Fragment {
     }
 
     private void set_timer() {
-        final String[] timeList = {"1시간 마다", "6시간 마다", "12시간 마다", "24시간 마다"};
+        final String[] timeList = {"오후 12시", "오후 3시", "오후 6시", "오후 9시"};
         AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
 
         dialog.setTitle("시간 설정")

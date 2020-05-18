@@ -165,7 +165,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         // 스트링 객체로 변환된 데이터를 bookmarkFolderList에 저장
         SharedPreferences.Editor editor = userFile.edit();
         editor.putString("bookmarkFolderList", json);
-        editor.commit();
+        editor.apply();
     }
 
     // SharedPreference의 bookmarkAlarmList 데이터를 가져옴
@@ -176,19 +176,17 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
             // gson을 통해 타 클래스 객체를 스트링으로 변경
             Gson gson = new GsonBuilder().create();
-            Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {
-            }.getType();
+            Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {}.getType();
             String json = gson.toJson(bookmarkAlarmList, listType);
 
             // 스트링 객체로 변환된 데이터를 myBookmarks에 저장
             SharedPreferences.Editor editor = userFile.edit();
             editor.putString("bookmarkAlarmList", json);
-            editor.commit();
+            editor.apply();
             Log.d("New bookmarkAlarmList", "bookmarkAlarmList: Complete setting bookmarkAlarmList");
         } else {
             String bookmarkAlarm = userFile.getString("bookmarkAlarmList", null);
-            Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {
-            }.getType();
+            Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {}.getType();
             bookmarkAlarmList = new GsonBuilder().create().fromJson(bookmarkAlarm, listType);
             Log.d("Get bookmarkAlarmList", "bookmarkAlarmList: Complete Getting bookmarkAlarmList");
         }
@@ -324,6 +322,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         private TextView item_title;
         private String item_id;
         private String item_type;
+        private int item_lprice;
         private TextView item_price;
 
         private String item_image_url;
@@ -360,7 +359,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             item_title.setText(data.getItem_title());
             item_id = data.getItem_id();
             item_type = data.getItem_type();
-            item_price.setText(data.getItem_price()+"원");
+            item_lprice = Integer.parseInt(data.getItem_price());
+            item_price.setText(String.format("%,d", item_lprice)+"원");
             item_image_url = data.getItem_image();
             item_mall_url.setText(data.getItem_mall());
 
@@ -464,7 +464,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                         // ** 북마크 등록 성공 시 ** //
                         Toast.makeText(mContext, folder_name + " 폴더에 북마크 등록 되었습니다.", Toast.LENGTH_LONG).show();
                         // 최저가 알림 설정
-                        set_lpriceAlarm(id);
+                        String item_id = holder.item_id;
+                        //String item_price = String.valueOf(holder.item_lprice);
+                        String item_price = "1000";
+                        set_lpriceAlarm(id, item_price);
                     } else if (!success)
                         // ** 북마크 등록 실패 시 ** //
                         Toast.makeText(mContext, jsonObject.toString(), Toast.LENGTH_LONG).show();
@@ -639,7 +642,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     }
 
     // 북마크 등록 시 클라이언트에 북마크 저장
-    private void set_lpriceAlarm(final String id) {
+    private void set_lpriceAlarm(final String id, final String item_price) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
                 .setTitle("최저가 알람 등록")
@@ -648,14 +651,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         alarm_check = true;
-                        set_bookmarkAlarmList(id);
+                        save_bookmarkAlarmList(id, item_price);
                     }
                 })
                 .setNegativeButton("아니오", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         alarm_check = false;
-                        set_bookmarkAlarmList(id);
+                        save_bookmarkAlarmList(id, item_price);
 
                     }
                 })
@@ -665,8 +668,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
     }
 
-    private void set_bookmarkAlarmList(String id) {
-        BookmarkAlarm bookmarkAlarm = new BookmarkAlarm(folder_name, id, alarm_time, alarm_check);
+    private void save_bookmarkAlarmList(String id, String item_price){
+        BookmarkAlarm bookmarkAlarm = new BookmarkAlarm(user_id, folder_name, id, item_price, alarm_time, alarm_check);
         bookmarkAlarmList.add(bookmarkAlarm);
 
         // List<BookmarkAlarm> 클래스 객체를 String 객체로 변환
@@ -686,6 +689,58 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         user_id = userFile.getString("user_id", null);
         access_token = userFile.getString("access_token", null);
         refresh_token = userFile.getString("refresh_token", null);
+    }
+
+    // 액세스 토큰 갱신
+    private void refresh() {
+        String reques_url = mContext.getResources().getString(R.string.authEndpoint) + "/refresh"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, reques_url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    boolean success = jsonObject.getBoolean("success");
+                    String re_access_token = jsonObject.getString("data");
+                    if (success) {
+                        // ** 액세스 토큰 갱신 성공 시 ** //
+                        userFile = mContext.getSharedPreferences("userFile", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = userFile.edit();
+                        editor.putString("access_token", re_access_token);
+                    } else if (!success)
+                        // ** 액세스 토큰 갱신 실패 시 ** //
+
+                        Toast.makeText(mContext, jsonObject.toString(), Toast.LENGTH_LONG).show();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // ** 리프레시 토큰 만료, 사용자 재로그인 및 새 토큰 발급 필요 ** //
+                SharedPreferences.Editor editor = userFile.edit();
+                editor.putString("user_id", null);
+                editor.putString("access_token", null);
+                editor.putString("refresh_token", null);
+                editor.commit();
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
+                        .setTitle("등록 실패")
+                        .setMessage("로그인이 필요합니다.")
+                        .setPositiveButton("확인", null);
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap();
+                Log.d("TOKEN", "token: " + refresh_token);
+                params.put("x-refresh-token", refresh_token);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+        requestQueue.add(stringRequest);
     }
 
     // 키보드 입력 후 엔터 입력시 키보드 창 내림

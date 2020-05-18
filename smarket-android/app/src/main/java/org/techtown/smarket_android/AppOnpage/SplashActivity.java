@@ -2,6 +2,7 @@ package org.techtown.smarket_android.AppOnpage;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -22,6 +23,8 @@ public class SplashActivity extends AppCompatActivity {
     public static Context context_push; //다른 액티비티나 클래스에서 접근할 수 있도록 컨텍스트를 만들어준다.
     public RequestQueue queue;
     public String pushToken;
+
+    private SharedPreferences userFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,12 +64,19 @@ public class SplashActivity extends AppCompatActivity {
                         String newToken = instanceIdResult.getToken();
                         pushToken = instanceIdResult.getToken();
                         Log.d( "PUSH_TOKEN", "새 토큰 : " + newToken );
-
+                        save_pushToken();
                     }
                 }
         );
 
         MyFirebaseMessagingService fms = new MyFirebaseMessagingService();
         fms.sendRegistrationToServer(pushToken);
+    }
+
+    private void save_pushToken(){
+        userFile = getSharedPreferences("userFile", MODE_PRIVATE);
+        SharedPreferences.Editor editor = userFile.edit();
+        editor.putString("push_token", pushToken);
+        editor.apply();
     }
 }
