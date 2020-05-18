@@ -50,6 +50,7 @@ public class recent_fragment extends Fragment {
     private TextView bookmarkAlarmList_foldername;
     private TextView bookmarkAlarmList_userId;
     private TextView bookmarkAlarmList_price;
+    private TextView bookmarkAlarmList_time;
 
     private Button remove_bookmarkList;
     private TextView bookmarkList_foldername;
@@ -69,6 +70,7 @@ public class recent_fragment extends Fragment {
         bookmarkAlarmList_id = viewGroup.findViewById(R.id.check_bookmarkalarm2);
         bookmarkAlarmList_foldername = viewGroup.findViewById(R.id.check_bookmarkalarm3);
         bookmarkAlarmList_price = viewGroup.findViewById(R.id.check_bookmarkalarm4);
+        bookmarkAlarmList_time = viewGroup.findViewById(R.id.check_bookmarkalarm5);
         bookmarkList_foldername = viewGroup.findViewById(R.id.check_bookmarklist);
         remove_bookmarkList = viewGroup.findViewById(R.id.remove_bookmarkList);
 
@@ -125,6 +127,7 @@ public class recent_fragment extends Fragment {
         String set2 = "";
         String set3 = "";
         String set4 = "";
+        String set5 = "";
         if (bookmarks == null) {
             bookmarkAlarmList_id.setText("북마크가 없습니다");
             bookmarkAlarmList_foldername.setText("북마크가 없습니다");
@@ -150,6 +153,11 @@ public class recent_fragment extends Fragment {
                 set4 += bookmarks.get(i).getBookmark_price() + "\n";
             }
             bookmarkAlarmList_price.setText(set4);
+
+            for (int i = 0; i < bookmarks.size(); i++) {
+                set5 += bookmarks.get(i).getAlarm_time() + "\n";
+            }
+            bookmarkAlarmList_time.setText(set5);
 
         }
     }

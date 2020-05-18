@@ -32,6 +32,15 @@
         <activity android:name=".User.UserLogin.user_login_fragment" android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
         <activity android:name=".MainNavigation.MainNavigationActivity"></activity>
 
+        <!--<receiver android:name=".DeviceBootReceiver"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>-->
+
+        <receiver android:name=".MainNavigation.AlarmReceiver" />
+
         <service
             android:name=".AppOnpage.MyFirebaseMessagingService"
             android:exported="false">

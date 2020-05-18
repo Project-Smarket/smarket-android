@@ -41,6 +41,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="TextView" />
+
+        <TextView
+            android:id="@+id/check_bookmarkalarm5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView" />
     </LinearLayout>
 
     <Button
