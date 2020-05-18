@@ -41,6 +41,8 @@ public class MainNavigationActivity extends AppCompatActivity {
 
     private static final String SETTINGS_BOOKMARK_JSON = "settings_bookmark_json";
 
+    private int alarm_unique_id = 1212;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
