@@ -3,6 +3,7 @@ package org.techtown.smarket_android.User.UserLogin;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -29,12 +30,12 @@ import com.android.volley.ServerError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.smarket_android.R;
 
@@ -46,13 +47,19 @@ import static com.android.volley.VolleyLog.TAG;
 
 
 public class user_register_fragment extends Fragment {
-    ViewGroup viewGroup;
+    private ViewGroup viewGroup;
+    private Context mContext;
 
-    public static user_register_fragment newInstance() {
-        return new user_register_fragment();
+    public static user_register_fragment newInstance(Context context) {
+        return new user_register_fragment(context);
+    }
+
+    user_register_fragment(Context context) {
+        mContext = context;
     }
 
     private EditText register_id;
+    private TextInputLayout register_pw_layout;
     private EditText register_pw;
     private EditText register_name;
     private EditText register_nickname;
@@ -74,20 +81,21 @@ public class user_register_fragment extends Fragment {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.user_register_main, container, false);
 
         register_id = viewGroup.findViewById(R.id.register_id_et); // 사용자 아이디
-        register_id.setFilters(new InputFilter[] {filterEng});
+        register_id.setFilters(new InputFilter[]{filterEng});
 
         register_nickname = viewGroup.findViewById(R.id.register_nick_et); // 사용자 닉네임
+        register_pw_layout = viewGroup.findViewById(R.id.register_pw_layout);
         register_pw = viewGroup.findViewById(R.id.register_pw_et); // 사용자 비번호
 
         register_name = viewGroup.findViewById(R.id.register_name_et); // 사용자 이름
-        register_name.setFilters(new InputFilter[] {filterKor});
+        register_name.setFilters(new InputFilter[]{filterKor});
 
         register_id.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(!hasFocus) {
+                if (!hasFocus) {
                     validate_id();
-                }else{
+                } else {
                     return;
                 }
             }
@@ -96,7 +104,7 @@ public class user_register_fragment extends Fragment {
         register_nickname.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(!hasFocus)
+                if (!hasFocus)
                     validate_nick();
                 else
                     return;
@@ -163,8 +171,8 @@ public class user_register_fragment extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 NetworkResponse response = error.networkResponse;
-                if(error instanceof ServerError && response != null){
-                    try{
+                if (error instanceof ServerError && response != null) {
+                    try {
                         String res = new String(response.data, HttpHeaderParser.parseCharset(response.headers, "utf-8"));
 
                         JsonParser parser = new JsonParser();
@@ -173,18 +181,21 @@ public class user_register_fragment extends Fragment {
                         String comment = null;
 
                         // ID는 6자리 이상입니다.
-                        if(!element.getAsJsonObject().get("data").isJsonNull()){
+                        if (!element.getAsJsonObject().get("data").isJsonNull()) {
                             data = element.getAsJsonObject().get("data").getAsJsonObject();
                             JsonArray errors = data.getAsJsonArray("errors");
                             JsonObject error_object = errors.get(0).getAsJsonObject();
                             String msg = error_object.get("msg").getAsString();
+                            register_id.setError(msg);
                             Log.d(TAG, "onErrorResponse: " + msg);
                         }// 이미 존재하는 ID 입니다.
                         else {
                             comment = element.getAsJsonObject().get("comment").getAsString();
-                            Log.d(TAG, "onErrorResponse: "+ comment);
+                            Log.d(TAG, "onErrorResponse: " + comment);
+                            register_id.setError(comment);
                         }
-                    }catch (UnsupportedEncodingException e){
+
+                    } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
                 }
@@ -225,7 +236,7 @@ public class user_register_fragment extends Fragment {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(getContext(), "error", Toast.LENGTH_LONG).show();
+                    Toast.makeText(mContext, "error", Toast.LENGTH_LONG).show();
                 }
             }
         };
@@ -233,8 +244,35 @@ public class user_register_fragment extends Fragment {
         user_validate validateRequest = new user_validate(url, key, user_nickname, responseListener, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), "errorListener", Toast.LENGTH_LONG).show();
+                NetworkResponse response = error.networkResponse;
+                if (error instanceof ServerError && response != null) {
+                    try {
+                        String res = new String(response.data, HttpHeaderParser.parseCharset(response.headers, "utf-8"));
 
+                        JsonParser parser = new JsonParser();
+                        JsonElement element = parser.parse(res);
+                        JsonObject data = null;
+                        String comment = null;
+
+                        // 닉네임은 2자리 이상입니다.
+                        if (!element.getAsJsonObject().get("data").isJsonNull()) {
+                            data = element.getAsJsonObject().get("data").getAsJsonObject();
+                            JsonArray errors = data.getAsJsonArray("errors");
+                            JsonObject error_object = errors.get(0).getAsJsonObject();
+                            String msg = error_object.get("msg").getAsString();
+                            register_nickname.setError(msg);
+                            Log.d(TAG, "onErrorResponse: " + msg);
+                        }// 이미 존재하는 닉네임 입니다.
+                        else {
+                            comment = element.getAsJsonObject().get("comment").getAsString();
+                            Log.d(TAG, "onErrorResponse: " + comment);
+                            register_nickname.setError(comment);
+                        }
+
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         });
         RequestQueue queue = Volley.newRequestQueue(getContext());
@@ -242,7 +280,6 @@ public class user_register_fragment extends Fragment {
     }
 
     private void register() {
-        Context context = getContext();
         String userID = register_id.getText().toString();
         String userPW = register_pw.getText().toString();
         String userName = register_name.getText().toString();
@@ -302,8 +339,35 @@ public class user_register_fragment extends Fragment {
             }
         };
 
-        user_register_request registerRequest = new user_register_request(context, userID, userPW, userName, userNick, userPhoneNumber, responseListener);
-        RequestQueue queue = Volley.newRequestQueue(context);
+        user_register_request registerRequest = new user_register_request(mContext, userID, userPW, userName, userNick, userPhoneNumber, responseListener, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                NetworkResponse response = error.networkResponse;
+                if (error instanceof ServerError && response != null) {
+                    try {
+                        String res = new String(response.data, HttpHeaderParser.parseCharset(response.headers, "utf-8"));
+
+                        JsonParser parser = new JsonParser();
+                        JsonElement element = parser.parse(res);
+                        JsonObject data = null;
+
+                        // 비밀번호는 6자리 이상입니다. && 비밀번호를 입력해주세요
+                        if (!element.getAsJsonObject().get("data").isJsonNull()) {
+                            data = element.getAsJsonObject().get("data").getAsJsonObject();
+                            JsonArray errors = data.getAsJsonArray("errors");
+                            JsonObject error_object = errors.get(0).getAsJsonObject();
+                            String msg = error_object.get("msg").getAsString();
+                            register_pw.setError(msg);
+                            Log.d(TAG, "onErrorResponse: " + msg);
+                        }
+
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        RequestQueue queue = Volley.newRequestQueue(mContext);
         queue.add(registerRequest);
     }
 

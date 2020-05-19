@@ -49,7 +49,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     private String user_id;
     private String access_token;
     private String refresh_token;
-    private String push_token;
+    private String device_token;
 
     private List<BookmarkAlarm> bookmarkAlarmList;
     private List<BookmarkAlarm> myBookmarkAlarmList;
@@ -293,7 +293,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
     // Request - 가격 변동된 제품의 푸쉬 알림 요청
     private void request_notification(final String pushtitle, final String alarm_type, final String item_lprice, final int updated_price, final Context context) {
-        String url = "http://10.0.2.2:3000/api/push/send"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        String url = "http://10.0.2.2:3000/api/fcm/send"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -324,7 +324,8 @@ public class AlarmReceiver extends BroadcastReceiver {
         ) {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                params.put("x-push-token", push_token);
+                params.put("x-device-token", device_token);
+                params.put("x-access-token", access_token);
                 return params;
             }
 
@@ -420,6 +421,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         user_id = userFile.getString("user_id", null);
         access_token = userFile.getString("access_token", null);
         refresh_token = userFile.getString("refresh_token", null);
-        push_token = userFile.getString("push_token", null);
+        device_token = userFile.getString("device_token", null);
     }
 }

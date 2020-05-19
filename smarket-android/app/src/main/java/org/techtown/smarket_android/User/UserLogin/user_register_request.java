@@ -22,8 +22,8 @@ public class  user_register_request extends StringRequest {
     private String userName;
     private String userPhoneNumber;
 
-    public user_register_request(Context context, String userID, String userPW, String userName, String userNick, String userPhoneNumber, Response .Listener<String> listener) {
-        super(Method.POST, context.getResources().getString(R.string.usersEndpoint), listener, null);
+    public user_register_request(Context context, String userID, String userPW, String userName, String userNick, String userPhoneNumber, Response .Listener<String> listener, Response.ErrorListener errorListener) {
+        super(Method.POST, context.getResources().getString(R.string.usersEndpoint), listener, errorListener);
 
         this.userID = userID;
         this.userNick = userNick;

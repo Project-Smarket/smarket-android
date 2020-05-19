@@ -33,11 +33,12 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
     private Context mContext;
     private Activity mActivity;
 
-    alarmListAdapter(Activity activity, Context context, List<SearchedItem> list ){
+    alarmListAdapter(Activity activity, Context context, List<SearchedItem> list) {
         mActivity = activity;
         mContext = context;
         alarmList = list;
     }
+
     @NonNull
     @Override
     public alViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -51,6 +52,10 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
     @Override
     public void onBindViewHolder(@NonNull alViewHolder holder, int position) {
         holder.onBind(alarmList.get(position));
+        if (holder.alarm_type.getText().toString().equals("하락"))
+            holder.set_alarmType_down();
+        else if (holder.alarm_type.getText().toString().equals("상승"))
+            holder.set_alarmType_up();
     }
 
     @Override
@@ -75,7 +80,7 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
 
         private Bitmap bitmap;
 
-        alViewHolder(View itemView){
+        alViewHolder(View itemView) {
             super(itemView);
 
             item_title = itemView.findViewById(R.id.alamr_item_title_textView);
@@ -88,16 +93,16 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
             //alarm_posted = itemView.findViewById(R.id.alarm_posted_textView);
         }
 
-        public void onBind(SearchedItem data){
+        public void onBind(SearchedItem data) {
             item_title.setText(data.getItem_title());
             item_image_url = data.getItem_image();
             set_item_image();
             item_lprice = Integer.parseInt(data.getItem_price());
-            item_price.setText(String.format("%,d", item_lprice)+"원");
+            item_price.setText(String.format("%,d", item_lprice) + "원");
 
             alarm_message.setText(data.getAlarm_message());
             alarm_type.setText(data.getAlarm_type());
-            set_alarmType();
+
 
         }
 
@@ -146,18 +151,20 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
         }
 
         // direction ImageView 설정정
-       void set_alarmType(){
-            if(alarm_type.getText().equals("하락")){
-                direction.setColorFilter(itemView.getResources().getColor(R.color.red), PorterDuff.Mode.SRC_IN);
-            }
+        void set_alarmType_down() {
+            alarm_type.setBackground(mContext.getResources().getDrawable(R.drawable.alarm_type_down));
+            direction.setColorFilter(itemView.getResources().getColor(R.color.red), PorterDuff.Mode.SRC_IN);
+            alarm_message.setTextColor(mContext.getResources().getColor(R.color.red));
+            item_price.setTextColor(mContext.getResources().getColor(R.color.red));
+            direction.setRotationX(0);
+        }
 
-            else if(alarm_type.getText().equals("상승")){
-                alarm_type.setBackground(mContext.getResources().getDrawable(R.drawable.alarm_type_up));
-                direction.setColorFilter(itemView.getResources().getColor(R.color.blue), PorterDuff.Mode.SRC_IN);
-                alarm_message.setTextColor(mContext.getResources().getColor(R.color.blue));
-                item_price.setTextColor(mContext.getResources().getColor(R.color.blue));
-                direction.setRotationX(180);
-            }
+        void set_alarmType_up() {
+            alarm_type.setBackground(mContext.getResources().getDrawable(R.drawable.alarm_type_up));
+            direction.setColorFilter(itemView.getResources().getColor(R.color.blue), PorterDuff.Mode.SRC_IN);
+            alarm_message.setTextColor(mContext.getResources().getColor(R.color.blue));
+            item_price.setTextColor(mContext.getResources().getColor(R.color.blue));
+            direction.setRotationX(180);
         }
     }
 }

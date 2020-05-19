@@ -23,6 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.smarket_android.Class.Hotdeal;
 import org.techtown.smarket_android.R;
+import org.techtown.smarket_android.searchItemList.RecyclerDecoration;
 
 import java.util.ArrayList;
 
@@ -41,9 +42,13 @@ public class hotdeal_page3_ppomppu3 extends Fragment {
 
         hotdealList = new ArrayList<>();
 
+        // 아이템 줄간격 설정
+        RecyclerDecoration spaceDecoration = new RecyclerDecoration(10);
+
         recyclerView = viewGroup.findViewById(R.id.hotdeal_list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.addItemDecoration(spaceDecoration);
         hotdealListAdapter = new hotdealListAdapter(getActivity(), getContext(), hotdealList);
         recyclerView.setAdapter(hotdealListAdapter);
 

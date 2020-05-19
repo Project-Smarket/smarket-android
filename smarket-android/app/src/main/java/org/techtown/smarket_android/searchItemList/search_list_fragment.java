@@ -117,11 +117,14 @@ public class search_list_fragment extends Fragment {
 
 
     private void CreateList() {
+
+        // 아이템 줄간격 설정
+        RecyclerDecoration spaceDecoration = new RecyclerDecoration(20);
+
         recyclerView = viewGroup.findViewById(R.id.search_item_list);
-        recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.addItemDecoration(spaceDecoration);
         adapter = new RecyclerAdapter(getContext(), getActivity(), itemList);
         recyclerView.setAdapter(adapter);
 

@@ -10,16 +10,21 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class RecyclerDecoration extends RecyclerView.ItemDecoration {
-    private final int divWidth;
 
-    public RecyclerDecoration(int divWidth) {
-        this.divWidth = divWidth;
+    private final int divHeight;
+
+
+    public RecyclerDecoration(int divHeight) {
+        this.divHeight = divHeight;
     }
 
     @Override
     public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-        outRect.right = divWidth;
-        // 칸 띄우기
+        super.getItemOffsets(outRect, view, parent, state);
+
+        if (parent.getChildAdapterPosition(view) != parent.getAdapter().getItemCount() - 1)
+            outRect.bottom = divHeight;
+
     }
 
 }

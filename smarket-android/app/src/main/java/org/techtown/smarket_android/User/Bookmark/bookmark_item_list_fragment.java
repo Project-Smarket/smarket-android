@@ -52,6 +52,7 @@ import org.techtown.smarket_android.Class.Bookmark;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.Class.BookmarkAlarm;
 import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
+import org.techtown.smarket_android.searchItemList.RecyclerDecoration;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
@@ -159,9 +160,13 @@ public class bookmark_item_list_fragment extends Fragment {
 
     // 북마크리스트 리사이클러 뷰 설정
     private void set_bookmarkList_recyclerView() {
-        recyclerView = viewGroup.findViewById(R.id.bookmark_itemList);
+        // 아이템 줄간격 설정
+        RecyclerDecoration spaceDecoration = new RecyclerDecoration(20);
+
+        recyclerView = viewGroup.findViewById(R.id.hotdeal_list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.addItemDecoration(spaceDecoration);
     }
 
     // 북마크 폴더 스피너 설정
