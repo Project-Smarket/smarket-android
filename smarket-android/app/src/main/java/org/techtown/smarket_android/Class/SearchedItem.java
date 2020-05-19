@@ -7,7 +7,6 @@ import java.net.URL;
 
 public class SearchedItem {
 
-
     private String id;
     private String item_title;
     private String item_id;
@@ -17,6 +16,7 @@ public class SearchedItem {
     private String item_mall;
 
     // alarm 에서 사용하는 데이터
+    private String user_id;
     private String alarm_type;
     private String updated_price;
     private String alarm_message;
@@ -34,7 +34,8 @@ public class SearchedItem {
     }
 
     // alarm에서 사용하는 클래스 생성자
-    public SearchedItem(String id, String item_title, String item_id, String item_type, String item_price, String item_image, String item_mall, String alarm_type, String updated_price) {
+    public SearchedItem(String user_id, String id, String item_title, String item_id, String item_type, String item_price, String item_image, String item_mall, String alarm_type, String updated_price) {
+        this.user_id = user_id;
         this.id = id;
         this.item_title = item_title;
         this.item_id = item_id;
@@ -45,6 +46,14 @@ public class SearchedItem {
         this.alarm_type = alarm_type;
         this.updated_price = updated_price;
         alarm_message = updated_price + "원 " + alarm_type + "했습니다";
+    }
+
+    public String getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
     }
 
     public String getId() {

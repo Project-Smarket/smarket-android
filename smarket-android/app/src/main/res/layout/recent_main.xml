@@ -7,7 +7,7 @@
         android:id="@+id/remove_bookmarkalarm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="remove_bookmarkalarm" />
+        android:text="북마크알람 리스트 삭제" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -54,11 +54,44 @@
         android:id="@+id/remove_bookmarkList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="remove_bookmarkList" />
+        android:text="북마크폴더 리스트 삭제" />
 
     <TextView
         android:id="@+id/check_bookmarklist"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="TextView" />
+
+    <Button
+        android:id="@+id/remove_alarmList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="알람 리스트 삭제" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/check_alarmlist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/check_alarmlist_user_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView" />
+        <TextView
+            android:id="@+id/check_alarmlist_item_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView" />
+
+    </LinearLayout>
 </LinearLayout>

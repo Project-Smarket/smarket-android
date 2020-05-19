@@ -213,7 +213,8 @@ public class AlarmReceiver extends BroadcastReceiver {
                                 String item_mallName = data.getString("item_link");
                                 String updated_price_string = String.valueOf(updated_price);
 
-                                SearchedItem alarm = new SearchedItem(id, item_title, item_id, item_type, item_lprice, item_image, item_mallName, alarm_type, updated_price_string);
+                                SearchedItem alarm = new SearchedItem(user_id, id, item_title, item_id, item_type, item_lprice, item_image, item_mallName,
+                                        alarm_type, updated_price_string);
                                 // 갱신된 가격으로 북마크알람의 가격 수정
                                 edit_bookmarkAlarmList(id, item_lprice);
                                 Log.d(TAG, "alarm: " + alarm.toString());
@@ -282,9 +283,10 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
     }
 
+    // alarmList에 동일한 id의 alarm이 있으면 삭제
     private void add_alarmList(SearchedItem alarm){
         for (int i = 0; i < alarmList.size(); i++) {
-            if(alarmList.get(i).getId().equals(alarm)){
+            if(alarmList.get(i).getId().equals(alarm.getId())){
                 alarmList.remove(i);
                 break;
             }

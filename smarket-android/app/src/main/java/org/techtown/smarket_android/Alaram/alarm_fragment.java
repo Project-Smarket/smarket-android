@@ -70,13 +70,17 @@ public class alarm_fragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.alarm_main, container, false);
+        // 현재 로그인된 아이디 - userFile에 저장된 user_id 가져오기
         get_userFile();
 
         // alarmList 데이터 가져옴
         get_alarmList();
 
-        for (int i = 0; i < alarmList.size(); i++) {
-            Log.d(TAG, "alarmList: "+ alarmList.get(i));
+        // 현재 로그인된 아이디와 일치하는 알람만 가져오기 - user_id가 일치하지 않는 alarm은 삭제
+        for (int i = alarmList.size()-1; i >=0; i--) {
+            if(!alarmList.get(i).getUser_id().equals(user_id)){
+                alarmList.remove(i);
+            }
         }
         // alarmList recyclerView 설정
         set_recyclerView();
@@ -123,12 +127,9 @@ public class alarm_fragment extends Fragment {
         editor.apply();
     }
 
-    // userFile에 저장된 user_id 와 access_token 값 가져오기
+    // userFile에 저장된 user_id 가져오기
     private void get_userFile() {
         userFile = getContext().getSharedPreferences("userFile", MODE_PRIVATE);
         user_id = userFile.getString("user_id", null);
-        access_token = userFile.getString("access_token", null);
-        refresh_token = userFile.getString("refresh_token", null);
-        push_token = userFile.getString("push_token", null);
     }
 }

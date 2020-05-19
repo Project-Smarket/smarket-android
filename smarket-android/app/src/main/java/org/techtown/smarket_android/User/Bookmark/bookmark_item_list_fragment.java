@@ -163,7 +163,7 @@ public class bookmark_item_list_fragment extends Fragment {
         // 아이템 줄간격 설정
         RecyclerDecoration spaceDecoration = new RecyclerDecoration(20);
 
-        recyclerView = viewGroup.findViewById(R.id.hotdeal_list);
+        recyclerView = viewGroup.findViewById(R.id.bookmark_itemList);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.addItemDecoration(spaceDecoration);

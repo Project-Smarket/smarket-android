@@ -28,11 +28,14 @@ import com.google.gson.reflect.TypeToken;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.techtown.smarket_android.Class.SearchedItem;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.Class.BookmarkAlarm;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +58,11 @@ public class recent_fragment extends Fragment {
     private Button remove_bookmarkList;
     private TextView bookmarkList_foldername;
 
+    private Button remove_alarmList;
+    private TextView check_alarmList;
+    private TextView check_alarmList_user_id;
+    private TextView check_alarmList_item_title;
+
     private SharedPreferences userFile;
     private String user_id;
     private String access_token;
@@ -63,6 +71,11 @@ public class recent_fragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        Date date= new Date();
+        Log.d("DATE", "onCreateView: " + date.toString());
+        Calendar calendar = Calendar.getInstance();
+        Log.d("Calandar", "onCreateView: " + calendar.getTimeInMillis());
         get_userFile();
         viewGroup = (ViewGroup) inflater.inflate(R.layout.recent_main, container, false);
         remove_bookmarkAlarmList = viewGroup.findViewById(R.id.remove_bookmarkalarm);
@@ -74,8 +87,14 @@ public class recent_fragment extends Fragment {
         bookmarkList_foldername = viewGroup.findViewById(R.id.check_bookmarklist);
         remove_bookmarkList = viewGroup.findViewById(R.id.remove_bookmarkList);
 
+        remove_alarmList = viewGroup.findViewById(R.id.remove_alarmList);
+        check_alarmList = viewGroup.findViewById(R.id.check_alarmlist);
+        check_alarmList_user_id = viewGroup.findViewById(R.id.check_alarmlist_user_id);
+        check_alarmList_item_title = viewGroup.findViewById(R.id.check_alarmlist_item_title);
+
         set_bookmarkAlarmList();
         set_bookmarkFolderList();
+        set_alamrList();
 
         remove_bookmarkAlarmList.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,21 +111,72 @@ public class recent_fragment extends Fragment {
                 set_bookmarkFolderList();
             }
         });
+
+        remove_alarmList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                remove_alarmlist();
+                set_alamrList();
+            }
+        });
+
         return viewGroup;
+    }
+
+    private void remove_alarmlist(){
+        userFile = getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = userFile.edit();
+        editor.putString("alarmList", null);
+        editor.apply();
+    }
+
+    private void set_alamrList(){
+        List<SearchedItem> alarmList;
+        userFile = getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE);
+        if (userFile.getString("alarmList", null) != null) {
+            String myBookmarks = userFile.getString("alarmList", null);
+            Type listType = new TypeToken<ArrayList<SearchedItem>>() {
+            }.getType();
+            alarmList = new GsonBuilder().create().fromJson(myBookmarks, listType);
+        } else {
+            alarmList = null;
+        }
+
+        String set1 = "";
+        String set2 = "";
+        String set3 = "";
+        if (alarmList == null) {
+            check_alarmList.setText("알림이 없습니다");
+            check_alarmList_user_id.setText("알림이 없습니다");
+            check_alarmList_item_title.setText("알림이 없습니다");
+        } else {
+            for (int i = 0; i < alarmList.size(); i++) {
+                set1 += alarmList.get(i).getId() + "\n";
+            }
+            check_alarmList.setText(set1);
+            for (int i = 0; i < alarmList.size(); i++) {
+                set2 += alarmList.get(i).getUser_id() + "\n";
+            }
+            check_alarmList_user_id.setText(set2);
+            for (int i = 0; i < alarmList.size(); i++) {
+                set3 += alarmList.get(i).getItem_title() + "\n";
+            }
+            check_alarmList_item_title.setText(set3);
+        }
     }
 
     private void remove() {
         userFile = getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = userFile.edit();
         editor.putString("bookmarkAlarmList", null);
-        editor.commit();
+        editor.apply();
     }
 
     private void remove_folderlist(){
         userFile = getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = userFile.edit();
         editor.putString("bookmarkFolderList", null);
-        editor.commit();
+        editor.apply();
     }
 
     private void set_bookmarkAlarmList() {
