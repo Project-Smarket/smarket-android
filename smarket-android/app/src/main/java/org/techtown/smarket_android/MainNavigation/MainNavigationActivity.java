@@ -19,6 +19,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import org.json.JSONArray;
 import org.techtown.smarket_android.Alaram.alarm_fragment;
 import org.techtown.smarket_android.Hotdeal.hotdeal_fragment;
+import org.techtown.smarket_android.NewSearch.newsearch_fragment;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
 import org.techtown.smarket_android.searchItemList.search_fragment;
@@ -36,6 +37,7 @@ public class MainNavigationActivity extends AppCompatActivity {
     //user_login_success user_fragment2; // 로그인 완료 창
     private user_login_fragment user_fragment3; // 로그인 창
     private alarm_fragment alarm_fragment4;
+    private newsearch_fragment newsearch_fragment;
 
     private static final String SETTINGS_BOOKMARK_JSON = "settings_bookmark_json";
 
@@ -52,7 +54,7 @@ public class MainNavigationActivity extends AppCompatActivity {
         //user_fragment2 = new user_login_success(); // 로그인 완료 창
         user_fragment3 = new user_login_fragment(); // 로그인 창
         alarm_fragment4 = new alarm_fragment(); // 최저가 알림창
-
+        newsearch_fragment = new newsearch_fragment();
         //set_bookmarkFolderList(); // 디폴트 북마크 폴더 생성 (함수 한번 실행시 어플이 삭제될 때까지 데이터 존재)
 
         set_navigation();
@@ -62,7 +64,7 @@ public class MainNavigationActivity extends AppCompatActivity {
     }
 
     private void set_navigation(){
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, search_fragment1).commitAllowingStateLoss(); //bottomnavigationview의 아이콘을 선택 했을때 원하는 프래그먼트가 띄워질 수 있도록 리스너를 추가합니다.
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, newsearch_fragment).commitAllowingStateLoss(); //bottomnavigationview의 아이콘을 선택 했을때 원하는 프래그먼트가 띄워질 수 있도록 리스너를 추가합니다.
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -84,6 +86,11 @@ public class MainNavigationActivity extends AppCompatActivity {
 
                     case R.id.tab4: {
                         getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, alarm_fragment4).commitAllowingStateLoss();
+                        return true;
+                    }
+
+                    case R.id.tab_ex:{
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, newsearch_fragment).commitAllowingStateLoss();
                         return true;
                     }
                     default:

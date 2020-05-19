@@ -111,7 +111,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
     private List<BookmarkAlarm> bookmarkAlarmList;
 
-    RecyclerAdapter(Context context, Activity activity, List<SearchedItem> itemList) {
+    public RecyclerAdapter(Context context, Activity activity, List<SearchedItem> itemList) {
         mContext = context;
         mActivity = activity;
         this.itemList = itemList;
