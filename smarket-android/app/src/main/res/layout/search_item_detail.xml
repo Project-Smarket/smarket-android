@@ -1,231 +1,288 @@
 <?xml version="1.0" encoding="utf-8"?>
-<org.techtown.smarket_android.searchItemList.Pager.CustomScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/detailScroll"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
     tools:context=".MainActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/detailToolbar"
+        <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="match_parent"
             android:background="@color/smarketyello"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark"
-            app:layout_constraintBottom_toTopOf="@id/detail_item_image"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:fitsSystemWindows="true"
+            app:layout_scrollFlags="scroll|enterAlways|exitUntilCollapsed"
+            app:titleEnabled="false">
 
-        <ImageView
-            android:id="@+id/detail_item_image"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_marginBottom="8dp"
-            android:background="@color/colorWhite"
-            android:src="@mipmap/ic_launcher"
-            app:layout_constraintBottom_toTopOf="@id/detailTextCollection"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/detailToolbar" />
-
-        <LinearLayout
-            android:id="@+id/detailTextCollection"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@+id/detail_tab"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/detail_item_image">
-
-            <TextView
-                android:id="@+id/detail_item_name"
+            <LinearLayout
+                android:id="@+id/detailTextCollection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/colorWhite"
-                android:text="안드로이드 연습용 텍스트"
-                android:textSize="26sp" />
+                android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/detailPriceArray"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                <ImageView
+                    android:id="@+id/detail_item_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/ic_launcher"
+                    android:fitsSystemWindows="true"
+                    android:scaleType="centerCrop"
+                    app:layout_collapseMode="parallax"
+                    android:contentDescription="TODO" />
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="최저가"
-                    android:textColor="@color/red"
-                    android:textSize="24sp" />
-
-                <TextView
-                    android:id="@+id/detail_item_value"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
+                    android:id="@+id/detail_item_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:background="@color/colorWhite"
-                    android:text="@string/lowprice"
-                    android:textColor="@color/red"
+                    android:text="안드로이드 연습용 텍스트"
                     android:textSize="26sp" />
 
+                <LinearLayout
+                    android:id="@+id/detailPriceArray"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="최저가"
+                        android:textColor="@color/red"
+                        android:textSize="24sp" />
+
+                    <TextView
+                        android:id="@+id/detail_item_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="8dp"
+                        android:background="@color/colorWhite"
+                        android:text="@string/lowprice"
+                        android:textColor="@color/red"
+                        android:textSize="26sp" />
+
+                </LinearLayout>
+
                 <TextView
-                    android:id="@+id/item_Fluctuations"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_weight="1"
+                    android:id="@+id/detail_firm_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:background="@color/colorWhite"
-                    android:text="@string/priceDifference"
-                    android:textColor="@color/blue"
-                    android:textSize="24sp" />
+                    android:gravity="end"
+                    android:text="@string/MallName"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/detail_firm_name"
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/detailToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/smarketyello"
+                android:theme="@style/ToolbarTheme"
+                app:layout_scrollFlags="scroll|snap"
+                app:layout_collapseMode="pin"
+                app:titleTextColor="@color/colorWhite" />
+
+
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+        <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/smarketyello"
+            app:layout_collapseMode="pin"
+            app:titleTextColor="#fff">
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/detail_TabLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorWhite"
-                android:gravity="end"
-                android:text="@string/MallName"
-                android:textSize="16sp" />
+                app:tabTextColor="#fff">
 
-        </LinearLayout>
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/detailTab1">
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/detail_tab"
+                </com.google.android.material.tabs.TabItem>
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/detailTab2" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/detailTab3" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/detailTab4"/>
+
+
+            </com.google.android.material.tabs.TabLayout>
+
+
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/detailTextCollection"
-            app:layout_constraintBottom_toTopOf="@id/detail_viewPage"/>
+            android:id="@+id/detail_frame">
 
-        <org.techtown.smarket_android.searchItemList.Pager.CustomViewPager
-            android:id="@+id/detail_viewPage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/detail_tab"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        </FrameLayout>
 
-</org.techtown.smarket_android.searchItemList.Pager.CustomScrollView>
 
-    <!--    <LinearLayout-->
-    <!--        xmlns:android="http://schemas.android.com/apk/res/android"-->
-    <!--        xmlns:tools="http://schemas.android.com/tools"-->
+    </androidx.core.widget.NestedScrollView>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+    <!--<androidx.coordinatorlayout.widget.CoordinatorLayout-->
+    <!--    xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+    <!--    xmlns:tools="http://schemas.android.com/tools"-->
+    <!--    android:id="@+id/detailScroll"-->
+    <!--    android:layout_width="match_parent"-->
+    <!--    android:layout_height="match_parent"-->
+    <!--    android:fillViewport="true"-->
+    <!--    tools:context=".MainActivity">-->
+
+    <!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+
+    <!--        android:descendantFocusability="blocksDescendants"-->
     <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent"-->
-    <!--        android:orientation="vertical">-->
+    <!--        android:layout_height="wrap_content">-->
 
     <!--        <androidx.appcompat.widget.Toolbar-->
     <!--            android:id="@+id/detailToolbar"-->
-    <!--            android:background="@color/smarketyello"-->
     <!--            android:layout_width="match_parent"-->
     <!--            android:layout_height="?attr/actionBarSize"-->
-    <!--            android:theme="@style/ThemeOverlay.AppCompat.Dark" />-->
+    <!--            android:background="@color/smarketyello"-->
+    <!--            android:theme="@style/ThemeOverlay.AppCompat.Dark"-->
+    <!--            app:layout_constraintBottom_toTopOf="@id/detail_item_image"-->
+    <!--            app:layout_constraintEnd_toEndOf="parent"-->
+    <!--            app:layout_constraintStart_toStartOf="parent"-->
+    <!--            app:layout_constraintTop_toTopOf="parent" />-->
 
-    <!--        <ScrollView-->
-    <!--            android:id="@+id/detailScroll"-->
-    <!--            android:fillViewport="true"-->
+    <!--        <ImageView-->
+    <!--            android:id="@+id/detail_item_image"-->
     <!--            android:layout_width="match_parent"-->
-    <!--            android:layout_height="match_parent">-->
+    <!--            android:layout_height="300dp"-->
+    <!--            android:layout_marginBottom="8dp"-->
+    <!--            android:background="@color/colorWhite"-->
+    <!--            android:src="@mipmap/ic_launcher"-->
+    <!--            app:layout_constraintBottom_toTopOf="@id/detailTextCollection"-->
+    <!--            app:layout_constraintEnd_toEndOf="parent"-->
+    <!--            app:layout_constraintStart_toStartOf="parent"-->
+    <!--            app:layout_constraintTop_toBottomOf="@+id/detailToolbar" />-->
 
+    <!--        <LinearLayout-->
+    <!--            android:id="@+id/detailTextCollection"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:orientation="vertical"-->
+    <!--            app:layout_constraintBottom_toTopOf="@+id/detail_tab"-->
+    <!--            app:layout_constraintEnd_toEndOf="parent"-->
+    <!--            app:layout_constraintStart_toStartOf="parent"-->
+    <!--            app:layout_constraintTop_toBottomOf="@id/detail_item_image">-->
 
-    <!--            <LinearLayout-->
-    <!--                android:id="@+id/detail_layout"-->
+    <!--            <TextView-->
+    <!--                android:id="@+id/detail_item_name"-->
     <!--                android:layout_width="match_parent"-->
     <!--                android:layout_height="wrap_content"-->
-    <!--                android:orientation="vertical">-->
+    <!--                android:background="@color/colorWhite"-->
+    <!--                android:text="안드로이드 연습용 텍스트"-->
+    <!--                android:textSize="26sp" />-->
 
-    <!--                <ImageView-->
-    <!--                    android:id="@+id/detail_item_image"-->
-    <!--                    android:layout_width="match_parent"-->
-    <!--                    android:layout_height="300dp"-->
-    <!--                    android:layout_marginLeft="4dp"-->
-    <!--                    android:layout_marginBottom="8dp"-->
-    <!--                    android:background="@color/colorWhite"-->
-    <!--                    android:src="@mipmap/ic_launcher" />-->
+    <!--            <LinearLayout-->
+    <!--                android:id="@+id/detailPriceArray"-->
+    <!--                android:layout_width="match_parent"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:orientation="horizontal">-->
 
     <!--                <TextView-->
-    <!--                    android:id="@+id/detail_item_name"-->
-    <!--                    android:layout_width="match_parent"-->
+    <!--                    android:layout_width="wrap_content"-->
     <!--                    android:layout_height="wrap_content"-->
+    <!--                    android:text="최저가"-->
+    <!--                    android:textColor="@color/red"-->
+    <!--                    android:textSize="24sp" />-->
+
+    <!--                <TextView-->
+    <!--                    android:id="@+id/detail_item_value"-->
+    <!--                    android:layout_width="wrap_content"-->
+    <!--                    android:layout_height="wrap_content"-->
+    <!--                    android:layout_marginLeft="8dp"-->
     <!--                    android:background="@color/colorWhite"-->
-    <!--                    android:text="안드로이드 연습용 텍스트"-->
+    <!--                    android:text="@string/lowprice"-->
+    <!--                    android:textColor="@color/red"-->
     <!--                    android:textSize="26sp" />-->
 
-    <!--                <LinearLayout-->
-    <!--                    android:layout_width="match_parent"-->
-    <!--                    android:layout_height="wrap_content"-->
-    <!--                    android:layout_marginLeft="4dp"-->
-    <!--                    android:background="@color/colorWhite"-->
-    <!--                    android:orientation="horizontal">-->
-
-    <!--                    <TextView-->
-    <!--                        android:layout_width="wrap_content"-->
-    <!--                        android:layout_height="wrap_content"-->
-    <!--                        android:text="최저가"-->
-    <!--                        android:textColor="@color/red"-->
-    <!--                        android:textSize="24sp" />-->
-
-    <!--                    <TextView-->
-    <!--                        android:id="@+id/detail_item_value"-->
-    <!--                        android:layout_width="wrap_content"-->
-    <!--                        android:layout_height="wrap_content"-->
-    <!--                        android:layout_marginLeft="8dp"-->
-    <!--                        android:background="@color/colorWhite"-->
-    <!--                        android:text="@string/lowprice"-->
-    <!--                        android:textColor="@color/red"-->
-    <!--                        android:textSize="26sp" />-->
-
-    <!--                    <TextView-->
-    <!--                        android:id="@+id/item_Fluctuations"-->
-    <!--                        android:layout_width="0dp"-->
-    <!--                        android:layout_height="wrap_content"-->
-    <!--                        android:layout_marginLeft="8dp"-->
-    <!--                        android:layout_weight="1"-->
-    <!--                        android:background="@color/colorWhite"-->
-    <!--                        android:text="@string/priceDifference"-->
-    <!--                        android:textColor="@color/blue"-->
-    <!--                        android:textSize="24sp"-->
-    <!--                        android:layout_marginStart="8dp" />-->
-
-
-    <!--                </LinearLayout>-->
-
     <!--                <TextView-->
-    <!--                    android:id="@+id/detail_firm_name"-->
-    <!--                    android:layout_width="match_parent"-->
+    <!--                    android:id="@+id/item_Fluctuations"-->
+    <!--                    android:layout_width="0dp"-->
     <!--                    android:layout_height="wrap_content"-->
+    <!--                    android:layout_marginStart="8dp"-->
+    <!--                    android:layout_marginLeft="8dp"-->
+    <!--                    android:layout_weight="1"-->
     <!--                    android:background="@color/colorWhite"-->
-    <!--                    android:gravity="end"-->
-    <!--                    android:text="@string/MallName"-->
-    <!--                    android:textSize="16sp" />-->
-
-<!--                    <com.google.android.material.tabs.TabLayout-->
-<!--                        android:id="@+id/detail_tab"-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content" />-->
-
-<!--                    <androidx.viewpager.widget.ViewPager-->
-<!--                        android:id="@+id/detail_viewPage"-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content" />-->
+    <!--                    android:text="@string/priceDifference"-->
+    <!--                    android:textColor="@color/blue"-->
+    <!--                    android:textSize="24sp" />-->
 
     <!--            </LinearLayout>-->
 
-    <!--        </ScrollView>-->
-    <!--    </LinearLayout>-->
+    <!--            <TextView-->
+    <!--                android:id="@+id/detail_firm_name"-->
+    <!--                android:layout_width="match_parent"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:background="@color/colorWhite"-->
+    <!--                android:gravity="end"-->
+    <!--                android:text="@string/MallName"-->
+    <!--                android:textSize="16sp" />-->
+
+    <!--        </LinearLayout>-->
+
+    <!--        <com.google.android.material.tabs.TabLayout-->
+    <!--            android:id="@+id/detail_tab"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            app:layout_constraintEnd_toEndOf="parent"-->
+    <!--            app:layout_constraintStart_toStartOf="parent"-->
+    <!--            app:layout_constraintTop_toBottomOf="@id/detailTextCollection"-->
+    <!--            app:layout_constraintBottom_toTopOf="@id/detail_viewPage"/>-->
+
+    <!--        <androidx.viewpager.widget.ViewPager-->
+    <!--            android:id="@+id/detail_viewPage"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            app:layout_constraintTop_toBottomOf="@id/detail_tab"-->
+    <!--            app:layout_constraintStart_toStartOf="parent"-->
+    <!--            app:layout_constraintEnd_toEndOf="parent"-->
+    <!--            app:layout_constraintBottom_toBottomOf="parent"/>-->
+
+    <!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+    <!--</androidx.coordinatorlayout.widget.CoordinatorLayout-->
+
+

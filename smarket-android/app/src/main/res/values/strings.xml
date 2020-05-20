@@ -8,6 +8,10 @@
     <string name="lowprice">33,000원</string>
     <string name="MallName">판매처 : OOO</string>
     <string name="priceDifference"> 500 </string>
+    <string name="detailTab1">뉴스</string>
+    <string name="detailTab2">상세보기</string>
+    <string name="detailTab3">영상보기</string>
+    <string name="detailTab4">리뷰</string>
     <string name="authEndpoint"> http://10.0.2.2:3000/api/auth </string>
     <string name="usersEndpoint"> http://10.0.2.2:3000/api/users </string>
     <string name="bookmarksEndpoint">http://10.0.2.2:3000/api/bookmarks</string>
@@ -15,4 +19,14 @@
     <string name="crawlingEndpoint"> http://10.0.2.2:3000/api/crawling </string>
     <string name="naverEndpoint"> http://10.0.2.2:3000/api/naver </string>
     <string name="youtubeEndpoint"> http://10.0.2.2:3000/api/youtube </string>
+    <string name="reviewTitle">리뷰제목</string>
+    <string name="reviewContent">리뷰내용입니다 가나다라마바사아자차카타파하 abcdefghijklmnopqrxtuvwxyz</string>
+    <string name="reviewUser">리뷰사용자</string>
+    <string name="reviewScore">100점</string>
+    <string name="reviewMall">리뮤몰</string>
+    <string name="reviewDate">2020.01.01</string>
+    <string name="newsTitle">[전문가 리뷰]이거  아는 사람 있음? 진짜 쉬운 아이폰 꿀팁… 메모앱 100% 활용하는 방법 총정리</string>
+    <string name="newsUser">TongTongTv</string>
+    <string name="newsHit">5,655</string>
+    <string name="newsDate">20/03/16</string>
 </resources>

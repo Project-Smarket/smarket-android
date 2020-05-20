@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/tableLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:background="@color/color_lite_gray"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/specTitle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/color_lite_gray"
+            android:text="@string/longTest"
+            android:layout_margin="1dp"
+            android:textSize="20sp"
+            android:gravity="center_vertical"
+            android:textColor="@color/cardview_dark_background"
+            android:paddingStart="8dp"
+            android:paddingLeft="8dp" />
+
+        <TextView
+            android:id="@+id/specContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="8dp"
+            android:paddingLeft="8dp"
+            android:textColor="@color/cardview_dark_background"
+            android:layout_margin="1dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:background="@color/colorWhite"
+            android:text="@string/lowprice"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <!--    <TableLayout-->
+    <!--        android:id="@+id/tableLayout"-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:stretchColumns="*"-->
+    <!--        android:background="@color/color_lite_gray"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent">-->
+
+    <!--        <TableRow>-->
+
+    <!--            <TextView-->
+    <!--                android:id="@+id/specTitle"-->
+    <!--                android:layout_width="match_parent"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:layout_margin="1dp"-->
+    <!--                android:background="@color/color_lite_gray"-->
+    <!--                android:text="@string/longTest"-->
+    <!--                android:textSize="20sp" />-->
+
+    <!--            <TextView-->
+    <!--                android:id="@+id/specContent"-->
+    <!--                android:layout_width="match_parent"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:background="@color/colorWhite"-->
+    <!--                android:text="@string/lowprice"-->
+    <!--                android:textSize="18sp" />-->
+    <!--        </TableRow>-->
+
+    <!--    </TableLayout>-->
