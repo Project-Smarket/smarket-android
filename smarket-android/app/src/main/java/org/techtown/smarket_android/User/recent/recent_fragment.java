@@ -1,6 +1,9 @@
 package org.techtown.smarket_android.User.recent;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,6 +32,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.smarket_android.Class.SearchedItem;
+import org.techtown.smarket_android.MainNavigation.AlarmReceiver;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.Class.BookmarkAlarm;
 
@@ -63,6 +67,11 @@ public class recent_fragment extends Fragment {
     private TextView check_alarmList_user_id;
     private TextView check_alarmList_item_title;
 
+    private Button remove_alarm;
+    private TextView alarm_textView;
+
+    private int alarm_unique_id = 1212;
+
     private SharedPreferences userFile;
     private String user_id;
     private String access_token;
@@ -72,7 +81,7 @@ public class recent_fragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        Date date= new Date();
+        Date date = new Date();
         Log.d("DATE", "onCreateView: " + date.toString());
         Calendar calendar = Calendar.getInstance();
         Log.d("Calandar", "onCreateView: " + calendar.getTimeInMillis());
@@ -86,6 +95,9 @@ public class recent_fragment extends Fragment {
         bookmarkAlarmList_time = viewGroup.findViewById(R.id.check_bookmarkalarm5);
         bookmarkList_foldername = viewGroup.findViewById(R.id.check_bookmarklist);
         remove_bookmarkList = viewGroup.findViewById(R.id.remove_bookmarkList);
+
+        remove_alarm = viewGroup.findViewById(R.id.remove_alarm);
+        alarm_textView = viewGroup.findViewById(R.id.alarm_textview);
 
         remove_alarmList = viewGroup.findViewById(R.id.remove_alarmList);
         check_alarmList = viewGroup.findViewById(R.id.check_alarmlist);
@@ -120,17 +132,64 @@ public class recent_fragment extends Fragment {
             }
         });
 
+        check_Alarm();
+
+        remove_alarm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                remove_Alarm();
+            }
+        });
+
         return viewGroup;
     }
 
-    private void remove_alarmlist(){
+    private void check_Alarm() {
+        // 설정된 알람 삭제
+
+
+        AlarmManager am = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(getContext(), AlarmReceiver.class);
+        PendingIntent sender = PendingIntent.getBroadcast(getContext(), alarm_unique_id, intent, PendingIntent.FLAG_NO_CREATE);
+
+        if (sender == null) {
+            // TODO: 이미 설정된 알람이 없는 경우
+            alarm_textView.setText("알람이 없습니다");
+        } else {
+            // TODO: 이미 설정된 알람이 있는 경우
+            alarm_textView.setText("알람이 설정되어있습니다");
+        }
+
+    }
+
+    // 설정된 알람 삭제
+    private void remove_Alarm() {
+
+        AlarmManager am = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(getContext(), AlarmReceiver.class);
+        PendingIntent sender = PendingIntent.getBroadcast(getContext(), alarm_unique_id, intent, PendingIntent.FLAG_NO_CREATE);
+
+        if (sender == null) {
+            // TODO: 이미 설정된 알람이 없는 경우
+        } else {
+            // TODO: 이미 설정된 알람이 있는 경우
+            sender = PendingIntent.getBroadcast(getContext(), 0, intent, 0);
+            am.cancel(sender);
+            sender.cancel();
+        }
+
+        check_Alarm();
+
+    }
+
+    private void remove_alarmlist() {
         userFile = getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = userFile.edit();
         editor.putString("alarmList", null);
         editor.apply();
     }
 
-    private void set_alamrList(){
+    private void set_alamrList() {
         List<SearchedItem> alarmList;
         userFile = getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE);
         if (userFile.getString("alarmList", null) != null) {
@@ -172,7 +231,7 @@ public class recent_fragment extends Fragment {
         editor.apply();
     }
 
-    private void remove_folderlist(){
+    private void remove_folderlist() {
         userFile = getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = userFile.edit();
         editor.putString("bookmarkFolderList", null);
@@ -232,7 +291,7 @@ public class recent_fragment extends Fragment {
         }
     }
 
-    private void set_bookmarkFolderList(){
+    private void set_bookmarkFolderList() {
         List<String> bookmarkFolderList;
         userFile = getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE);
         if (userFile.getString("bookmarkFolderList", null) != null) {

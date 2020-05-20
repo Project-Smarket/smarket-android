@@ -1,18 +1,18 @@
 package org.techtown.smarket_android.searchItemList.Request;
 
-import android.util.Log;
-import android.widget.TextView;
+        import android.util.Log;
+        import android.widget.TextView;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
+        import com.android.volley.Response;
+        import com.android.volley.VolleyError;
+        import com.android.volley.toolbox.StringRequest;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
+        import java.io.UnsupportedEncodingException;
+        import java.net.URLEncoder;
+        import java.util.HashMap;
+        import java.util.Map;
 
-import static com.android.volley.VolleyLog.TAG;
+        import static com.android.volley.VolleyLog.TAG;
 
 
 public class searchRequest extends StringRequest {
