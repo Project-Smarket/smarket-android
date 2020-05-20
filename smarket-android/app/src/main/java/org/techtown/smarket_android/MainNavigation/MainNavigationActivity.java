@@ -17,7 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.json.JSONArray;
-import org.techtown.smarket_android.Alaram.alarm_fragment;
+import org.techtown.smarket_android.Alarm.alarm_fragment;
 import org.techtown.smarket_android.Hotdeal.hotdeal_fragment;
 import org.techtown.smarket_android.NewSearch.newsearch_fragment;
 import org.techtown.smarket_android.R;

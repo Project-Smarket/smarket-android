@@ -27,7 +27,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.Class.BookmarkAlarm;
+import org.techtown.smarket_android.BookmarkClass.BookmarkAlarm;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;

@@ -1,12 +1,10 @@
-package org.techtown.smarket_android.Alaram;
+package org.techtown.smarket_android.Alarm;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +12,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.techtown.smarket_android.Class.SearchedItem;
+import org.techtown.smarket_android.BookmarkClass.SearchedItem;
 import org.techtown.smarket_android.R;
 
 import java.io.IOException;

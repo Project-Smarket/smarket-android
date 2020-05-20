@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import org.techtown.smarket_android.Alaram.alarm_fragment;
+import org.techtown.smarket_android.Alarm.alarm_fragment;
 import org.techtown.smarket_android.Hotdeal.home_fragment;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.User.user_login_fragment;

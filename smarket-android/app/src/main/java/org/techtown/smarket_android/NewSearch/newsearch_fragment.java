@@ -1,7 +1,10 @@
 package org.techtown.smarket_android.NewSearch;
 
-import android.app.FragmentTransaction;
+import android.animation.ObjectAnimator;
+import android.animation.StateListAnimator;
+import android.app.ActionBar;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 
 import com.android.volley.RequestQueue;
@@ -10,26 +13,27 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.view.ViewCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Layout;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,9 +41,8 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.techtown.smarket_android.Class.SearchedItem;
+import org.techtown.smarket_android.BookmarkClass.SearchedItem;
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
 import org.techtown.smarket_android.searchItemList.ClearEditText;
 import org.techtown.smarket_android.searchItemList.RecyclerAdapter;
 import org.techtown.smarket_android.searchItemList.RecyclerDecoration;
@@ -50,13 +53,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.android.volley.VolleyLog.TAG;
-import static org.techtown.smarket_android.R.color.red;
 
 public class newsearch_fragment extends Fragment {
 
     private ViewGroup viewGroup;
     private RecyclerView recyclerView;
-    private String txt;
     private RecyclerAdapter adapter;
     private ProgressBar search_progressBar;
     private int start = 1;
@@ -66,57 +67,84 @@ public class newsearch_fragment extends Fragment {
     private AppBarLayout mAppBarLayout;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private Toolbar toolbar;
+    private NestedScrollView nestedScrollView;
 
+    // 검색창을 통해 검색을 완료했는지 검사
     private boolean isUpdate = false;
-    private boolean isItemList = false;
+
+    // moreLoad가 실행중인지 검사
+    private boolean isMoreLoad = false;
+
+    private String searched_item = "";
+
 
     // 검색한 데이터 가져오기
     private List<SearchedItem> itemList;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.activity_newsearch_fragment, container, false);
-        search_progressBar = viewGroup.findViewById(R.id.newsearch_progressBar);
-        search_progressBar.setVisibility(View.GONE);
-        itemList = new ArrayList<>();
-
-        // 검색 데이터 가져오기
-        CreateList();
-
         mAppBarLayout = viewGroup.findViewById(R.id.app_bar);
         collapsingToolbarLayout = viewGroup.findViewById(R.id.newsearch_collaps);
-
         toolbar = viewGroup.findViewById(R.id.toolbar);
+        search_text = viewGroup.findViewById(R.id.newsearch_editText);
+        search_progressBar = viewGroup.findViewById(R.id.newsearch_progressBar);
+        search_progressBar.setVisibility(View.GONE);
 
-        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+
+        itemList = new ArrayList<>();
+
+        // recyclerView 설정
+        set_recyclerView();
+
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         getActivity().setTitle("");
 
-        search_text = viewGroup.findViewById(R.id.newsearch_editText);
+
+        final AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) collapsingToolbarLayout.getLayoutParams();
+        params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED);
+
+
+        // search_text를 눌렀을 때 start 초기화
+
+
+        // 키보드에서 "검색" 버튼 눌렀을 때 서버에 검색 요청
         search_text.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 itemList.clear();
+                params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED);
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    // 검색되었던 제품명과 현재 검색한 제품명이 다를 경우, start 초기화
+                    if (!searched_item.equals(search_text.getText().toString())) {
+                        start = 1;
+                    }
                     try {
-                        txt = search_text.getText().toString();
-                        search_text.setText("");
+                        // 현재 검색된 제품명 저장
+                        searched_item = search_text.getText().toString();
+                        // Appbar 축소
                         mAppBarLayout.setExpanded(false);
+                        // AppBar 그림자 설정
+                        StateListAnimator stateListAnimator = null;
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                            stateListAnimator = new StateListAnimator();
+                            stateListAnimator.addState(new int[0], ObjectAnimator.ofFloat(mAppBarLayout, "elevation", 16));
+                            mAppBarLayout.setStateListAnimator(stateListAnimator);
+                        }
+                        // 프로그레스바 실행
                         search_progressBar.setVisibility(View.VISIBLE);
-                        //collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(R.color.colorNone));
-                        collapsingToolbarLayout.setTitle(search_text.getText().toString());
-                        collapsingToolbarLayout.setCollapsedTitleTextColor(getResources().getColor(R.color.colorBlack));
-                        collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(R.color.colorNone));
+                        // 검색된 제품명으로 서버에 요청
                         getJson();
                     } catch (UnsupportedEncodingException e) {
 
-
                     }
-                    return true;
                 }
                 return false;
             }
         });
 
+        // 검색 완료 후 검색 창을 누르면 고양이가 내려옴
         toolbar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,35 +154,10 @@ public class newsearch_fragment extends Fragment {
         });
 
 
-
-
-
-
-
-        // 이미 데이터를 가져왔으면 moreLoad하지 않음
-        /*if (!isItemList) {
-            try {
-                search_progressBar.setVisibility(View.VISIBLE);
-                getJson();
-                isItemList = true;
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-        }*/
-
-        /*FloatingActionButton fab = (FloatingActionButton) viewGroup.findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
-
         return viewGroup;
     }
 
-    private void CreateList() {
+    private void set_recyclerView() {
 
         // 아이템 줄간격 설정
         RecyclerDecoration spaceDecoration = new RecyclerDecoration(20);
@@ -175,8 +178,9 @@ public class newsearch_fragment extends Fragment {
                     Log.i(TAG, "Top of list");
                     // 스크롤 가장 아래로 내려왔을 때
                 } else if (!recyclerView.canScrollVertically(1)) {
-                    //Log.i(TAG, "End of list");
-                    if (!isUpdate) {
+                    Log.i(TAG, "End of list");
+                    if (!isMoreLoad) {
+                        isMoreLoad = true;
                         try {
                             search_progressBar.setVisibility(View.VISIBLE);
                             getJson();
@@ -187,12 +191,14 @@ public class newsearch_fragment extends Fragment {
                 }
             }
         });
+
     }
 
 
     private void getJson() throws UnsupportedEncodingException {
 
-        searchRequest searchRequest = new searchRequest(start, display, txt, new Response.Listener<String>() {
+        String url = getString(R.string.naverEndpoint) + "/search?query=";
+        searchRequest searchRequest = new searchRequest(url, start, display, searched_item, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
@@ -214,11 +220,24 @@ public class newsearch_fragment extends Fragment {
                         itemList.add(item);
                     }
                     adapter.notifyDataSetChanged();
-                    isUpdate = false;
+
+                    // 상품 검색 및 조회 완료 후 "로딩 바" 안보이게 설정
                     search_progressBar.setVisibility(View.GONE);
+
+                    // 상품 검색 및 조회 완료 후 moreLoad 시 검색 위치 재설정
                     start += display;
 
+                    // 상품 검색 및 조회 완료 후 isUpdate : true 설정
+                    isMoreLoad = false;
 
+                    isUpdate = true;
+                    // 상품 검색 및 조회 완료 후 Appbar의 높이 재조정(가운데에서 약간 위로)
+                    if (isUpdate) {
+                        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) mAppBarLayout.getLayoutParams();
+                        params.height = 600;
+                        mAppBarLayout.setLayoutParams(params);
+                        recyclerView.setBackgroundColor(getResources().getColor(R.color.color_lite_gray));
+                    }
                     hideKeyboard();
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -232,7 +251,6 @@ public class newsearch_fragment extends Fragment {
                 Toast.makeText(getContext(), error + "", Toast.LENGTH_LONG).show();
             }
         });
-        isUpdate = true;
         RequestQueue queue = Volley.newRequestQueue(getContext());
         queue.add(searchRequest);
     }
@@ -243,8 +261,8 @@ public class newsearch_fragment extends Fragment {
     }
 
     // 키보드 창 내림
-    private void hideKeyboard(){
-        InputMethodManager imm= (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(search_text.getWindowToken(), 0);
     }
 }

@@ -8,9 +8,6 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -26,7 +23,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -46,11 +42,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.techtown.smarket_android.Class.BookmarkAlarm;
-import org.techtown.smarket_android.Class.SearchedItem;
+import org.techtown.smarket_android.BookmarkClass.BookmarkAlarm;
+import org.techtown.smarket_android.BookmarkClass.SearchedItem;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.User.Bookmark.bookmark_dialog;
 import org.techtown.smarket_android.User.Bookmark.bookmark_recyclerview_adapater;
@@ -540,7 +535,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     // access-token 갱신 요청 후 폴더 목록 재요청 - 실패 시 logout
     private void refresh_accessToken(final String request_type, final ItemViewHolder holder) {
         Log.d(TAG, "refresh_accessToken: access-token을 갱신합니다.");
-        String url = "http://10.0.2.2:3000/api/auth/refresh"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        String url = mContext.getString(R.string.authEndpoint)+"/refresh"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -689,58 +684,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         user_id = userFile.getString("user_id", null);
         access_token = userFile.getString("access_token", null);
         refresh_token = userFile.getString("refresh_token", null);
-    }
-
-    // 액세스 토큰 갱신
-    private void refresh() {
-        String reques_url = mContext.getResources().getString(R.string.authEndpoint) + "/refresh"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, reques_url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    boolean success = jsonObject.getBoolean("success");
-                    String re_access_token = jsonObject.getString("data");
-                    if (success) {
-                        // ** 액세스 토큰 갱신 성공 시 ** //
-                        userFile = mContext.getSharedPreferences("userFile", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = userFile.edit();
-                        editor.putString("access_token", re_access_token);
-                    } else if (!success)
-                        // ** 액세스 토큰 갱신 실패 시 ** //
-
-                        Toast.makeText(mContext, jsonObject.toString(), Toast.LENGTH_LONG).show();
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                // ** 리프레시 토큰 만료, 사용자 재로그인 및 새 토큰 발급 필요 ** //
-                SharedPreferences.Editor editor = userFile.edit();
-                editor.putString("user_id", null);
-                editor.putString("access_token", null);
-                editor.putString("refresh_token", null);
-                editor.commit();
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
-                        .setTitle("등록 실패")
-                        .setMessage("로그인이 필요합니다.")
-                        .setPositiveButton("확인", null);
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap();
-                Log.d("TOKEN", "token: " + refresh_token);
-                params.put("x-refresh-token", refresh_token);
-                return params;
-            }
-        };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
-        requestQueue.add(stringRequest);
     }
 
     // 키보드 입력 후 엔터 입력시 키보드 창 내림

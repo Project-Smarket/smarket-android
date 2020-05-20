@@ -1,4 +1,4 @@
-package org.techtown.smarket_android.Alaram;
+package org.techtown.smarket_android.Alarm;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
