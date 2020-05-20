@@ -97,8 +97,6 @@ public class search_list_fragment extends Fragment {
         return viewGroup;
     }
 
-
-
     private void CreateList() {
         recyclerView = viewGroup.findViewById(R.id.search_item_list);
         recyclerView.setHasFixedSize(true);
