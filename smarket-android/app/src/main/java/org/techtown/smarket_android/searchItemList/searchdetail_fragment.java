@@ -83,6 +83,12 @@ public class searchdetail_fragment extends Fragment {
 
         ReceiveData();
 
+        try {
+            getJSon();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
         Button gotoMall = viewGroup.findViewById(R.id.detail_gotoMall);
         gotoMall.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,14 +100,6 @@ public class searchdetail_fragment extends Fragment {
                 }
             }
         });
-
-
-        try {
-            getJSon();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
 
         settingToolbar();
         setHasOptionsMenu(true);
@@ -204,7 +202,8 @@ public class searchdetail_fragment extends Fragment {
                 if (detail_news_fragment == null) {
                     detail_news_fragment = new search_detail_news_fragment();
                     Bundle newsBundle = new Bundle();
-                    List<news> list = newsList;
+                    List<news> list = new ArrayList<>();
+                    list = newsList;
                     newsBundle.putSerializable("news", (Serializable) list);
                     detail_news_fragment.setArguments(newsBundle);
                     fragmentManager.beginTransaction().add(R.id.detail_frame, detail_news_fragment).addToBackStack(null).commit();
@@ -236,34 +235,14 @@ public class searchdetail_fragment extends Fragment {
                     fragmentManager.beginTransaction().hide(detail_news_fragment).commit();
                 if (detail_of_detail_fragment != null)
                     fragmentManager.beginTransaction().show(detail_of_detail_fragment).commit();
-                if (detail_video_fragment != null)
-                    fragmentManager.beginTransaction().hide(detail_video_fragment).commit();
                 if (detail_review_fragment != null)
                     fragmentManager.beginTransaction().hide(detail_review_fragment).commit();
+                if (detail_video_fragment != null)
+                    fragmentManager.beginTransaction().hide(detail_video_fragment).commit();
 
                 break;
             }
             case 2: {
-                if (detail_video_fragment == null) {
-                    detail_video_fragment = new search_detail_video_fragment();
-                    Bundle itemBundle = new Bundle();
-                    itemBundle.putString("txt", in);
-                    detail_video_fragment.setArguments(itemBundle);
-                    fragmentManager.beginTransaction().add(R.id.detail_frame, detail_video_fragment).addToBackStack(null).commit();
-                }
-
-                if (detail_news_fragment != null)
-                    fragmentManager.beginTransaction().hide(detail_news_fragment).commit();
-                if (detail_of_detail_fragment != null)
-                    fragmentManager.beginTransaction().hide(detail_of_detail_fragment).commit();
-                if (detail_video_fragment != null)
-                    fragmentManager.beginTransaction().show(detail_video_fragment).commit();
-                if (detail_review_fragment != null)
-                    fragmentManager.beginTransaction().hide(detail_review_fragment).commit();
-
-                break;
-            }
-            case 3: {
                 if (detail_review_fragment == null) {
                     detail_review_fragment = new search_detail_review_fragment();
                     Bundle reviewBundle = new Bundle();
@@ -277,11 +256,34 @@ public class searchdetail_fragment extends Fragment {
                     fragmentManager.beginTransaction().hide(detail_news_fragment).commit();
                 if (detail_of_detail_fragment != null)
                     fragmentManager.beginTransaction().hide(detail_of_detail_fragment).commit();
-                if (detail_video_fragment != null)
-                    fragmentManager.beginTransaction().hide(detail_video_fragment).commit();
                 if (detail_review_fragment != null)
                     fragmentManager.beginTransaction().show(detail_review_fragment).commit();
+                if (detail_video_fragment != null)
+                    fragmentManager.beginTransaction().hide(detail_video_fragment).commit();
+
+                break;
             }
+            case 3: {
+                if (detail_video_fragment == null) {
+                    detail_video_fragment = new search_detail_video_fragment();
+                    Bundle itemBundle = new Bundle();
+                    itemBundle.putString("txt", in);
+                    detail_video_fragment.setArguments(itemBundle);
+                    fragmentManager.beginTransaction().add(R.id.detail_frame, detail_video_fragment).addToBackStack(null).commit();
+                }
+
+                if (detail_news_fragment != null)
+                    fragmentManager.beginTransaction().hide(detail_news_fragment).commit();
+                if (detail_of_detail_fragment != null)
+                    fragmentManager.beginTransaction().hide(detail_of_detail_fragment).commit();
+                if (detail_review_fragment != null)
+                    fragmentManager.beginTransaction().hide(detail_review_fragment).commit();
+                if (detail_video_fragment != null)
+                    fragmentManager.beginTransaction().show(detail_video_fragment).commit();
+
+                break;
+            }
+
         }
 
     }
@@ -295,7 +297,9 @@ public class searchdetail_fragment extends Fragment {
                     JSONObject jsonObject = new JSONObject(response);
 
                     dodJson(jsonObject); //상세정보 json파싱
+
                     reviewJson(jsonObject); //리뷰 json파싱
+
                     newsJson(jsonObject); //뉴스 json파싱
 
                     fragmentManager = getChildFragmentManager();
