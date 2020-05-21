@@ -58,7 +58,7 @@ public class hotdeal_page6_fmhotdeal extends Fragment {
     }
 
     private void request_fmhotdeal() {
-        String url = "http://10.0.2.2:3000/api/crawling/fmhotdeal/1"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        String url = "http://10.0.2.2:3000/api/crawling/fmkorea/1"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {

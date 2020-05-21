@@ -360,7 +360,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             item_id = data.getItem_id();
             item_type = data.getItem_type();
             item_lprice = Integer.parseInt(data.getItem_price());
-            item_price.setText(String.format("%,d", item_lprice)+"원");
+            item_price.setText(String.format("%,d", item_lprice));
             item_image_url = data.getItem_image();
             item_mall_url.setText(data.getItem_mall());
 

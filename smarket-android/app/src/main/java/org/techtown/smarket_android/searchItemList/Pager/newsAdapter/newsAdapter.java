@@ -58,12 +58,13 @@ public class newsAdapter extends RecyclerView.Adapter<newsAdapter.ViewHolder> {
     public class ViewHolder extends RecyclerView.ViewHolder{
         private ImageView newsImg;
         private TextView newsTitle;
-        private TextView newsUrl;
         private TextView newsHit;
         private TextView newsUser;
         private TextView newsDate;
         private String newsImageUrl;
         private Bitmap bitmap;
+
+        private String newsUrl;
 
         ViewHolder(final View itemView){
             super(itemView);
@@ -71,7 +72,6 @@ public class newsAdapter extends RecyclerView.Adapter<newsAdapter.ViewHolder> {
             newsUser = itemView.findViewById(R.id.newsUser);
             newsHit = itemView.findViewById(R.id.newsHit);
             newsDate = itemView.findViewById(R.id.newsDate);
-            newsUrl = itemView.findViewById(R.id.newsUrl);
             newsImg =itemView.findViewById(R.id.newsImage);
         }
 
@@ -80,7 +80,7 @@ public class newsAdapter extends RecyclerView.Adapter<newsAdapter.ViewHolder> {
             newsUser.setText(data.getNewsUser());
             newsHit.setText(data.getNewsHit());
             newsDate.setText(data.getNewsDate());
-            newsUrl.setText(data.getNewsUrl());
+            newsUrl = data.getNewsUrl();
             newsImageUrl = data.getNewsImg();
 
             set_item_image();

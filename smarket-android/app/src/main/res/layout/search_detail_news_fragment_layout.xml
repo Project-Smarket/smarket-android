@@ -8,7 +8,7 @@
         android:id="@+id/newsRecycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/color_lite_gray"
+        android:background="@color/colorWhite"
         android:scrollbarFadeDuration="0"
         android:scrollbarSize="5dp"
         android:scrollbarThumbVertical="@android:color/darker_gray"
