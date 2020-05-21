@@ -9,12 +9,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class danawaRequest extends StringRequest {
-    final static private String urlRouter = "http://10.0.2.2:3000/api/item/detail?query=";
     private Response.Listener<String> responseListener;
     private Response.ErrorListener errorListener;
 
-    public danawaRequest(String detailItem, Response.Listener<String> responseListener, Response.ErrorListener errorListener) throws UnsupportedEncodingException{
-        super(Method.GET, urlRouter+ URLEncoder.encode(detailItem, "UTF-8")+"&reviewcount=5", responseListener, errorListener);
+    public danawaRequest(String url, String detailItem, Response.Listener<String> responseListener, Response.ErrorListener errorListener) throws UnsupportedEncodingException{
+        super(Method.GET, url+ URLEncoder.encode(detailItem, "UTF-8")+"&reviewcount=5", responseListener, errorListener);
         this.responseListener = responseListener;
         this.errorListener = errorListener;
     }
