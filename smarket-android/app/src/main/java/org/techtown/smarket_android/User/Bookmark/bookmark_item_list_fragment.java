@@ -45,9 +45,9 @@ import com.google.gson.reflect.TypeToken;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.techtown.smarket_android.BookmarkClass.Bookmark;
+import org.techtown.smarket_android.smarketClass.Bookmark;
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.BookmarkClass.BookmarkAlarm;
+import org.techtown.smarket_android.smarketClass.BookmarkAlarm;
 import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
 import org.techtown.smarket_android.searchItemList.RecyclerDecoration;
 

@@ -44,8 +44,8 @@ import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.techtown.smarket_android.BookmarkClass.BookmarkAlarm;
-import org.techtown.smarket_android.BookmarkClass.SearchedItem;
+import org.techtown.smarket_android.smarketClass.BookmarkAlarm;
+import org.techtown.smarket_android.smarketClass.SearchedItem;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.User.Bookmark.bookmark_dialog;
 import org.techtown.smarket_android.User.Bookmark.bookmark_recyclerview_adapater;
@@ -68,7 +68,7 @@ import static com.android.volley.VolleyLog.TAG;
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemViewHolder> {
 
     public interface OnRecyclerClickListener {
-        void OnRecyclerClickListener(View v, int position);
+        void OnRecyclerClickListener(View v, int position, String[] item_data);
     }
 
     private OnRecyclerClickListener onRecyclerClickListener = null;
@@ -322,11 +322,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
         private String item_image_url;
         private ImageView item_image;
-
-        private ImageView heart_btn;
-        private TextView item_mall_url;
         private Bitmap bitmap;
 
+        private ImageView heart_btn;
+
+        private String[] item_data;
 
         ItemViewHolder(final View itemView) {
             super(itemView);
@@ -334,8 +334,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             item_title = itemView.findViewById(R.id.search_list_item_name);
             item_price = itemView.findViewById(R.id.search_list_item_value);
             item_image = itemView.findViewById(R.id.search_list_item_image);
-            item_mall_url = itemView.findViewById(R.id.search_mallName);
             heart_btn = itemView.findViewById(R.id.heart_btn);
+            item_data = new String[8];
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -343,7 +343,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                     int pos = getAdapterPosition();
                     if (pos != RecyclerView.NO_POSITION) {
                         if (onRecyclerClickListener != null) {
-                            onRecyclerClickListener.OnRecyclerClickListener(v, pos);
+                            onRecyclerClickListener.OnRecyclerClickListener(v, pos, item_data);
                         }
                     }
                 }
@@ -357,7 +357,15 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             item_lprice = Integer.parseInt(data.getItem_price());
             item_price.setText(String.format("%,d", item_lprice));
             item_image_url = data.getItem_image();
-            item_mall_url.setText(data.getItem_mall());
+
+            item_data[0] = data.getItem_mallName();
+            item_data[1] = data.getItem_link();
+            item_data[2] = data.getItem_brand();
+            item_data[3] = data.getItem_maker();
+            item_data[4] = data.getItem_category1();
+            item_data[5] = data.getItem_category2();
+            item_data[6] = data.getItem_category3();
+            item_data[7] = data.getItem_category4();
 
             set_item_image();
 

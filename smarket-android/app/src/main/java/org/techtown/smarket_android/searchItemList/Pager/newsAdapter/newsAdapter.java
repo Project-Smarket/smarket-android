@@ -12,10 +12,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.techtown.smarket_android.BookmarkClass.news;
-import org.techtown.smarket_android.BookmarkClass.news;
+import org.techtown.smarket_android.smarketClass.news;
 import org.techtown.smarket_android.R;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.io.InputStream;

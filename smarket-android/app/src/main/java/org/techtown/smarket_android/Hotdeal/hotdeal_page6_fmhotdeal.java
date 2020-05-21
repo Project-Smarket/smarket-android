@@ -7,8 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,7 +21,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.techtown.smarket_android.BookmarkClass.Hotdeal;
+import org.techtown.smarket_android.smarketClass.Hotdeal;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.searchItemList.RecyclerDecoration;
 
@@ -59,7 +57,7 @@ public class hotdeal_page6_fmhotdeal extends Fragment {
     }
 
     private void request_fmhotdeal() {
-        String url = getString(R.string.crawlingEndpoint) + "/fmhotdeal/1"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        String url = getString(R.string.crawlingEndpoint) + "/fmkorea/1"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {

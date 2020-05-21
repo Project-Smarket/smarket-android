@@ -20,9 +20,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.techtown.smarket_android.BookmarkClass.BookmarkAlarm;
+import org.techtown.smarket_android.smarketClass.BookmarkAlarm;
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.BookmarkClass.Bookmark;
+import org.techtown.smarket_android.smarketClass.Bookmark;
 
 import java.io.IOException;
 import java.io.InputStream;

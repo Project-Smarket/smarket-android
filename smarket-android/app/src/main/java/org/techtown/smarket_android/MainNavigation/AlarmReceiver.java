@@ -23,8 +23,8 @@ import com.google.gson.reflect.TypeToken;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.techtown.smarket_android.BookmarkClass.BookmarkAlarm;
-import org.techtown.smarket_android.BookmarkClass.SearchedItem;
+import org.techtown.smarket_android.smarketClass.BookmarkAlarm;
+import org.techtown.smarket_android.smarketClass.SearchedItem;
 import org.techtown.smarket_android.R;
 
 import java.lang.reflect.Type;
@@ -71,7 +71,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         Calendar calendar = Calendar.getInstance();
 
         // TODO : 각 시간별로 최저가 알람이 설정된 제품의 가격 정보 조회를 요청
-        int hour = calendar.get(Calendar.SECOND);
+        int hour = calendar.get(Calendar.MINUTE);
         Toast.makeText(context, String.valueOf(hour), Toast.LENGTH_SHORT).show();
         int selection;
         switch (hour) {
@@ -96,23 +96,23 @@ public class AlarmReceiver extends BroadcastReceiver {
         // 설정된 selection으로 가격 시간별 상품 분류 및 가격 조회 요청
         request_classified_bookmarkAlarmList(selection, context);
 
-        // 알람 10초 - 오후 12시
-        if (calendar.get(Calendar.SECOND) >= 0 && calendar.get(Calendar.SECOND) < 10) {
-            calendar.set(Calendar.SECOND, 10);
+        // 알람 10분 - 오후 12시
+        if (calendar.get(Calendar.MINUTE) >= 0 && calendar.get(Calendar.MINUTE) < 10) {
+            calendar.set(Calendar.MINUTE, 10);
         }
-        // 알람 20초 - 오후 3시
-        else if (calendar.get(Calendar.SECOND) >= 10 && calendar.get(Calendar.SECOND) < 20) {
-            calendar.set(Calendar.SECOND, 20);
+        // 알람 20분 - 오후 3시
+        else if (calendar.get(Calendar.MINUTE) >= 10 && calendar.get(Calendar.MINUTE) < 20) {
+            calendar.set(Calendar.MINUTE, 20);
         }
-        // 알람 30초 - 오후 6시
-        else if (calendar.get(Calendar.SECOND) >= 20 && calendar.get(Calendar.SECOND) < 30) {
-            calendar.set(Calendar.SECOND, 30);
-        } // 알람 40초 - 오후 9시
-        else if (calendar.get(Calendar.SECOND) >= 30 && calendar.get(Calendar.SECOND) < 40) {
-            calendar.set(Calendar.SECOND, 40);
+        // 알람 30분 - 오후 6시
+        else if (calendar.get(Calendar.MINUTE) >= 20 && calendar.get(Calendar.MINUTE) < 30) {
+            calendar.set(Calendar.MINUTE, 30);
+        } // 알람 40분 - 오후 9시
+        else if (calendar.get(Calendar.MINUTE) >= 30 && calendar.get(Calendar.MINUTE) < 40) {
+            calendar.set(Calendar.MINUTE, 40);
         } else {
-            calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) + 1);
-            calendar.set(Calendar.SECOND, 10);
+            calendar.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY) + 1);
+            calendar.set(Calendar.MINUTE, 10);
         }
 
 
@@ -132,7 +132,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Log.d("알람", date.toString() + " : 알람이 " + calendar.get(Calendar.SECOND) + "초로 설정되었습니다");
+            Log.d("알람", date.toString() + " : 알람이 " + calendar.get(Calendar.MINUTE) + "분로 설정되었습니다");
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
         }
     }
@@ -244,7 +244,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("REQUESTERROR", "onErrorResponse: " + error.toString());
+                Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show();
             }
         }
         ) {
@@ -293,7 +293,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
     // Request - 가격 변동된 제품의 푸쉬 알림 요청
     private void request_notification(final String pushtitle, final String alarm_type, final String item_lprice, final int updated_price, final Context context) {
-        String url = "http://10.0.2.2:3000/api/fcm/send"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        String url = context.getString(R.string.fcmEndpoint)+"/send"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -318,7 +318,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("REQUESTERROR", "onErrorResponse: " + error.toString());
+                Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show();
             }
         }
         ) {

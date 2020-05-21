@@ -2,9 +2,10 @@ package org.techtown.smarket_android.NewSearch;
 
 import android.animation.ObjectAnimator;
 import android.animation.StateListAnimator;
-import android.app.ActionBar;
 import android.content.Context;
-import android.os.Build;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import com.android.volley.RequestQueue;
@@ -19,21 +20,20 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.view.ViewCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.text.Layout;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,12 +41,13 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.techtown.smarket_android.BookmarkClass.SearchedItem;
+import org.techtown.smarket_android.smarketClass.SearchedItem;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.searchItemList.ClearEditText;
 import org.techtown.smarket_android.searchItemList.RecyclerAdapter;
 import org.techtown.smarket_android.searchItemList.RecyclerDecoration;
 import org.techtown.smarket_android.searchItemList.Request.searchRequest;
+import org.techtown.smarket_android.searchItemList.searchdetail_fragment;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -192,6 +193,20 @@ public class newsearch_fragment extends Fragment {
             }
         });
 
+        adapter.setOnRecyclerClickListener(new RecyclerAdapter.OnRecyclerClickListener() {
+            @Override
+            public void OnRecyclerClickListener(View v, int position, String[] item_data) {
+                searchdetail_fragment searchdetailFragment = new searchdetail_fragment();
+                Bundle bundle = settingBundle(v, item_data);
+                searchdetailFragment.setArguments(bundle);
+                //listClear();
+                adapter.notifyDataSetChanged();
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.main_layout, searchdetailFragment).addToBackStack(null);
+                fragmentTransaction.commitAllowingStateLoss();
+            }
+        });
+
     }
 
 
@@ -214,8 +229,15 @@ public class newsearch_fragment extends Fragment {
                         String item_lprice = key.getJSONObject(index).getString("lprice");
                         String item_image = key.getJSONObject(index).getString("image");
                         String item_mallName = key.getJSONObject(index).getString("mallName");
+                        String item_link = key.getJSONObject(index).getString("link");
+                        String item_brand = key.getJSONObject(index).getString("brand");
+                        String item_maker = key.getJSONObject(index).getString("maker");
+                        String item_category1 = key.getJSONObject(index).getString("category1");
+                        String item_category2 = key.getJSONObject(index).getString("category2");
+                        String item_category3 = key.getJSONObject(index).getString("category3");
+                        String item_category4 = key.getJSONObject(index).getString("category4");
 
-                        SearchedItem item = new SearchedItem(item_title, item_id, item_type, item_lprice, item_image, item_mallName);
+                        SearchedItem item = new SearchedItem(item_title, item_id, item_type, item_lprice, item_image, item_mallName, item_link, item_brand, item_maker,item_category1, item_category2, item_category3, item_category4);
 
                         itemList.add(item);
                     }
@@ -258,6 +280,23 @@ public class newsearch_fragment extends Fragment {
 
     public String removeTag(String html) throws Exception {
         return html.replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", "");
+    }
+
+    private Bundle settingBundle(View v, String[] item_data) {
+        Bundle bundle = new Bundle();
+        TextView item_name = v.findViewById(R.id.search_list_item_name);
+        TextView item_value = v.findViewById(R.id.search_list_item_value);
+        ImageView item_image = v.findViewById(R.id.search_list_item_image);
+
+        Drawable d = item_image.getDrawable();
+        Bitmap bitmap = ((BitmapDrawable) d).getBitmap();
+
+        bundle.putString("item_name", item_name.getText().toString());
+        bundle.putString("item_value", item_value.getText().toString());
+        bundle.putParcelable("item_image", bitmap);
+        bundle.putStringArray("item_data", item_data);
+
+        return bundle;
     }
 
     // 키보드 창 내림

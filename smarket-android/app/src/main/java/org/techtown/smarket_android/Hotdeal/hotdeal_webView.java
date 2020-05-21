@@ -37,16 +37,7 @@ public class hotdeal_webView extends AppCompatActivity {
         // 루리웹 mobile 웹페이지
         if(url.contains("https://bbs.ruliweb"))
             mUrl = url.replace("https://bbs.ruliweb", "https://m.ruliweb");
-        // 뽐뿌 mobile 웹페이지
-        else if(url.contains("http://www.ppomppu"))
-            mUrl = url;
-        else if(url.contains("https://www.fmkorea.com"))
-            mUrl = url;
-        else if(url.contains("https://www.clien.net"))
-            mUrl = url;
-        else if(url.contains("http://www.coolenjoy.net"))
-            mUrl = url;
-        else if(url.contains("https://post.malltail.com"))
+        else
             mUrl = url;
 
         Log.d("GET", "getUrl: " + mUrl);

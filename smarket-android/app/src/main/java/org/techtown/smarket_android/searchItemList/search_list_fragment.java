@@ -36,7 +36,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.techtown.smarket_android.BookmarkClass.SearchedItem;
+import org.techtown.smarket_android.smarketClass.SearchedItem;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.searchItemList.Request.searchRequest;
 
@@ -90,19 +90,6 @@ public class search_list_fragment extends Fragment {
 
         setHasOptionsMenu(true);
 
-        adapter.setOnRecyclerClickListener(new RecyclerAdapter.OnRecyclerClickListener() {
-            @Override
-            public void OnRecyclerClickListener(View v, int position) {
-                searchdetail_fragment searchdetailFragment = new searchdetail_fragment();
-                Bundle bundle = settingBundle(v);
-                searchdetailFragment.setArguments(bundle);
-                //listClear();
-                adapter.notifyDataSetChanged();
-                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.main_layout, searchdetailFragment).addToBackStack(null);
-                fragmentTransaction.commitAllowingStateLoss();
-            }
-        });
 
 
         return viewGroup;
@@ -172,9 +159,6 @@ public class search_list_fragment extends Fragment {
                         String item_image = key.getJSONObject(index).getString("image");
                         String item_mallName = key.getJSONObject(index).getString("mallName");
 
-                        SearchedItem item = new SearchedItem(item_title, item_id, item_type, item_lprice, item_image, item_mallName);
-
-                        itemList.add(item);
                     }
                     adapter.notifyDataSetChanged();
                     isUpdate = false;
@@ -292,7 +276,6 @@ public class search_list_fragment extends Fragment {
         TextView item_name = v.findViewById(R.id.search_list_item_name);
         TextView item_value = v.findViewById(R.id.search_list_item_value);
         ImageView item_image = v.findViewById(R.id.search_list_item_image);
-        TextView item_mall = v.findViewById(R.id.search_mallName);
 
         Drawable d = item_image.getDrawable();
         Bitmap bitmap = ((BitmapDrawable) d).getBitmap();
@@ -300,7 +283,6 @@ public class search_list_fragment extends Fragment {
         bundle.putString("item_name", item_name.getText().toString());
         bundle.putString("item_value", item_value.getText().toString());
         bundle.putParcelable("item_image", bitmap);
-        bundle.putString("item_mallName", item_mall.getText().toString());
         bundle.putString("txt", txt);
 
         return bundle;

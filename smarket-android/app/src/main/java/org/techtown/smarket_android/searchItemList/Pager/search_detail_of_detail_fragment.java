@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.searchItemList.Pager.dodAdapter.detailAdapter;
-import org.techtown.smarket_android.BookmarkClass.specList;
+import org.techtown.smarket_android.smarketClass.specList;
 
 import java.util.ArrayList;
 import java.util.List;

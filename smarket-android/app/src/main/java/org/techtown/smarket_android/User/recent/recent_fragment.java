@@ -20,10 +20,10 @@ import androidx.fragment.app.Fragment;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import org.techtown.smarket_android.BookmarkClass.SearchedItem;
+import org.techtown.smarket_android.smarketClass.SearchedItem;
 import org.techtown.smarket_android.MainNavigation.AlarmReceiver;
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.BookmarkClass.BookmarkAlarm;
+import org.techtown.smarket_android.smarketClass.BookmarkAlarm;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;

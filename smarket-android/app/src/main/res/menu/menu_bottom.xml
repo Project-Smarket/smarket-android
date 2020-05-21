@@ -3,13 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/tab_ex"
-        app:showAsAction="always"
-        android:icon="@drawable/bookmark"
-        android:enabled="true"
-        android:title="더보기"/>
-
-    <item
         android:id="@+id/tab1"
         app:showAsAction="always"
         android:icon="@drawable/search_icon"

@@ -1,4 +1,4 @@
-package org.techtown.smarket_android.BookmarkClass;
+package org.techtown.smarket_android.smarketClass;
 
 public class Hotdeal {
 
