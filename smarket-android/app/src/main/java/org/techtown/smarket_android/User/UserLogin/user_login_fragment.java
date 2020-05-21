@@ -39,6 +39,7 @@ import com.google.gson.JsonParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.techtown.smarket_android.NewSearch.newsearch_fragment;
 import org.techtown.smarket_android.R;
 
 import java.io.UnsupportedEncodingException;
@@ -115,6 +116,7 @@ public class user_login_fragment extends Fragment {
                 goto_register();
             }
         });
+
         return viewGroup;
     }
 
