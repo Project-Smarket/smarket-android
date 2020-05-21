@@ -1,9 +1,4 @@
-package org.techtown.smarket_android.Class;
-
-import android.graphics.Bitmap;
-import android.widget.ImageButton;
-
-import java.net.URL;
+package org.techtown.smarket_android.BookmarkClass;
 
 public class SearchedItem {
 

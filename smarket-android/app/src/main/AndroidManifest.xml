@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.techtown.smarket_android">
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-
-    <!-- 인스턴스 ID 자동 초기화 방지 -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- 인스턴스 ID 자동 초기화 방지 -->
     <meta-data
         android:name="firebase_messaging_auto_init_enabled"
         android:value="false" />
@@ -20,8 +19,11 @@
         android:roundIcon="@mipmap/ic_smarket_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true"
-        >
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name=".NewSearch.newsearch_fragment"
+            android:label="@string/title_activity_newsearch_fragment"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".AppOnpage.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,13 +31,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".User.UserLogin.user_login_fragment" android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
-        <activity android:name=".MainNavigation.MainNavigationActivity"
-            android:windowSoftInputMode="adjustPan"></activity>
-        <activity android:name=".Hotdeal.hotdeal_webView"/>
-        <activity android:name=".searchItemList.Pager.youtubeActivity"/>
-
-        <!--<receiver android:name=".DeviceBootReceiver"
+        <activity
+            android:name=".MainNavigation.MainNavigationActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".Hotdeal.hotdeal_webView" />
+        <!--
+<receiver android:name=".DeviceBootReceiver"
             android:enabled="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

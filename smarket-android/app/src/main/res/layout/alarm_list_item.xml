@@ -17,9 +17,9 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_margin="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -28,9 +28,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
         android:layout_toEndOf="@+id/alarm_item_imageView"
         android:layout_toRightOf="@+id/alarm_item_imageView"
         android:inputType="textMultiLine"
@@ -43,14 +43,12 @@
 
     <TextView
         android:id="@+id/alamr_item_title_textView"
-        android:layout_width="300dp"
+        android:layout_width="290dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginRight="12dp"
         android:layout_toEndOf="@+id/alarm_item_imageView"
         android:layout_toRightOf="@+id/alarm_item_imageView"
         android:inputType="textMultiLine"
@@ -58,8 +56,6 @@
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/alarm_item_imageView"
         app:layout_constraintTop_toBottomOf="@+id/alarm_posted_textView"
         app:layout_constraintVertical_bias="0.0" />
 
@@ -69,9 +65,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerVertical="true"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="10dp"
         android:layout_toEndOf="@+id/alarm_item_imageView"
         android:layout_toRightOf="@+id/alarm_item_imageView"
         android:text="39,800"
@@ -79,7 +76,8 @@
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/alamr_item_title_textView" />
 
     <TextView
         android:id="@+id/alarm_message_textView"
@@ -87,8 +85,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerVertical="true"
-        android:layout_marginStart="216dp"
-        android:layout_marginLeft="216dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="10dp"
@@ -101,7 +97,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/alarm_item_price_textView"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/alarm_item_imageView" />
+        app:layout_constraintStart_toEndOf="@+id/alarm_item_imageView"
+        app:layout_constraintTop_toBottomOf="@+id/alamr_item_title_textView"
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/alarm_type_textView"
@@ -109,8 +107,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="4dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="6dp"
         android:background="@drawable/alarm_type_down"
         android:gravity="center_vertical"
         android:paddingHorizontal="6dp"
@@ -126,10 +124,8 @@
         android:id="@+id/direction_imageView"
         android:layout_width="16dp"
         android:layout_height="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="2dp"
+        android:layout_marginTop="10dp"
         android:filterTouchesWhenObscured="false"
-        app:layout_constraintBottom_toTopOf="@+id/alarm_item_imageView"
         app:layout_constraintStart_toEndOf="@+id/alarm_type_textView"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/direction" />

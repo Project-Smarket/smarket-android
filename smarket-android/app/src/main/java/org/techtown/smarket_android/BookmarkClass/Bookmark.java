@@ -1,4 +1,4 @@
-package org.techtown.smarket_android.Class;
+package org.techtown.smarket_android.BookmarkClass;
 
 // bookmark_item_list_adapter에서 적용될 Bookmark_client 클래스 입니다.
 public class Bookmark {

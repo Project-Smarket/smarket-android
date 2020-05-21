@@ -29,4 +29,5 @@
     <string name="newsUser">TongTongTv</string>
     <string name="newsHit">5,655</string>
     <string name="newsDate">20/03/16</string>
+    <string name="title_activity_newsearch_fragment">newsearch_fragment</string>
 </resources>

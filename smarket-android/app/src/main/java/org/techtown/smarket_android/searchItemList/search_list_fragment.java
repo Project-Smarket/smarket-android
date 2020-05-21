@@ -36,7 +36,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.techtown.smarket_android.Class.SearchedItem;
+import org.techtown.smarket_android.BookmarkClass.SearchedItem;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.searchItemList.Request.searchRequest;
 
@@ -154,7 +154,8 @@ public class search_list_fragment extends Fragment {
 
     private void getJson() throws UnsupportedEncodingException {
 
-        searchRequest searchRequest = new searchRequest(start, display, txt, new Response.Listener<String>() {
+        String url = getString(R.string.naverEndpoint) + "/search?query=";
+        searchRequest searchRequest = new searchRequest(url, start, display, txt, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {

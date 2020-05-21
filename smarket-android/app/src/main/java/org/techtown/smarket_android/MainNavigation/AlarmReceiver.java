@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -24,10 +23,9 @@ import com.google.gson.reflect.TypeToken;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.techtown.smarket_android.Alaram.alarmListAdapter;
-import org.techtown.smarket_android.Class.Bookmark;
-import org.techtown.smarket_android.Class.BookmarkAlarm;
-import org.techtown.smarket_android.Class.SearchedItem;
+import org.techtown.smarket_android.BookmarkClass.BookmarkAlarm;
+import org.techtown.smarket_android.BookmarkClass.SearchedItem;
+import org.techtown.smarket_android.R;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -166,7 +164,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     // Request - 최저가 알림 설정된 상품의 가격 재조회 요청
     private void request_get_item_price(final List<BookmarkAlarm> list, final Context context) {
-        String url = "http://10.0.2.2:3000/api/bookmarks/lprice"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        String url = context.getString(R.string.bookmarksEndpoint)+"/lprice"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {

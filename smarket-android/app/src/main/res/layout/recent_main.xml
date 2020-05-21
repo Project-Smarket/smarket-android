@@ -94,4 +94,13 @@
             android:text="TextView" />
 
     </LinearLayout>
+    <Button
+        android:id="@+id/remove_alarm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="알람 삭제"/>
+    <TextView
+        android:id="@+id/alarm_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 </LinearLayout>
