@@ -21,8 +21,9 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.techtown.smarket_android.Class.Hotdeal;
+import org.techtown.smarket_android.smarketClass.Hotdeal;
 import org.techtown.smarket_android.R;
+import org.techtown.smarket_android.searchItemList.RecyclerDecoration;
 
 import java.util.ArrayList;
 
@@ -38,19 +39,24 @@ public class hotdeal_page8_coolenjoy extends Fragment {
 
         hotdealList = new ArrayList<>();
 
+        String site_name = "쿨엔조이";
+        // 아이템 줄간격 설정
+        RecyclerDecoration spaceDecoration = new RecyclerDecoration(10);
+
         recyclerView = viewGroup.findViewById(R.id.hotdeal_list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
-        hotdealListAdapter = new hotdealListAdapter(getActivity(), getContext(), hotdealList);
+        recyclerView.addItemDecoration(spaceDecoration);
+        hotdealListAdapter = new hotdealListAdapter(getActivity(), getContext(), hotdealList,site_name);
         recyclerView.setAdapter(hotdealListAdapter);
 
-        request_ruliweb();
+        request_coolenjoy();
 
         return viewGroup;
     }
 
-    private void request_ruliweb() {
-        String url = "http://10.0.2.2:3000/api/crawling/coolenjoy/1"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+    private void request_coolenjoy() {
+        String url = getString(R.string.crawlingEndpoint) + "/coolenjoy/1"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {

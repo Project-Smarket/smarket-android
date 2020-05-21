@@ -30,6 +30,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
@@ -58,6 +61,10 @@ public class user_login_fragment extends Fragment {
     private String user_id;
     private String access_token;
     private String refresh_token;
+    public String device_token = "";
+
+    public RequestQueue queue;
+
 
     public static user_login_fragment newInstance() {
         return new user_login_fragment();
@@ -117,11 +124,10 @@ public class user_login_fragment extends Fragment {
 
 
     private void login() {
-        String url = getString(R.string.authEndpoint) + "/login"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+        String loginUrl = getString(R.string.authEndpoint) + "/login";  // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, loginUrl, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(response);
@@ -134,6 +140,8 @@ public class user_login_fragment extends Fragment {
                         String access_token = data.getString("accessToken"); // userFile에 저장할 access_token
                         String refresh_token = data.getString("refreshToken");
                         set_userFile(user_id, access_token, refresh_token); // userFile에 user_id와 access_token을 저장
+
+                        createToken(access_token, getContext());
 
                         FragmentManager fragmentManager = getFragmentManager();
                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -165,6 +173,87 @@ public class user_login_fragment extends Fragment {
         };
 
         RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+        requestQueue.add(stringRequest);
+    }
+
+    private void createToken(String a_token, final Context mContext) {
+        //파이어베이스 API에서 현재 토큰을 검색하는 메소드
+        final String access = a_token;
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(getActivity(),
+
+                new OnSuccessListener<InstanceIdResult>() {
+                    @Override
+                    public void onSuccess(InstanceIdResult instanceIdResult) {
+                        //instanceIdResult.getToken(); 토큰 조회
+                        sendRegistrationToServer(access, instanceIdResult.getToken(), mContext);
+                    }
+                }
+        );
+    }
+
+    public void sendRegistrationToServer(String a_token, String d_token, Context mContext) { // 토큰을 서버로 보내는 메소드
+
+        final String access = a_token;
+        final String device = d_token;
+        String url = mContext.getResources().getString(R.string.fcmEndpoint) + "/receive"; // getString 하면 오류남 ㅠㅠ
+        StringRequest stringRequest = new StringRequest(Request.Method.PATCH, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("OK", response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //에러 추가
+            }
+        }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap();
+                params.put("x-access-token", access);
+                params.put("x-device-token", device);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+        requestQueue.add(stringRequest);
+    }
+
+    public static void getDeviceToken(String a_token, Context mContext) {
+        final String access = a_token;
+        String url = mContext.getResources().getString(R.string.fcmEndpoint) + "/select";
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    boolean success = jsonObject.getBoolean("success");
+                    JSONObject data = jsonObject.getJSONObject("data");
+                    String token = data.getString("id");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }
+        ) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap();
+                params.put("x-access-token", access);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
         requestQueue.add(stringRequest);
     }
 
@@ -218,7 +307,7 @@ public class user_login_fragment extends Fragment {
 
     private void goto_register() {
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.main_layout, user_register_fragment.newInstance()).commit();
+        fragmentManager.beginTransaction().replace(R.id.main_layout, user_register_fragment.newInstance(getContext())).commit();
     }
 }
 

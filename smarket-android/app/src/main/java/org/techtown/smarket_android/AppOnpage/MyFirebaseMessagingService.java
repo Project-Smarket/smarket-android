@@ -36,8 +36,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     //푸시 알림 설정
     private String color = "";
-    private String pushToken = "";
+    private String device_token = "";
+    private String user_id = "";
 
+    private Context mContext;
+
+    public MyFirebaseMessagingService(){}
+    public MyFirebaseMessagingService(Context context){
+        mContext = context;
+    } // 이거 없애면 팅김;
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         //푸시 메시지가 왔을때 실행되는 메소드.
@@ -67,13 +74,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
 
     @Override
-    public void onNewToken(String token) { //여기는 그냥 서버에 자동으로 보내는걸로 하고
+    public void onNewToken(String token) { // 새로운 토큰이 발행될때 호출됨.
         Log.d(TAG, "Refreshed token: " + token);
 
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
-        sendRegistrationToServer(token);
+
+//        sendRegistrationToServer(token);
     }
 
 
@@ -90,32 +98,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "Short lived task is done.");
     }
 
-    public void sendRegistrationToServer(String token) { // 토큰을 서버로 보내는 메소드
-        //추후에 앱을 실행하게 되면 자동으로 호출되게끔 설계해야함.
-        String url = "http://localhost:8080/api/push/receive";
-        pushToken = token;
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d(TAG, response);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                //에러 추가
-            }
-        }
-        ) {
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("token", pushToken);
-                return params;
-            }
-        };
-
-        ((SplashActivity) SplashActivity.context_push).queue.add(stringRequest);//MainActiviy에 있는 queue에 requestString을 추가
-        //프래그먼트에 있는 queue에 reqeustString을 추가
-    }
 
     private void sendNotification(String title, String body) { //Notification으로 전송하는 메소드.
         if(title == null){
@@ -123,7 +105,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
         Intent intent = new Intent(this, MainActivity.class);//Intent는 아직 모름ㅠ
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, (int)(System.currentTimeMillis()/1000), intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         String channelId = "채널 ID";
@@ -149,6 +131,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             notificationManager.createNotificationChannel(channel);
         }
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());;
+        notificationManager.notify((int)(System.currentTimeMillis()/1000), notificationBuilder.build());;
     }
 }
+

@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -15,6 +16,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import org.techtown.smarket_android.R;
 
 public class ClearEditText extends AppCompatEditText implements TextWatcher, View.OnTouchListener, View.OnFocusChangeListener {
+    private static final String TAG = "point";
     private Drawable clearDrawable;
     private OnFocusChangeListener onFocusChangeListener;
     private OnTouchListener onTouchListener;
@@ -48,7 +50,7 @@ public class ClearEditText extends AppCompatEditText implements TextWatcher, Vie
         Drawable tempDrawable = ContextCompat.getDrawable(getContext(), R.drawable.x_btn);
         clearDrawable = DrawableCompat.wrap(tempDrawable);
         DrawableCompat.setTintList(clearDrawable, getHintTextColors());
-        clearDrawable.setBounds(0,0,48,48);
+        clearDrawable.setBounds(0,0,55,55);
         setClearIconVisible(false);
         super.setOnTouchListener(this);
         super.setOnFocusChangeListener(this);
@@ -70,7 +72,12 @@ public class ClearEditText extends AppCompatEditText implements TextWatcher, Vie
     @Override
     public boolean onTouch(final View view, final MotionEvent motionEvent) {
         final int x = (int) motionEvent.getX();
-        if (clearDrawable.isVisible() && x > getWidth() - getPaddingRight() - clearDrawable.getIntrinsicWidth()) {
+        if (clearDrawable.isVisible() && x > 920) {
+            Log.d(TAG, "x :" + x);
+            Log.d(TAG, "getWidth :" + getWidth());
+            Log.d(TAG, "getPaddingRight :" + getPaddingRight());
+            Log.d(TAG, "clearDrawbled :" + clearDrawable.getIntrinsicWidth());
+
             if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
                 setError(null);
                 setText(null);
@@ -102,5 +109,6 @@ public class ClearEditText extends AppCompatEditText implements TextWatcher, Vie
     private void setClearIconVisible(boolean visible) {
         clearDrawable.setVisible(visible, false);
         setCompoundDrawables(null, null, visible ? clearDrawable : null, null);
+        setPadding(35,0, 20, 0);
     }
 }

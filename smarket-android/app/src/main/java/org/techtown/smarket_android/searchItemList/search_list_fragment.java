@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,7 +36,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.techtown.smarket_android.Class.SearchedItem;
+import org.techtown.smarket_android.smarketClass.SearchedItem;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.searchItemList.Request.searchRequest;
 
@@ -52,7 +53,12 @@ public class search_list_fragment extends Fragment {
     private String txt;
     private Toolbar toolbar;
     private RecyclerAdapter adapter;
+    private ProgressBar search_progressBar;
+    private int start = 1;
+    private int display = 10;
 
+    private boolean isUpdate = false;
+    private boolean isItemList = false;
     // 검색한 데이터 가져오기
     private List<SearchedItem> itemList = new ArrayList<>();
 
@@ -61,56 +67,82 @@ public class search_list_fragment extends Fragment {
     @Override
     public ViewGroup onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.search_list, container, false);
+        search_progressBar = viewGroup.findViewById(R.id.search_progressBar);
+        search_progressBar.setVisibility(View.GONE);
 
-        getBundle();
+        // 검색한 내용 불러옴
+        get_searchedName();
 
         // 검색 데이터 가져오기
         CreateList();
 
-        try {
-            getJson();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+        if (!isItemList) {
+            try {
+                search_progressBar.setVisibility(View.VISIBLE);
+                getJson();
+                isItemList = true;
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
         }
-
-        Log.d(TAG, "CreateList: " + itemList.isEmpty());
 
         settingToolbar();
 
         setHasOptionsMenu(true);
 
-        adapter.setOnRecyclerClickListener(new RecyclerAdapter.OnRecyclerClickListener() {
-            @Override
-            public void OnRecyclerClickListener(View v, int position) {
-                searchdetail_fragment searchdetailFragment = new searchdetail_fragment();
-                Bundle bundle = settingBundle(v);
-                searchdetailFragment.setArguments(bundle);
-                //listClear();
-                adapter.notifyDataSetChanged();
-                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.main_layout, searchdetailFragment).addToBackStack(null);
-                fragmentTransaction.commitAllowingStateLoss();
-            }
-        });
 
 
         return viewGroup;
     }
 
+    // 검색한 내용 불러옴
+    private void get_searchedName() {
+        if (getArguments() != null) {
+            txt = getArguments().getString("searchName");
+        }
+    }
+
+
     private void CreateList() {
+
+        // 아이템 줄간격 설정
+        RecyclerDecoration spaceDecoration = new RecyclerDecoration(20);
+
         recyclerView = viewGroup.findViewById(R.id.search_item_list);
-        recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.addItemDecoration(spaceDecoration);
         adapter = new RecyclerAdapter(getContext(), getActivity(), itemList);
         recyclerView.setAdapter(adapter);
+
+        // 검색 상품 loadMore
+        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                // 스크롤이 가장 위에 있을 때
+                if (!recyclerView.canScrollVertically(-1)) {
+                    Log.i(TAG, "Top of list");
+                    // 스크롤 가장 아래로 내려왔을 때
+                } else if (!recyclerView.canScrollVertically(1)) {
+                    //Log.i(TAG, "End of list");
+                    if (!isUpdate) {
+                        try {
+                            search_progressBar.setVisibility(View.VISIBLE);
+                            getJson();
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
     }
 
 
     private void getJson() throws UnsupportedEncodingException {
 
-        searchRequest searchRequest = new searchRequest(txt, new Response.Listener<String>() {
+        String url = getString(R.string.naverEndpoint) + "/search?query=";
+        searchRequest searchRequest = new searchRequest(url, start, display, txt, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
@@ -123,19 +155,15 @@ public class search_list_fragment extends Fragment {
                         String item_title = removeTag(title);
                         String item_id = key.getJSONObject(index).getString("productId");
                         String item_type = key.getJSONObject(index).getString("productType");
-                        String price = key.getJSONObject(index).getString("lprice");
-                        int item_price = Integer.parseInt(price);
-                        String item_lprice = String.format("%,d", item_price);
-
+                        String item_lprice = key.getJSONObject(index).getString("lprice");
                         String item_image = key.getJSONObject(index).getString("image");
-
                         String item_mallName = key.getJSONObject(index).getString("mallName");
 
-                        SearchedItem item = new SearchedItem(item_title, item_id, item_type, item_lprice, item_image, item_mallName);
-
-                        itemList.add(item);
                     }
                     adapter.notifyDataSetChanged();
+                    isUpdate = false;
+                    search_progressBar.setVisibility(View.GONE);
+                    start += display;
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -149,16 +177,12 @@ public class search_list_fragment extends Fragment {
                 Toast.makeText(getContext(), error + "", Toast.LENGTH_LONG).show();
             }
         });
+        isUpdate = true;
         RequestQueue queue = Volley.newRequestQueue(getContext());
         queue.add(searchRequest);
     }
 
-    /**
-     * 모든 HTML 태그를 제거하고 반환한다.
-     *
-     * @param html
-     * @throws Exception
-     */
+
     public String removeTag(String html) throws Exception {
         return html.replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", "");
     }
@@ -242,22 +266,16 @@ public class search_list_fragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    public void listClear(){
+    public void listClear() {
         adapter.clear();
     }
 
-    private void getBundle() {
-        if (getArguments() != null) {
-            txt = getArguments().getString("searchName");
-        }
 
-    }
     private Bundle settingBundle(View v) {
         Bundle bundle = new Bundle();
         TextView item_name = v.findViewById(R.id.search_list_item_name);
         TextView item_value = v.findViewById(R.id.search_list_item_value);
         ImageView item_image = v.findViewById(R.id.search_list_item_image);
-        TextView item_mall = v.findViewById(R.id.search_mallName);
 
         Drawable d = item_image.getDrawable();
         Bitmap bitmap = ((BitmapDrawable) d).getBitmap();
@@ -265,8 +283,7 @@ public class search_list_fragment extends Fragment {
         bundle.putString("item_name", item_name.getText().toString());
         bundle.putString("item_value", item_value.getText().toString());
         bundle.putParcelable("item_image", bitmap);
-        bundle.putString("item_mallName", item_mall.getText().toString());
-        bundle.putString("txt",txt);
+        bundle.putString("txt", txt);
 
         return bundle;
     }

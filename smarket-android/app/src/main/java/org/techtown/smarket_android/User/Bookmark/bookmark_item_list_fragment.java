@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -33,13 +32,11 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.ServerError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -48,10 +45,11 @@ import com.google.gson.reflect.TypeToken;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.techtown.smarket_android.Class.Bookmark;
+import org.techtown.smarket_android.smarketClass.Bookmark;
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.Class.BookmarkAlarm;
+import org.techtown.smarket_android.smarketClass.BookmarkAlarm;
 import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
+import org.techtown.smarket_android.searchItemList.RecyclerDecoration;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
@@ -62,7 +60,6 @@ import java.util.List;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
-import static com.android.volley.VolleyLog.TAG;
 
 
 public class bookmark_item_list_fragment extends Fragment {
@@ -129,6 +126,7 @@ public class bookmark_item_list_fragment extends Fragment {
 
     // SharedPreference의 bookmarkAlarmList 데이터를 가져온다
     private void get_bookmarkAlarmList() {
+        // 저장된 bookmarkAlarmList가 있을 경우
         if (userFile.getString("bookmarkAlarmList", null) != null) {
             String bookmarkAlarm = userFile.getString("bookmarkAlarmList", null);
             Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {
@@ -136,7 +134,8 @@ public class bookmark_item_list_fragment extends Fragment {
             bookmarkAlarmList = new GsonBuilder().create().fromJson(bookmarkAlarm, listType);
 
             Log.d("Get bookmarkAlarmList", "bookmarkAlarmList: Complete Getting bookmarkAlarmList");
-        } else {
+        }// 저장된 bookmarkAlarmList가 없을 경우
+        else {
             bookmarkAlarmList = new ArrayList<>();
             save_bookmarkAlarmList();
         }
@@ -157,9 +156,13 @@ public class bookmark_item_list_fragment extends Fragment {
 
     // 북마크리스트 리사이클러 뷰 설정
     private void set_bookmarkList_recyclerView() {
+        // 아이템 줄간격 설정
+        RecyclerDecoration spaceDecoration = new RecyclerDecoration(20);
+
         recyclerView = viewGroup.findViewById(R.id.bookmark_itemList);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.addItemDecoration(spaceDecoration);
     }
 
     // 북마크 폴더 스피너 설정
@@ -579,7 +582,7 @@ public class bookmark_item_list_fragment extends Fragment {
     // Request - 서버로 folder_name과 일치하는 DB 북마크 조회 요청 - 실패 시 request 오류(토큰만료) 처리
     private void request_bookmarkList_by_folder_name(final String folder_name) throws UnsupportedEncodingException {
 
-        String url = "http://10.0.2.2:3000/api/bookmarks?foldername=" + URLEncoder.encode(folder_name, "UTF-8"); // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        String url = getString(R.string.bookmarksEndpoint)+"?foldername=" + URLEncoder.encode(folder_name, "UTF-8"); // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -677,7 +680,7 @@ public class bookmark_item_list_fragment extends Fragment {
     // access-token 갱신 요청 후 폴더 목록 재요청 - 실패 시 logout
     private void refresh_accessToken(final String request_type, final String bookmark_data) {
         Log.d(TAG, "refresh_accessToken: access-token을 갱신합니다.");
-        String url = "http://10.0.2.2:3000/api/auth/refresh"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        String url = getString(R.string.authEndpoint) + "/refresh"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {

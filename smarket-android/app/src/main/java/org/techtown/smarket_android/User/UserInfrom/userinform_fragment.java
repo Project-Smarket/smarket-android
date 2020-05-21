@@ -23,22 +23,33 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import org.json.JSONObject;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.User.UserLogin.user_login_success;
 import org.techtown.smarket_android.User.UserLogin.user_validate;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.android.volley.VolleyLog.TAG;
 
 public class userinform_fragment extends Fragment {
 
@@ -48,10 +59,9 @@ public class userinform_fragment extends Fragment {
 
     private ViewGroup viewGroup;
     private TextView userinform_id;
-    private EditText userinform_nick_et;
-    private Button userinform_validate_nick_btn;
-    private EditText userinform_pw_et;
-    private EditText userinform_name_et;
+    private TextInputEditText userinform_nick_et;
+    private TextInputEditText userinform_pw_et;
+    private TextInputEditText userinform_name_et;
     private Spinner userinform_phoneNumber_spinner;
     private ArrayAdapter<String> phoneNumberAdapter;
     private EditText userinform_phoneNumber1_et;
@@ -82,10 +92,10 @@ public class userinform_fragment extends Fragment {
         // 현재 로그인된 user_id 표시
         userinform_id.setText(user_id);
 
-        // nickname 중복검사 버튼
-        userinform_validate_nick_btn.setOnClickListener(new View.OnClickListener() {
+        userinform_nick_et.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onClick(View v) { validate_nick();
+            public void onFocusChange(View v, boolean hasFocus) {
+                validate_nick();
             }
         });
 
@@ -102,29 +112,26 @@ public class userinform_fragment extends Fragment {
 
     // ViewGroup 설정
     private void set_viewGroup(){
-        userinform_id = viewGroup.findViewById(R.id.userinform_id);
+        userinform_id = viewGroup.findViewById(R.id.userinform_id_et);
         userinform_nick_et = viewGroup.findViewById(R.id.userinform_nick_et);
-        userinform_validate_nick_btn = viewGroup.findViewById(R.id.userinform_validate_nick_btn);
+
         userinform_pw_et = viewGroup.findViewById(R.id.userinform_pw_et);
         userinform_name_et = viewGroup.findViewById(R.id.userinform_name_et);
         userinform_phoneNumber1_et = viewGroup.findViewById(R.id.userinform_phoneNumber1_et);
         userinform_phoneNumber2_et = viewGroup.findViewById(R.id.userinform_phoneNumber2_et);
-        userinform_modify_btn = viewGroup.findViewById(R.id.userinform_modify_btn);
+        userinform_modify_btn = viewGroup.findViewById(R.id.userinform_btn);
 
         List<String> phoneNumber_list = new ArrayList<>();
         phoneNumber_list.add("010");
         phoneNumber_list.add("011");
-        phoneNumber_list.add("012");
-        phoneNumber_list.add("013");
-        phoneNumber_list.add("014");
-        phoneNumber_list.add("015");
+
 
         phoneNumberAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, phoneNumber_list);
 
         userinform_phoneNumber_spinner = (Spinner) viewGroup.findViewById(R.id.userinform_phoneNumber_spinner);
         userinform_phoneNumber_spinner.setAdapter(phoneNumberAdapter);
 
-        String url = getString(R.string.usersEndpoint) + user_id;
+        String url = getString(R.string.usersEndpoint) + "/" +  user_id;
         Log.d(TAG, "set_viewGroup: " + url);
         StringRequest userinform_get_request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
@@ -144,10 +151,6 @@ public class userinform_fragment extends Fragment {
                         switch(phonenum1){
                             case "010" : userinform_phoneNumber_spinner.setSelection(0);break;
                             case "011" : userinform_phoneNumber_spinner.setSelection(1);break;
-                            case "012" : userinform_phoneNumber_spinner.setSelection(2);break;
-                            case "013" : userinform_phoneNumber_spinner.setSelection(3);break;
-                            case "014" : userinform_phoneNumber_spinner.setSelection(4);break;
-                            case "015" : userinform_phoneNumber_spinner.setSelection(5);break;
                         }
                         userinform_phoneNumber1_et.setText(phonenumber.substring(3,7));
                         userinform_phoneNumber2_et.setText(phonenumber.substring(7,11));
@@ -182,17 +185,6 @@ public class userinform_fragment extends Fragment {
         String key = "nickname";
         String user_nickname = userinform_nick_et.getText().toString();
 
-        if (validate_nickname) {
-            return;
-        }
-        if (user_nickname.equals("")) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            dialog = builder.setMessage("닉네임은 빈 칸 일 수 없습니다.")
-                    .setPositiveButton("확인", null)
-                    .create();
-            dialog.show();
-            return;
-        }
         Response.Listener<String> responseListener = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -227,7 +219,35 @@ public class userinform_fragment extends Fragment {
         user_validate validateRequest = new user_validate(url, key, user_nickname, responseListener, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), "errorListener", Toast.LENGTH_LONG).show();
+                NetworkResponse response = error.networkResponse;
+                if(error instanceof ServerError && response != null){
+                    try{
+                        String res = new String(response.data, HttpHeaderParser.parseCharset(response.headers, "utf-8"));
+
+                        JsonParser parser = new JsonParser();
+                        JsonElement element = parser.parse(res);
+                        JsonObject data = null;
+                        String comment = null;
+
+                        // 닉네임은 2자리 이상입니다.
+                        if(!element.getAsJsonObject().get("data").isJsonNull()){
+                            data = element.getAsJsonObject().get("data").getAsJsonObject();
+                            JsonArray errors = data.getAsJsonArray("errors");
+                            JsonObject error_object = errors.get(0).getAsJsonObject();
+                            String msg = error_object.get("msg").getAsString();
+                            userinform_nick_et.setError(msg);
+                            Log.d(TAG, "onErrorResponse: " + msg);
+                        }// 이미 존재하는 닉네임 입니다.
+                        else {
+                            comment = element.getAsJsonObject().get("comment").getAsString();
+                            Log.d(TAG, "onErrorResponse: "+ comment);
+                            userinform_nick_et.setError(comment);
+                        }
+
+                    }catch (UnsupportedEncodingException e){
+                        e.printStackTrace();
+                    }
+                }
 
             }
         });
@@ -295,7 +315,35 @@ public class userinform_fragment extends Fragment {
             }
         };
 
-        userinform_modify_request registerRequest = new userinform_modify_request(getActivity(), userID, userPW, userName, userNick, userPhoneNumber, responseListener);
+        userinform_modify_request registerRequest = new userinform_modify_request(getActivity(), userID, userPW, userName, userNick, userPhoneNumber, responseListener
+                , new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                NetworkResponse response = error.networkResponse;
+                if (error instanceof ServerError && response != null) {
+                    try {
+                        String res = new String(response.data, HttpHeaderParser.parseCharset(response.headers, "utf-8"));
+
+                        JsonParser parser = new JsonParser();
+                        JsonElement element = parser.parse(res);
+                        JsonObject data = null;
+
+                        // 비밀번호는 6자리 이상입니다. && 비밀번호를 입력해주세요
+                        if (!element.getAsJsonObject().get("data").isJsonNull()) {
+                            data = element.getAsJsonObject().get("data").getAsJsonObject();
+                            JsonArray errors = data.getAsJsonArray("errors");
+                            JsonObject error_object = errors.get(0).getAsJsonObject();
+                            String msg = error_object.get("msg").getAsString();
+                            userinform_pw_et.setError(msg);
+                            Log.d(TAG, "onErrorResponse: " + msg);
+                        }
+
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
         RequestQueue queue = Volley.newRequestQueue(getContext());
         queue.add(registerRequest);
     }

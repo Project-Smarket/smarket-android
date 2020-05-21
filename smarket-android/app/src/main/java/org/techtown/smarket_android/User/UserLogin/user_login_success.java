@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,15 +20,23 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.User.Bookmark.bookmark_item_list_fragment;
 import org.techtown.smarket_android.User.UserInfrom.userinform_fragment;
 import org.techtown.smarket_android.User.recent.recent_fragment;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class user_login_success extends Fragment {
@@ -58,6 +67,7 @@ public class user_login_success extends Fragment {
 
         // 현재 로그인된 아이디 가져오기
         get_userFile();
+        get_deviceToken();
 
         userId_textView = viewGroup.findViewById(R.id.user_tv);
         userId_textView.setText(userID);
@@ -173,6 +183,50 @@ public class user_login_success extends Fragment {
         editor.putString("access_token", null);
         editor.putString("refresh_token", null);
         editor.commit();
+    }
+
+    // 서버로부터 device_token 가져옴
+    public void get_deviceToken() {
+        String url = getContext().getResources().getString(R.string.fcmEndpoint) + "/select";
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    boolean success = jsonObject.getBoolean("success");
+                    JSONObject data = jsonObject.getJSONObject("data");
+                    String device_token = data.getString("deviceToken");
+                    Log.d("TOKEN", "device_token: " + device_token);
+                    save_deviceToken(device_token);
+                } catch (JSONException e) {
+                   Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getContext(), error.toString(),Toast.LENGTH_SHORT).show();
+            }
+        }
+        ) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap();
+                params.put("x-access-token", access_token);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+        requestQueue.add(stringRequest);
+    }
+
+    // SharedPreference device_token 저장
+    private void save_deviceToken(String device_token){
+        SharedPreferences.Editor editor = userFile.edit();
+        editor.putString("device_token", device_token);
+        editor.apply();
     }
 
     // userFile에 저장된 user_id 와 access_token 값 가져오기

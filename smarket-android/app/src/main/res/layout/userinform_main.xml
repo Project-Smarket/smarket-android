@@ -2,41 +2,42 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/smarketyello"
     android:gravity="center_vertical"
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/userinform_logo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:text="회원 정보 변경"
-        android:textSize="60dp" />
-
-    <LinearLayout
+        android:id="@+id/userinform"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="50dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginRight="50dp"
+        android:layout_gravity="center"
+        android:gravity="left"
+        android:text="회원 정보 변경"
+        android:textColor="@color/colorBlack"
+        android:textSize="24dp" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="30dp"
         android:layout_marginRight="50dp"
         android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/userinform_id"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/userinform_id_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="4"
             android:ems="10"
-            android:textSize="24dp"
+            android:text="아이디"
+            android:enabled="false"
             android:hint="아이디"
             android:inputType="textPersonName" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-
-    </LinearLayout>
-
-    <LinearLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="50dp"
@@ -44,46 +45,50 @@
         android:layout_marginRight="50dp"
         android:orientation="horizontal">
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/userinform_nick_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="닉네임"
-            android:layout_weight="4"
             android:inputType="textPersonName" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
-            android:id="@+id/userinform_validate_nick_btn"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/register_pw_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="50dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/userinform_pw_et"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_weight="10"
-            android:background="@drawable/button_validate"
-            android:text="중복검사"
-            android:layout_gravity="center"/>
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:ems="10"
+            android:hint="비밀번호"
+            android:inputType="textPassword" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <EditText
-        android:id="@+id/userinform_pw_et"
+
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="비밀번호"
         android:layout_marginLeft="50dp"
         android:layout_marginTop="10dp"
-        android:layout_marginRight="50dp"
-        android:inputType="textPassword" />
+        android:layout_marginRight="50dp">
 
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/userinform_name_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:ems="10"
+            android:hint="이름" />
 
-    <EditText
-        android:id="@+id/userinform_name_et"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="이름"
-        android:layout_marginLeft="50dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="50dp" />
+    </com.google.android.material.textfield.TextInputLayout>
 
 
     <LinearLayout
@@ -132,15 +137,15 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/userinform_modify_btn"
+        android:id="@+id/userinform_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="50dp"
         android:layout_marginTop="10dp"
         android:layout_marginRight="50dp"
         android:background="@drawable/button_smarket"
-        android:textColor="@color/colorWhite"
-        android:text="회원정보 수정" />
+        android:textColor="@color/colorBlack"
+        android:text="회원 정보 수정" />
 
 
 </LinearLayout>

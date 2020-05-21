@@ -8,7 +8,7 @@
         android:layout_height="wrap_content"
 
         android:paddingLeft="80dp"
-        android:paddingRight="70dp"
+        android:paddingRight="80dp"
         android:src="@drawable/smarket_logo" />
 
 </LinearLayout>

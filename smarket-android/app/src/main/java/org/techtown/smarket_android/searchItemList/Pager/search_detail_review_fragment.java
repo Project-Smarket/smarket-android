@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.Class.review;
+import org.techtown.smarket_android.smarketClass.review;
 import org.techtown.smarket_android.searchItemList.Pager.reviewAdapter.reviewAdapter;
 
 import java.util.ArrayList;

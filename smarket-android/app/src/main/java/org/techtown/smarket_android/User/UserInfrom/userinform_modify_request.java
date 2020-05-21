@@ -28,8 +28,8 @@ public class userinform_modify_request extends StringRequest {
 
 
     public userinform_modify_request(Activity activity, String userID, String userPW, String userName, String userNick, String userPhoneNumber,
-                                     Response .Listener<String> listener) {
-        super(Method.PUT, activity.getResources().getString(R.string.usersEndpoint) + "/" + userID, listener, null);
+                                     Response .Listener<String> listener, Response.ErrorListener errorListener) {
+        super(Method.PUT, activity.getResources().getString(R.string.usersEndpoint) + "/" + userID, listener, errorListener);
 
         mActivity = activity;
         this.userID = userID;
