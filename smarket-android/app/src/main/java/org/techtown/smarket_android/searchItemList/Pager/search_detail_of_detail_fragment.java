@@ -1,22 +1,33 @@
 package org.techtown.smarket_android.searchItemList.Pager;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.techtown.smarket_android.R;
+import org.techtown.smarket_android.searchItemList.Pager.dodAdapter.detailAdapter;
+import org.techtown.smarket_android.Class.specList;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.android.volley.VolleyLog.TAG;
 
 public class search_detail_of_detail_fragment extends Fragment {
 
-    ViewPager viewPager;
+    RecyclerView.Adapter dodAdapter;
 
-    public search_detail_of_detail_fragment(){
+    private List<specList> spec;
+    private RecyclerView recyclerView;
+
+    public search_detail_of_detail_fragment() {
 
     }
 
@@ -24,6 +35,30 @@ public class search_detail_of_detail_fragment extends Fragment {
     @Override
     public ViewGroup onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.search_detail_of_detail_fragment_layout, container, false);
+        spec = new ArrayList<>();
+
+        getBundle();
+
+        CreateList(viewGroup);
+
+
         return viewGroup;
+    }
+
+    private void CreateList(ViewGroup viewGroup) {
+        recyclerView = viewGroup.findViewById(R.id.dodRecycler);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        dodAdapter = new detailAdapter(getContext(), spec);
+        recyclerView.setAdapter(dodAdapter);
+    }
+
+    private void getBundle() {
+        Bundle bundle = getArguments();
+
+        if (bundle != null) {
+            List<specList> list = (List<specList>) bundle.getSerializable("spec");
+            spec = list;
+            Log.d(TAG, "dod: " + spec);
+        }
     }
 }

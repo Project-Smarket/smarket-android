@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/dodRecycler"
+        android:id="@+id/newsRecycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/color_lite_gray"

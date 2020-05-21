@@ -7,7 +7,6 @@ import java.net.URL;
 
 public class SearchedItem {
 
-
     private String item_title;
     private String item_id;
     private String item_type;
