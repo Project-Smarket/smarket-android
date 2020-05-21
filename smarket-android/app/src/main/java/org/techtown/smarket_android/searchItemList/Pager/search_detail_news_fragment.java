@@ -12,8 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
-import org.techtown.smarket_android.Class.news;
-import org.techtown.smarket_android.Class.review;
+import org.techtown.smarket_android.BookmarkClass.news;
+import org.techtown.smarket_android.BookmarkClass.news;
+import org.techtown.smarket_android.BookmarkClass.review;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.searchItemList.Pager.newsAdapter.newsAdapter;
 

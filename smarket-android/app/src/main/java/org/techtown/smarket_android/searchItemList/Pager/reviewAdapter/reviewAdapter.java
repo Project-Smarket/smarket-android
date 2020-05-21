@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.techtown.smarket_android.Class.review;
+import org.techtown.smarket_android.BookmarkClass.review;
 import org.techtown.smarket_android.R;
 
 import java.util.List;
