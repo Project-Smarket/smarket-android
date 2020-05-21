@@ -23,9 +23,8 @@
             android:background="@color/color_lite_gray"
             android:text="@string/longTest"
             android:layout_margin="1dp"
-            android:textSize="20sp"
+            android:textSize="12sp"
             android:gravity="center_vertical"
-            android:textColor="@color/cardview_dark_background"
             android:paddingStart="8dp"
             android:paddingLeft="8dp" />
 
@@ -35,13 +34,13 @@
             android:layout_height="match_parent"
             android:paddingStart="8dp"
             android:paddingLeft="8dp"
-            android:textColor="@color/cardview_dark_background"
+            android:textColor="@color/colorBlack"
             android:layout_margin="1dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:background="@color/colorWhite"
+            android:background="@drawable/spec_item_border"
             android:text="@string/lowprice"
-            android:textSize="16sp" />
+            android:textSize="12sp" />
 
     </LinearLayout>
 

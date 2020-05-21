@@ -156,7 +156,8 @@
                         android:id="@+id/detail_gotoMall"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/button_smarket"
+                        android:background="@drawable/button_smarket_black"
+                        android:textColor="@color/colorWhite"
                         android:text="판매처 구입하러 가기" />
                 </LinearLayout>
 

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,99 +8,122 @@
     android:background="@color/colorWhite"
     tools:context=".MainActivity">
 
-    <ImageView
-        android:id="@+id/search_list_item_image"
-        android:layout_width="112dp"
-        android:layout_height="112dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_margin="8dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/search_list_item_name"
-        android:layout_width="230dp"
-        android:layout_height="48dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="10dp"
-        android:layout_toEndOf="@+id/search_list_item_image"
-        android:layout_toRightOf="@+id/search_list_item_image"
-        android:inputType="textMultiLine"
-        android:text="안드로이드"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/search_list_item_image"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <TextView
-        android:id="@+id/search_list_item_value"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginBottom="8dp"
-        android:layout_toEndOf="@+id/search_list_item_image"
-        android:layout_toRightOf="@+id/search_list_item_image"
-        android:text="39,800"
-        android:textColor="@color/red"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/search_list_item_name"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/search_list_item_image"
-        app:layout_constraintTop_toBottomOf="@+id/search_list_item_name" />
+        style="@style/SelectableItemBackground">
 
-    <ImageView
-        android:id="@+id/heart_btn"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginStart="160dp"
-        android:layout_marginLeft="160dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginRight="10dp"
-        android:background="@drawable/bookmark"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/search_list_item_name"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        <ImageView
+            android:id="@+id/search_list_item_image"
+            android:layout_width="112dp"
+            android:layout_height="112dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/cash_btn"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="16dp"
-        android:src="@drawable/cash"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/search_list_item_name"
-        app:layout_constraintTop_toBottomOf="@+id/heart_btn"
-        app:layout_constraintVertical_bias="0.0" />
+        <TextView
+            android:id="@+id/search_list_item_title"
+            android:layout_width="230dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginEnd="9dp"
+            android:layout_marginRight="9dp"
+            android:layout_toEndOf="@+id/search_list_item_image"
+            android:layout_toRightOf="@+id/search_list_item_image"
+            android:inputType="textMultiLine"
+            android:text="트 9삼성 갤럭시 노트 9삼성 갤럭시갤럭시 노트 9삼성 갤럭시 노트 9트 9삼성 갤럭시 노트 9삼성 갤럭시갤럭시 노트 9삼성9"
+            android:textSize="16sp"
+            android:textColor="@color/colorBlack"
+            app:layout_constraintEnd_toStartOf="@+id/heart_btn"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/search_list_item_image"
+            app:layout_constraintTop_toTopOf="@+id/search_list_item_image" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/search_list_item_mallName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="36dp"
+            android:layout_marginRight="36dp"
+            android:layout_marginBottom="10dp"
+            android:layout_toEndOf="@+id/search_list_item_image"
+            android:layout_toRightOf="@+id/search_list_item_image"
+            android:inputType="textMultiLine"
+            android:text="네이버"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/search_list_item_price"
+            app:layout_constraintTop_toBottomOf="@+id/search_list_item_price"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/search_list_item_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="8dp"
+            android:layout_toEndOf="@+id/search_list_item_image"
+            android:layout_toRightOf="@+id/search_list_item_image"
+            android:text="39,800"
+            android:textColor="@color/red"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/search_list_item_title"
+            app:layout_constraintTop_toBottomOf="@+id/search_list_item_title" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="2dp"
+            android:layout_marginLeft="2dp"
+            android:layout_toEndOf="@+id/search_list_item_image"
+            android:layout_toRightOf="@+id/search_list_item_image"
+            android:text="원"
+            android:textColor="@color/red"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/search_list_item_price"
+            app:layout_constraintStart_toEndOf="@+id/search_list_item_price" />
+
+        <ImageView
+            android:id="@+id/heart_btn"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:background="@drawable/bookmark"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/search_list_item_title" />
+
+        <ImageView
+            android:id="@+id/cash_btn"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="12dp"
+            android:src="@drawable/cash"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/heart_btn"
+            app:layout_constraintTop_toBottomOf="@+id/heart_btn" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

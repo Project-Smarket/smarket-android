@@ -112,7 +112,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
-                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setSmallIcon(R.mipmap.ic_smarket_round)
                         .setContentTitle(title) // 푸시 알람에 title 적용
                         .setContentText(body) // body 적용
                         .setAutoCancel(true) // 노티바에서 터치하면 자동으로 삭제되도록 설정

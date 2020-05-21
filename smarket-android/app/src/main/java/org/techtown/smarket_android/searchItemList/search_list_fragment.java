@@ -273,8 +273,8 @@ public class search_list_fragment extends Fragment {
 
     private Bundle settingBundle(View v) {
         Bundle bundle = new Bundle();
-        TextView item_name = v.findViewById(R.id.search_list_item_name);
-        TextView item_value = v.findViewById(R.id.search_list_item_value);
+        TextView item_name = v.findViewById(R.id.search_list_item_title);
+        TextView item_value = v.findViewById(R.id.search_list_item_price);
         ImageView item_image = v.findViewById(R.id.search_list_item_image);
 
         Drawable d = item_image.getDrawable();

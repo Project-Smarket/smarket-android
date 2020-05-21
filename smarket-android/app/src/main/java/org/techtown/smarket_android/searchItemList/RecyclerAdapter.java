@@ -325,15 +325,17 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         private Bitmap bitmap;
 
         private ImageView heart_btn;
+        private TextView item_mall;
 
         private String[] item_data;
 
         ItemViewHolder(final View itemView) {
             super(itemView);
 
-            item_title = itemView.findViewById(R.id.search_list_item_name);
-            item_price = itemView.findViewById(R.id.search_list_item_value);
+            item_title = itemView.findViewById(R.id.search_list_item_title);
+            item_price = itemView.findViewById(R.id.search_list_item_price);
             item_image = itemView.findViewById(R.id.search_list_item_image);
+            item_mall = itemView.findViewById(R.id.search_list_item_mallName);
             heart_btn = itemView.findViewById(R.id.heart_btn);
             item_data = new String[8];
 
@@ -356,6 +358,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             item_type = data.getItem_type();
             item_lprice = Integer.parseInt(data.getItem_price());
             item_price.setText(String.format("%,d", item_lprice));
+            item_mall.setText(data.getItem_mallName());
             item_image_url = data.getItem_image();
 
             item_data[0] = data.getItem_mallName();

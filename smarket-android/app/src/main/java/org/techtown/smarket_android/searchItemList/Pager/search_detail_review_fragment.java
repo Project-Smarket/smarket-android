@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RatingBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,6 +24,7 @@ public class search_detail_review_fragment extends Fragment {
     private List<review> reviewList;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter reviewAdapter;
+
 
     @Nullable
     @Override

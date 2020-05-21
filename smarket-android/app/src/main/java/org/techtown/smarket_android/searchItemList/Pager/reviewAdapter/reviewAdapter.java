@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,7 @@ public class reviewAdapter extends RecyclerView.Adapter<reviewAdapter.ViewHolder
 
     private LayoutInflater layoutInflater;
     private List<review> reviewList;
+
 
     public reviewAdapter(Context context, List<review> reviewList){
         this.layoutInflater = LayoutInflater.from(context);
@@ -34,19 +36,7 @@ public class reviewAdapter extends RecyclerView.Adapter<reviewAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String Title = reviewList.get(position).getTitle();
-        String Content = reviewList.get(position).getContent();
-        String Score = reviewList.get(position).getScore();
-        String User = reviewList.get(position).getUser();
-        String Mall = reviewList.get(position).getMall();
-        String Date = reviewList.get(position).getDate();
-
-        holder.title.setText(Title);
-        holder.content.setText(Content);
-        holder.score.setText(Score);
-        holder.user.setText(User);
-        holder.mall.setText(Mall);
-        holder.date.setText(Date);
+        holder.onBind(reviewList.get(position));
 
     }
 
@@ -57,7 +47,7 @@ public class reviewAdapter extends RecyclerView.Adapter<reviewAdapter.ViewHolder
 
     static class ViewHolder extends RecyclerView.ViewHolder{
         TextView title, content, user, score, mall, date;
-
+        private RatingBar ratingBar;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.reviewTitle);
@@ -66,6 +56,22 @@ public class reviewAdapter extends RecyclerView.Adapter<reviewAdapter.ViewHolder
             score = itemView.findViewById(R.id.reviewScore);
             mall = itemView.findViewById(R.id.reviewMall);
             date = itemView.findViewById(R.id.reviewDate);
+            ratingBar=itemView.findViewById(R.id.reviewScore_ratingBar);
+        }
+
+        public void onBind(review data){
+
+            title.setText(data.getTitle());
+            content.setText(data.getContent());
+            user.setText(data.getUser());
+            String review_score_string = data.getScore().replace("점", "");
+            float review_score = Float.parseFloat(review_score_string);
+            review_score /= 20;
+            score.setText(String.valueOf(review_score)+"점");
+            mall.setText(data.getMall());
+            date.setText(data.getDate());
+            title.setText(data.getTitle());
+            ratingBar.setRating(review_score);
         }
     }
 }

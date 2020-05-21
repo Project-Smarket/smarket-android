@@ -42,7 +42,7 @@
         android:layout_marginLeft="50dp"
         android:layout_marginTop="10dp"
         android:layout_marginRight="50dp"
-        android:background="@drawable/button_smarket"
+        android:background="@drawable/button_smarket_yello"
         android:textColor="@color/colorBlack"
         android:text="로그인" />
 

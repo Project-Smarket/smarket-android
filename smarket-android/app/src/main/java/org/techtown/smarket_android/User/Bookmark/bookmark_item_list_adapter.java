@@ -147,9 +147,9 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
         public bmViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            bookmark_title = itemView.findViewById(R.id.search_list_item_name);
+            bookmark_title = itemView.findViewById(R.id.search_list_item_title);
             bookmark_image = itemView.findViewById(R.id.search_list_item_image);
-            bookmark_price = itemView.findViewById(R.id.search_list_item_value);
+            bookmark_price = itemView.findViewById(R.id.search_list_item_price);
 
             heart_btn = itemView.findViewById(R.id.heart_btn);
             cash_btn = itemView.findViewById(R.id.cash_btn);
