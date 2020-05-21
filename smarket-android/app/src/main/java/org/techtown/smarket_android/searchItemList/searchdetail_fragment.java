@@ -287,7 +287,8 @@ public class searchdetail_fragment extends Fragment {
     }
 
     private void getJSon() throws UnsupportedEncodingException {
-        danawaRequest detailRequest = new danawaRequest(in, new Response.Listener<String>() {
+        String url = getString(R.string.detailEndpoint);
+        danawaRequest detailRequest = new danawaRequest(url, in, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {

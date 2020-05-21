@@ -21,6 +21,7 @@
     <string name="fcmEndpoint"> http://118.47.184.245:8080/api/fcm </string>
     <string name="crawlingEndpoint"> http://118.47.184.245:8080/api/crawling </string>
     <string name="naverEndpoint"> http://118.47.184.245:8080/api/naver </string>
+    <string name="detailEndpoint">http://118.47.184.245:8080/api/item/detail?query=</string>
     <string name="youtubeEndpoint"> http://118.47.184.245:8080/api/youtube </string>
     <string name="reviewTitle">리뷰제목</string>
     <string name="reviewContent">리뷰내용입니다 가나다라마바사아자차카타파하 abcdefghijklmnopqrxtuvwxyz</string>
