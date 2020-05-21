@@ -62,29 +62,33 @@ public class MainNavigationActivity extends AppCompatActivity {
 
     }
 
+    // 각 프래그먼트에 addToBackStack 선언 뒤로가기를 누르면 스택에 쌓인 프래그먼트가 없어지는 형태
+    // https://youngest-programming.tistory.com/21
+    // 고민 : 프래그먼트를 뒤로가기로 변경할 때 하단 네비게이션 바를 어떻게 같이 변환시킬까?
+
     private void set_navigation(){
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, search_fragment1).commitAllowingStateLoss(); //bottomnavigationview의 아이콘을 선택 했을때 원하는 프래그먼트가 띄워질 수 있도록 리스너를 추가합니다.
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, search_fragment1).addToBackStack(null).commitAllowingStateLoss(); //bottomnavigationview의 아이콘을 선택 했을때 원하는 프래그먼트가 띄워질 수 있도록 리스너를 추가합니다.
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) { //menu_bottom.xml에서 지정해줬던 아이디 값을 받아와서 각 아이디값마다 다른 이벤트를 발생시킵니다.
                     case R.id.tab1: {
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, search_fragment1).addToBackStack(null).commitAllowingStateLoss();
 
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, search_fragment1).commitAllowingStateLoss();
                         return true;
                     }
                     case R.id.tab2: {
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, hotdeal_fragment2).commitAllowingStateLoss(); //로그인 완료 창
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, hotdeal_fragment2).addToBackStack(null).commitAllowingStateLoss(); //로그인 완료 창
                         //getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, user_fragment2).commitAllowingStateLoss(); // 로그인 창
                         return true;
                     }
                     case R.id.tab3: {
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, user_fragment3).commitAllowingStateLoss();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, user_fragment3).addToBackStack(null).commitAllowingStateLoss();
                         return true;
                     }
 
                     case R.id.tab4: {
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, alarm_fragment4).commitAllowingStateLoss();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, alarm_fragment4).addToBackStack(null).commitAllowingStateLoss();
                         return true;
                     }
 
