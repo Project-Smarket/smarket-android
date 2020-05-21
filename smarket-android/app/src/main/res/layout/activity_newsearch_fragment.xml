@@ -35,7 +35,8 @@
                 app:layout_collapseMode="pin">
 
                 <ImageView
-                    android:layout_width="150dp"
+                    android:id="@+id/newsearch_smarket_cat"
+                    android:layout_width="280dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"

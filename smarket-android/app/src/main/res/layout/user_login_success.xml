@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="24dp"
         android:layout_marginTop="12dp"
-        android:text="합리적인 소비 파트너, 스마캣과 함께 하세요"
+        android:text="합리적인 소비 파트너, 스마켓과 함께 하세요!"
         android:textColor="@color/colorBlack"
         android:textSize="16sp" />
 
@@ -41,6 +41,8 @@
             android:id="@+id/user_tv3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
             android:text="님"
             android:textColor="@color/colorBlack"
             android:textSize="24sp"

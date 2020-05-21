@@ -68,7 +68,9 @@ public class newsearch_fragment extends Fragment {
     private AppBarLayout mAppBarLayout;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private Toolbar toolbar;
-    private NestedScrollView nestedScrollView;
+
+    private ImageView smarket_cat;
+
 
     // 검색창을 통해 검색을 완료했는지 검사
     private boolean isUpdate = false;
@@ -92,6 +94,7 @@ public class newsearch_fragment extends Fragment {
         search_text = viewGroup.findViewById(R.id.newsearch_editText);
         search_progressBar = viewGroup.findViewById(R.id.newsearch_progressBar);
         search_progressBar.setVisibility(View.GONE);
+        smarket_cat = viewGroup.findViewById(R.id.newsearch_smarket_cat);
 
 
         itemList = new ArrayList<>();
@@ -243,6 +246,11 @@ public class newsearch_fragment extends Fragment {
                     }
                     adapter.notifyDataSetChanged();
 
+                    // 스마켓 고양이 축소
+                    ViewGroup.LayoutParams cat_params = smarket_cat.getLayoutParams();
+                    cat_params.width = 240;
+                    smarket_cat.setLayoutParams(cat_params);
+
                     // 상품 검색 및 조회 완료 후 "로딩 바" 안보이게 설정
                     search_progressBar.setVisibility(View.GONE);
 
@@ -256,7 +264,7 @@ public class newsearch_fragment extends Fragment {
                     // 상품 검색 및 조회 완료 후 Appbar의 높이 재조정(가운데에서 약간 위로)
                     if (isUpdate) {
                         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) mAppBarLayout.getLayoutParams();
-                        params.height = 600;
+                        params.height = 340;
                         mAppBarLayout.setLayoutParams(params);
                         recyclerView.setBackgroundColor(getResources().getColor(R.color.color_lite_gray));
                     }
