@@ -40,7 +40,6 @@ import org.techtown.smarket_android.smarketClass.specList;
 import org.techtown.smarket_android.searchItemList.Pager.search_detail_news_fragment;
 import org.techtown.smarket_android.searchItemList.Pager.search_detail_of_detail_fragment;
 import org.techtown.smarket_android.searchItemList.Pager.search_detail_review_fragment;
-import org.techtown.smarket_android.searchItemList.Pager.search_detail_video_fragment;
 import org.techtown.smarket_android.searchItemList.Request.danawaRequest;
 
 import java.io.Serializable;
@@ -59,7 +58,6 @@ public class searchdetail_fragment extends Fragment {
     private Toolbar toolbar;
     private search_detail_news_fragment detail_news_fragment;
     private search_detail_of_detail_fragment detail_of_detail_fragment;
-    private search_detail_video_fragment detail_video_fragment;
     private search_detail_review_fragment detail_review_fragment;
     private FragmentManager fragmentManager;
     private ArrayList<specList> spec;
@@ -103,6 +101,10 @@ public class searchdetail_fragment extends Fragment {
 
         settingToolbar();
         setHasOptionsMenu(true);
+
+
+
+        Tab();
 
 
         return viewGroup;
@@ -199,23 +201,21 @@ public class searchdetail_fragment extends Fragment {
 
         switch (index) {
             case 0: {
-                if (detail_news_fragment == null) {
-                    detail_news_fragment = new search_detail_news_fragment();
-                    Bundle newsBundle = new Bundle();
-                    List<news> list = new ArrayList<>();
-                    list = newsList;
-                    newsBundle.putSerializable("news", (Serializable) list);
-                    detail_news_fragment.setArguments(newsBundle);
-                    fragmentManager.beginTransaction().add(R.id.detail_frame, detail_news_fragment).addToBackStack(null).commit();
+                if (detail_review_fragment == null) {
+                    detail_review_fragment = new search_detail_review_fragment();
+                    Bundle reviewBundle = new Bundle();
+                    List<review> list = new ArrayList<>();
+                    list = reviewList;
+                    reviewBundle.putSerializable("review", (Serializable) list);
+                    detail_review_fragment.setArguments(reviewBundle);
+                    fragmentManager.beginTransaction().add(R.id.detail_frame, detail_review_fragment, "search").addToBackStack(null).commit();
                 }
                 if (detail_news_fragment != null)
-                    fragmentManager.beginTransaction().show(detail_news_fragment).commit();
+                    fragmentManager.beginTransaction().hide(detail_news_fragment).commit();
                 if (detail_of_detail_fragment != null)
                     fragmentManager.beginTransaction().hide(detail_of_detail_fragment).commit();
-                if (detail_video_fragment != null)
-                    fragmentManager.beginTransaction().hide(detail_video_fragment).commit();
                 if (detail_review_fragment != null)
-                    fragmentManager.beginTransaction().hide(detail_review_fragment).commit();
+                    fragmentManager.beginTransaction().show(detail_review_fragment).commit();
 
                 break;
             }
@@ -228,7 +228,7 @@ public class searchdetail_fragment extends Fragment {
                     dodBundle.putSerializable("spec", (Serializable) list);
 
                     detail_of_detail_fragment.setArguments(dodBundle);
-                    fragmentManager.beginTransaction().add(R.id.detail_frame, detail_of_detail_fragment).addToBackStack(null).commit();
+                    fragmentManager.beginTransaction().add(R.id.detail_frame, detail_of_detail_fragment, "search").addToBackStack(null).commit();
                 }
 
                 if (detail_news_fragment != null)
@@ -237,49 +237,25 @@ public class searchdetail_fragment extends Fragment {
                     fragmentManager.beginTransaction().show(detail_of_detail_fragment).commit();
                 if (detail_review_fragment != null)
                     fragmentManager.beginTransaction().hide(detail_review_fragment).commit();
-                if (detail_video_fragment != null)
-                    fragmentManager.beginTransaction().hide(detail_video_fragment).commit();
 
                 break;
             }
             case 2: {
-                if (detail_review_fragment == null) {
-                    detail_review_fragment = new search_detail_review_fragment();
-                    Bundle reviewBundle = new Bundle();
-                    List<review> list = new ArrayList<>();
-                    list = reviewList;
-                    reviewBundle.putSerializable("review", (Serializable) list);
-                    detail_review_fragment.setArguments(reviewBundle);
-                    fragmentManager.beginTransaction().add(R.id.detail_frame, detail_review_fragment).addToBackStack(null).commit();
+                if (detail_news_fragment == null) {
+                    detail_news_fragment = new search_detail_news_fragment();
+                    Bundle newsBundle = new Bundle();
+                    List<news> list = new ArrayList<>();
+                    list = newsList;
+                    newsBundle.putSerializable("news", (Serializable) list);
+                    detail_news_fragment.setArguments(newsBundle);
+                    fragmentManager.beginTransaction().add(R.id.detail_frame, detail_news_fragment, "search").addToBackStack(null).commit();
                 }
                 if (detail_news_fragment != null)
-                    fragmentManager.beginTransaction().hide(detail_news_fragment).commit();
-                if (detail_of_detail_fragment != null)
-                    fragmentManager.beginTransaction().hide(detail_of_detail_fragment).commit();
-                if (detail_review_fragment != null)
-                    fragmentManager.beginTransaction().show(detail_review_fragment).commit();
-                if (detail_video_fragment != null)
-                    fragmentManager.beginTransaction().hide(detail_video_fragment).commit();
-
-                break;
-            }
-            case 3: {
-                if (detail_video_fragment == null) {
-                    detail_video_fragment = new search_detail_video_fragment();
-                    Bundle itemBundle = new Bundle();
-                    itemBundle.putString("txt", in);
-                    detail_video_fragment.setArguments(itemBundle);
-                    fragmentManager.beginTransaction().add(R.id.detail_frame, detail_video_fragment).addToBackStack(null).commit();
-                }
-
-                if (detail_news_fragment != null)
-                    fragmentManager.beginTransaction().hide(detail_news_fragment).commit();
+                    fragmentManager.beginTransaction().show(detail_news_fragment).commit();
                 if (detail_of_detail_fragment != null)
                     fragmentManager.beginTransaction().hide(detail_of_detail_fragment).commit();
                 if (detail_review_fragment != null)
                     fragmentManager.beginTransaction().hide(detail_review_fragment).commit();
-                if (detail_video_fragment != null)
-                    fragmentManager.beginTransaction().show(detail_video_fragment).commit();
 
                 break;
             }
@@ -303,14 +279,12 @@ public class searchdetail_fragment extends Fragment {
                     newsJson(jsonObject); //뉴스 json파싱
 
                     fragmentManager = getChildFragmentManager();
-                    detail_news_fragment = new search_detail_news_fragment();
-                    Bundle newsbundle = new Bundle();
-                    List<news> list = newsList;
-                    newsbundle.putSerializable("news", (Serializable) list);
-                    detail_news_fragment.setArguments(newsbundle);
-                    fragmentManager.beginTransaction().replace(R.id.detail_frame, detail_news_fragment).addToBackStack(null).commit();
-
-                    Tab();
+                    detail_review_fragment = new search_detail_review_fragment();
+                    Bundle reviewbundle = new Bundle();
+                    List<review> list = reviewList;
+                    reviewbundle.putSerializable("review", (Serializable) list);
+                    detail_review_fragment.setArguments(reviewbundle);
+                    fragmentManager.beginTransaction().replace(R.id.detail_frame, detail_review_fragment, "search").addToBackStack(null).commitAllowingStateLoss();
 
                 } catch (JSONException e) {
                     Log.d(TAG, "getJson: " + e.toString());

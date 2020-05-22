@@ -3,8 +3,10 @@ package org.techtown.smarket_android.MainNavigation;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -39,6 +42,7 @@ import java.util.Date;
 public class MainNavigationActivity extends AppCompatActivity {
     private static final String TAG = "alarmmanager_main";
     private BottomNavigationView bottomNavigationView;
+    private long backKeyPressedTime = 0;
     private newsearch_fragment search_fragment1;
     private hotdeal_fragment hotdeal_fragment2;
     //user_login_success user_fragment2; // 로그인 완료 창
@@ -71,10 +75,10 @@ public class MainNavigationActivity extends AppCompatActivity {
 
     // 각 프래그먼트에 addToBackStack 선언 뒤로가기를 누르면 스택에 쌓인 프래그먼트가 없어지는 형태
     // https://youngest-programming.tistory.com/21
-    // 고민 : 프래그먼트를 뒤로가기로 변경할 때 하단 네비게이션 바를 어떻게 같이 변환시킬까?
+    // https://hwanine.github.io/android/backStack/
 
     private void set_navigation() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, search_fragment1,"search").addToBackStack(null).commitAllowingStateLoss(); //bottomnavigationview의 아이콘을 선택 했을때 원하는 프래그먼트가 띄워질 수 있도록 리스너를 추가합니다.
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, search_fragment1, "search").addToBackStack(null).commitAllowingStateLoss(); //bottomnavigationview의 아이콘을 선택 했을때 원하는 프래그먼트가 띄워질 수 있도록 리스너를 추가합니다.
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -110,7 +114,7 @@ public class MainNavigationActivity extends AppCompatActivity {
                 }
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                fragmentTransaction.commitAllowingStateLoss(); //로그인 완료 창
+                fragmentTransaction.commit(); //로그인 완료 창
 
                 return true;
             }

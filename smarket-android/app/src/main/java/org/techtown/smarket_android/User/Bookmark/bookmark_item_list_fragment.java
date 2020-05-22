@@ -770,7 +770,7 @@ public class bookmark_item_list_fragment extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
                         null_userFile();
                         FragmentManager fragmentManager = getFragmentManager();
-                        fragmentManager.beginTransaction().replace(R.id.main_layout, user_login_fragment.newInstance()).commit();
+                        fragmentManager.beginTransaction().replace(R.id.main_layout, user_login_fragment.newInstance(),"login").commit();
                     }
                 });
         builder.create();
