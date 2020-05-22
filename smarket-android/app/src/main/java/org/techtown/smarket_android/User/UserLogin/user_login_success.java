@@ -27,6 +27,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonObject;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,6 +61,7 @@ public class user_login_success extends Fragment {
     private String userID;
     private String access_token;
     private String refresh_token;
+    private String user_name = "";
 
     @Nullable
     @Override
@@ -68,10 +70,11 @@ public class user_login_success extends Fragment {
 
         // 현재 로그인된 아이디 가져오기
         get_userFile();
+        get_userName();
         get_deviceToken();
 
         userId_textView = viewGroup.findViewById(R.id.user_tv);
-        userId_textView.setText(userID);
+
 
         bookmark = viewGroup.findViewById(R.id.bookmark);
 
@@ -201,13 +204,13 @@ public class user_login_success extends Fragment {
                     Log.d("TOKEN", "device_token: " + device_token);
                     save_deviceToken(device_token);
                 } catch (JSONException e) {
-                   Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), error.toString(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
             }
         }
         ) {
@@ -224,7 +227,7 @@ public class user_login_success extends Fragment {
     }
 
     // SharedPreference device_token 저장
-    private void save_deviceToken(String device_token){
+    private void save_deviceToken(String device_token) {
         SharedPreferences.Editor editor = userFile.edit();
         editor.putString("device_token", device_token);
         editor.apply();
@@ -238,5 +241,52 @@ public class user_login_success extends Fragment {
         refresh_token = userFile.getString("refresh_token", null);
         Log.d("TOKEN", "access_token: " + access_token);
         Log.d("TOKEN", "refresh_token: " + refresh_token);
+    }
+
+    private void get_userName() {
+        String loginUrl = getString(R.string.usersEndpoint) + "/" + userID;  // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, loginUrl, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(response);
+                    boolean success = jsonObject.getBoolean("success");
+                    JSONObject data = jsonObject.getJSONObject("data");
+                    if (success) {
+                        // ** 로그인 성공시 ** //
+                        user_name = data.getString("name");
+                        userId_textView.setText(user_name);
+                    } else if (!success) {
+                        // ** 로그인 실패 시 ** //
+                        Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //error_handling(error);
+            }
+        }
+        ) {
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("user_id", userID);
+                return params;
+            }
+
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("x-access-token", access_token);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+        requestQueue.add(stringRequest);
     }
 }
