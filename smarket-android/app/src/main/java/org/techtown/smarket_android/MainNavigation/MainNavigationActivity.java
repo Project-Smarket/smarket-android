@@ -21,6 +21,7 @@ import org.techtown.smarket_android.Alarm.alarm_fragment;
 import org.techtown.smarket_android.Hotdeal.hotdeal_fragment;
 import org.techtown.smarket_android.NewSearch.newsearch_fragment;
 import org.techtown.smarket_android.R;
+import org.techtown.smarket_android.User.Bookmark.newbookmark_fragment;
 import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
 import org.techtown.smarket_android.searchItemList.search_fragment;
 
@@ -53,7 +54,6 @@ public class MainNavigationActivity extends AppCompatActivity {
         //user_fragment2 = new user_login_success(); // 로그인 완료 창
         user_fragment3 = new user_login_fragment(); // 로그인 창
         alarm_fragment4 = new alarm_fragment(); // 최저가 알림창
-
         //set_bookmarkFolderList(); // 디폴트 북마크 폴더 생성 (함수 한번 실행시 어플이 삭제될 때까지 데이터 존재)
 
         set_navigation();

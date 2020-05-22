@@ -5,7 +5,33 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -18,38 +44,17 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.techtown.smarket_android.smarketClass.Bookmark;
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.smarketClass.BookmarkAlarm;
 import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
 import org.techtown.smarket_android.searchItemList.RecyclerDecoration;
+import org.techtown.smarket_android.smarketClass.Bookmark;
+import org.techtown.smarket_android.smarketClass.BookmarkAlarm;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
@@ -61,13 +66,12 @@ import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
 
-
-public class bookmark_item_list_fragment extends Fragment {
+public class newbookmark_fragment extends Fragment {
 
     private String TAG = "tag";
 
-    public static bookmark_item_list_fragment newInstance() {
-        return new bookmark_item_list_fragment();
+    public static newbookmark_fragment newInstance() {
+        return new newbookmark_fragment();
     } // 프래그먼트 생성
 
 
@@ -78,6 +82,8 @@ public class bookmark_item_list_fragment extends Fragment {
     private List<String> bookmarkFolderList = new ArrayList<>(); // SharedPreference에 저장된 bookmarkFolderList
     private List<BookmarkAlarm> bookmarkAlarmList; // SharedPreference에 저장된 bookmarkAlarmList
 
+    private TextView add_bookmarkFolder;
+    private TextView remove_bookmarkFolder;
 
     private EditText bookmark_folder_name; // 추가할 북마크 이름
 
@@ -98,12 +104,10 @@ public class bookmark_item_list_fragment extends Fragment {
 
     // 스피너 중복 실행 방지 변수
     int iCurrentSelection;
-
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        viewGroup = (ViewGroup) inflater.inflate(R.layout.bookmark_main, container, false);
+        viewGroup = (ViewGroup) inflater.inflate(R.layout.activity_newbookmark_fragment, container, false);
         userFile = getContext().getSharedPreferences("userFile", MODE_PRIVATE);
         imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         requestedBookmarkList = new ArrayList<>();
@@ -120,8 +124,6 @@ public class bookmark_item_list_fragment extends Fragment {
 
         return viewGroup;
     }
-
-
     // SharedPreference의 bookmarkAlarmList 데이터를 가져온다
     private void get_bookmarkAlarmList() {
         // 저장된 bookmarkAlarmList가 있을 경우
@@ -157,7 +159,7 @@ public class bookmark_item_list_fragment extends Fragment {
         // 아이템 줄간격 설정
         RecyclerDecoration spaceDecoration = new RecyclerDecoration(20);
 
-        recyclerView = viewGroup.findViewById(R.id.bookmark_itemList1);
+        recyclerView = viewGroup.findViewById(R.id.bookmark_itemList);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.addItemDecoration(spaceDecoration);
@@ -166,7 +168,7 @@ public class bookmark_item_list_fragment extends Fragment {
     // 북마크 폴더 스피너 설정
     private void set_bookmark_spinner() {
         spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, bookmarkFolderList);
-        bookmark_spinner = (Spinner) viewGroup.findViewById(R.id.bookmark_folder1);
+        bookmark_spinner = (Spinner) viewGroup.findViewById(R.id.bookmarkFolder_spinner);
         iCurrentSelection = bookmark_spinner.getSelectedItemPosition();
         bookmark_spinner.setAdapter(spinnerAdapter);
         bookmark_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -268,8 +270,8 @@ public class bookmark_item_list_fragment extends Fragment {
 
     // 북마크 폴더 추가 버튼 설정
     private void set_plus_btn() {
-        ImageButton plus_btn = viewGroup.findViewById(R.id.plus_btn);
-        plus_btn.setOnClickListener(new View.OnClickListener() {
+        add_bookmarkFolder = viewGroup.findViewById(R.id.add_bookmarkFolder);
+        add_bookmarkFolder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 LayoutInflater inflater = getLayoutInflater();
@@ -329,8 +331,8 @@ public class bookmark_item_list_fragment extends Fragment {
 
     // 북마크 폴더 삭제 버튼 설정
     private void set_trashcan_btn() {
-        ImageButton trashcan_btn = viewGroup.findViewById(R.id.trashcan_btn);
-        trashcan_btn.setOnClickListener(new View.OnClickListener() {
+        remove_bookmarkFolder = viewGroup.findViewById(R.id.remove_bookmarkFolder);
+        remove_bookmarkFolder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!spinnerAdapter.isEmpty()) {

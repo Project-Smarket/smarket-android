@@ -2,14 +2,33 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_lite_gray"
+    android:orientation="vertical">
 
-
+    <androidx.appcompat.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:contentInsetStart="0dp"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStartWithNavigation="0dp"
+        android:paddingLeft="12dp"
+        android:paddingTop="8dp"
+        app:title="최저가 알람"
+        android:elevation="10dp"
+        android:background="@color/colorWhite"
+        app:titleTextColor="@color/colorBlack"
+        app:titleTextAppearance="@style/Toolbar.TitleText"/>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/alarm_list_recyclerView"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/color_lite_gray" />
+
+    <ImageView
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/color_lite_gray"
-        />
+        android:scaleType="fitCenter"
+        android:src="@drawable/smarket_footprint"/>
 </LinearLayout>

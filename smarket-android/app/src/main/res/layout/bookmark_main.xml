@@ -11,10 +11,12 @@
         android:orientation="horizontal">
 
         <Spinner
-            android:id="@+id/bookmark_folder"
+            android:id="@+id/bookmark_folder1"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_weight="1"
+            android:background="@drawable/border"
+            android:popupBackground="@drawable/border"
             android:spinnerMode="dropdown" />
 
         <ImageButton
@@ -39,7 +41,7 @@
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/bookmark_itemList"
+        android:id="@+id/bookmark_itemList1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbarFadeDuration="0"

@@ -67,6 +67,8 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
         private String item_type;
         private int item_lprice;
         private TextView alarm_message;
+        private TextView alarm_lprice;
+        private TextView alarm_won;
         private TextView item_price;
         private TextView alarm_type;
         private ImageView direction;
@@ -82,7 +84,9 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
 
             item_title = itemView.findViewById(R.id.alamr_item_title_textView);
             item_image = itemView.findViewById(R.id.alarm_item_imageView);
+            alarm_lprice = itemView.findViewById(R.id.alarm_lprice_textView);
             item_price = itemView.findViewById(R.id.alarm_item_price_textView);
+            alarm_won = itemView.findViewById(R.id.alarm_won_textVIew);
             alarm_message = itemView.findViewById(R.id.alarm_message_textView);
             alarm_type = itemView.findViewById(R.id.alarm_type_textView);
             direction = itemView.findViewById(R.id.direction_imageView);
@@ -95,7 +99,7 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
             item_image_url = data.getItem_image();
             set_item_image();
             item_lprice = Integer.parseInt(data.getItem_price());
-            item_price.setText(String.format("%,d", item_lprice) + "원");
+            item_price.setText(String.format("%,d", item_lprice));
 
             alarm_message.setText(data.getAlarm_message());
             alarm_type.setText(data.getAlarm_type());
@@ -151,7 +155,9 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
         void set_alarmType_down() {
             alarm_type.setBackground(mContext.getResources().getDrawable(R.drawable.alarm_type_down));
             direction.setColorFilter(itemView.getResources().getColor(R.color.red), PorterDuff.Mode.SRC_IN);
+            alarm_lprice.setTextColor(mContext.getResources().getColor(R.color.red));
             alarm_message.setTextColor(mContext.getResources().getColor(R.color.red));
+            alarm_won.setTextColor(mContext.getResources().getColor(R.color.red));
             item_price.setTextColor(mContext.getResources().getColor(R.color.red));
             direction.setRotationX(0);
         }
@@ -159,6 +165,8 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
         void set_alarmType_up() {
             alarm_type.setBackground(mContext.getResources().getDrawable(R.drawable.alarm_type_up));
             direction.setColorFilter(itemView.getResources().getColor(R.color.blue), PorterDuff.Mode.SRC_IN);
+            alarm_lprice.setTextColor(mContext.getResources().getColor(R.color.blue));
+            alarm_won.setTextColor(mContext.getResources().getColor(R.color.blue));
             alarm_message.setTextColor(mContext.getResources().getColor(R.color.blue));
             item_price.setTextColor(mContext.getResources().getColor(R.color.blue));
             direction.setRotationX(180);

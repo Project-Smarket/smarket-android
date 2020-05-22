@@ -32,6 +32,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.User.Bookmark.bookmark_item_list_fragment;
+import org.techtown.smarket_android.User.Bookmark.newbookmark_fragment;
 import org.techtown.smarket_android.User.UserInfrom.userinform_fragment;
 import org.techtown.smarket_android.User.recent.recent_fragment;
 
@@ -79,7 +80,7 @@ public class user_login_success extends Fragment {
             public void onClick(View v) {
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_layout, bookmark_item_list_fragment.newInstance());
+                fragmentTransaction.replace(R.id.main_layout, newbookmark_fragment.newInstance());
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             }

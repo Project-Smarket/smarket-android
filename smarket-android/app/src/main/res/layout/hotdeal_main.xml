@@ -6,6 +6,16 @@
     android:background="@color/colorWhite"
     android:orientation="vertical">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:text="핫딜"
+        android:textColor="@color/colorBlack"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginBottom="8dp"/>
+
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/hotdealTapLayout"
         android:layout_width="match_parent"

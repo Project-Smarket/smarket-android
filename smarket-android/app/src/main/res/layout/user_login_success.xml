@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="24dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="16dp"
         android:text="합리적인 소비 파트너, 스마켓과 함께 하세요!"
         android:textColor="@color/colorBlack"
         android:textSize="16sp" />

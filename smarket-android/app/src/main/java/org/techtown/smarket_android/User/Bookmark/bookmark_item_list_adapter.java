@@ -89,6 +89,7 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
         if (bookmarkList.get(position).getBookmark_selling()){
             holder.onBind(bookmarkList.get(position));
             holder.setPriceAlarm(holder);
+            holder.onType(bookmarkList.get(position));
         }
         // item_selling == 0
         else{
@@ -135,6 +136,7 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
         private String bookmark_link;
         private String bookmark_image_url;
         private ImageView bookmark_image;
+        private TextView bookmark_productype;
         private int bookmark_lprice;
         private TextView bookmark_price;
         private BookmarkAlarm bookmark_alarm;
@@ -150,6 +152,7 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
             bookmark_title = itemView.findViewById(R.id.search_list_item_title);
             bookmark_image = itemView.findViewById(R.id.search_list_item_image);
             bookmark_price = itemView.findViewById(R.id.search_list_item_price);
+            bookmark_productype = itemView.findViewById(R.id.search_list_item_productype);
 
             heart_btn = itemView.findViewById(R.id.heart_btn);
             cash_btn = itemView.findViewById(R.id.cash_btn);
@@ -182,7 +185,7 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
             bookmark_image_url = bookmark.getBookmark_image_url();
             bookmark_lprice = Integer.parseInt(bookmark.getBookmark_lprice());
             String price = String.format("%,d", bookmark_lprice);
-            bookmark_price.setText(price+"원");
+            bookmark_price.setText(price);
             bookmark_image_url = bookmark.getBookmark_image_url();
             //bookmark_image.setBackgroundResource(R.drawable.smarket_cat);
             set_bookmark_image();
@@ -204,6 +207,12 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
             set_bookmark_image();
             cash_btn.setVisibility(View.GONE);
 
+        }
+
+        void onType(Bookmark bookmark){
+            if(!bookmark.getBookmark_type().equals("1")){
+                bookmark_productype.setText("");
+            }
         }
 
         // 최저가 알람 버튼 색상 설정

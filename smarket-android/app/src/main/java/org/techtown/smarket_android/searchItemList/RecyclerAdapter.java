@@ -191,6 +191,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     public void onBindViewHolder(@NonNull final ItemViewHolder holder, int position) {
         // Item을 하나, 하나 보여주는(bind 되는) 함수입니다.
         holder.onBind(itemList.get(position));
+        holder.onType(itemList.get(position).getItem_type());
 
         // 북마크 버튼 기능 설정
         holder.heart_btn.setOnClickListener(new View.OnClickListener() {
@@ -329,6 +330,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
         private String[] item_data;
 
+        private TextView item_productype;
+
         ItemViewHolder(final View itemView) {
             super(itemView);
 
@@ -336,6 +339,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             item_price = itemView.findViewById(R.id.search_list_item_price);
             item_image = itemView.findViewById(R.id.search_list_item_image);
             item_mall = itemView.findViewById(R.id.search_list_item_mallName);
+            item_productype = itemView.findViewById(R.id.search_list_item_productype);
             heart_btn = itemView.findViewById(R.id.heart_btn);
             item_data = new String[8];
 
@@ -369,6 +373,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             item_data[5] = data.getItem_category2();
             item_data[6] = data.getItem_category3();
             item_data[7] = data.getItem_category4();
+
 
             set_item_image();
 
@@ -415,6 +420,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                 item_image.setImageBitmap(bitmap);
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            }
+        }
+
+        void onType(String item_type){
+            if(!item_type.equals("1")){
+                item_productype.setText("");
             }
         }
     }
