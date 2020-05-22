@@ -3,6 +3,7 @@ package org.techtown.smarket_android.searchItemList.Request;
         import android.util.Log;
         import android.widget.TextView;
 
+        import com.android.volley.AuthFailureError;
         import com.android.volley.Response;
         import com.android.volley.VolleyError;
         import com.android.volley.toolbox.StringRequest;
@@ -26,7 +27,7 @@ public class searchRequest extends StringRequest {
         this.errorListener = errorListener;
     }
 
-    public Map<String, String> getParams(){
+    public Map<String, String> getParams() throws AuthFailureError {
         Map<String,String> parameters;
         parameters = new HashMap<>();
         parameters.put("searchItemName", this.getUrl());

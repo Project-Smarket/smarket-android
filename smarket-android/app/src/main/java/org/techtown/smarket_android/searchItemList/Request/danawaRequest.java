@@ -1,5 +1,6 @@
 package org.techtown.smarket_android.searchItemList.Request;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 
@@ -18,7 +19,7 @@ public class danawaRequest extends StringRequest {
         this.errorListener = errorListener;
     }
 
-    public Map<String, String> getParams(){
+    public Map<String, String> getParams() throws AuthFailureError {
         Map<String,String> parameters;
         parameters = new HashMap<>();
         parameters.put("detailItem", this.getUrl());

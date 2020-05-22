@@ -79,7 +79,7 @@ public class user_login_success extends Fragment {
             public void onClick(View v) {
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_layout, bookmark_item_list_fragment.newInstance());
+                fragmentTransaction.replace(R.id.main_layout, bookmark_item_list_fragment.newInstance(),"login");
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             }
@@ -92,7 +92,7 @@ public class user_login_success extends Fragment {
             public void onClick(View v) {
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_layout, recent_fragment.newInstance());
+                fragmentTransaction.replace(R.id.main_layout, recent_fragment.newInstance(),"login");
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             }
@@ -116,12 +116,17 @@ public class user_login_success extends Fragment {
                 // 현재 로그인된 id와 access_token 제거
                 null_userFile();
                 FragmentManager fragmentManager = getFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.main_layout, user_login_fragment.newInstance()).commit();
+                fragmentManager.beginTransaction().replace(R.id.main_layout, user_login_fragment.newInstance(),"login").addToBackStack(null).commit();
             }
         });
 
-
         return viewGroup;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
     }
 
     // 회원 정보 수정 전 비밀번호 확인
@@ -145,7 +150,8 @@ public class user_login_success extends Fragment {
                                     if (success) {
                                         FragmentManager fragmentManager = getFragmentManager();
                                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                        fragmentTransaction.replace(R.id.main_layout, userinform_fragment.newInstance()).commit();
+                                        fragmentTransaction.replace(R.id.main_layout, userinform_fragment.newInstance(),"login")
+                                                .addToBackStack(null).commit();
                                     } else {
                                         AlertDialog alertDialog = new AlertDialog.Builder(getContext())
                                                 .setMessage("비밀번호가 일치하지 않습니다.")

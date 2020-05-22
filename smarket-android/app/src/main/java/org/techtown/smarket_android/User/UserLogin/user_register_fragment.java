@@ -320,7 +320,7 @@ public class user_register_fragment extends Fragment {
                                     public void onClick(DialogInterface dialog, int which) {
                                         FragmentManager fragmentManager = getFragmentManager();
                                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                        fragmentTransaction.replace(R.id.main_layout, user_login_fragment.newInstance()).commit();
+                                        fragmentTransaction.replace(R.id.main_layout, user_login_fragment.newInstance(),"login").commit();
                                     }
                                 })
                                 .create();

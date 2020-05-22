@@ -205,8 +205,8 @@ public class newsearch_fragment extends Fragment {
                 adapter.notifyDataSetChanged();
 
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.main_layout, searchdetailFragment).addToBackStack(null);
-                fragmentTransaction.commitAllowingStateLoss();
+                fragmentTransaction.replace(R.id.main_layout, searchdetailFragment, "search").addToBackStack(null);
+                fragmentTransaction.commit();
             }
         });
 
