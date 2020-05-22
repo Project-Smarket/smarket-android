@@ -6,10 +6,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
+import org.techtown.smarket_android.NewSearch.newsearch_fragment;
 import org.techtown.smarket_android.R;
 
 public class hotdeal_fragment extends Fragment {
@@ -21,6 +24,7 @@ public class hotdeal_fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.hotdeal_main, container, false);
 
+
         // viewpager 생성 및 어댑터 설정
         hotdealViewPager = viewGroup.findViewById(R.id.hotdealViewPager);
         hotdealViewPagerAdapter adapter = new hotdealViewPagerAdapter(getChildFragmentManager());
@@ -29,6 +33,7 @@ public class hotdeal_fragment extends Fragment {
         // viewpager와 tablayout 연동
         hotdealTabLayout = viewGroup.findViewById(R.id.hotdealTapLayout);
         hotdealTabLayout.setupWithViewPager(hotdealViewPager);
+
 
         return viewGroup;
     }

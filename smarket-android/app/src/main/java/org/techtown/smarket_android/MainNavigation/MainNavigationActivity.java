@@ -1,5 +1,6 @@
 package org.techtown.smarket_android.MainNavigation;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -9,16 +10,21 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.json.JSONArray;
 import org.techtown.smarket_android.Alarm.alarm_fragment;
 import org.techtown.smarket_android.Hotdeal.hotdeal_fragment;
+import org.techtown.smarket_android.MainActivity;
 import org.techtown.smarket_android.NewSearch.newsearch_fragment;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.User.Bookmark.newbookmark_fragment;
@@ -50,10 +56,11 @@ public class MainNavigationActivity extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottomNavigationView); //프래그먼트 생성
         search_fragment1 = new newsearch_fragment();//제일 처음 띄워줄 뷰를 세팅해줍니다. commit();까지 해줘야 합니다.
 
-        hotdeal_fragment2 = new hotdeal_fragment(); // 스마켓 홈 창
+//        hotdeal_fragment2 = new hotdeal_fragment(); // 스마켓 홈 창
         //user_fragment2 = new user_login_success(); // 로그인 완료 창
-        user_fragment3 = new user_login_fragment(); // 로그인 창
-        alarm_fragment4 = new alarm_fragment(); // 최저가 알림창
+//        user_fragment3 = new user_login_fragment(); // 로그인 창
+//        alarm_fragment4 = new alarm_fragment(); // 최저가 알림창
+
         //set_bookmarkFolderList(); // 디폴트 북마크 폴더 생성 (함수 한번 실행시 어플이 삭제될 때까지 데이터 존재)
 
         set_navigation();
@@ -62,37 +69,76 @@ public class MainNavigationActivity extends AppCompatActivity {
 
     }
 
-    private void set_navigation(){
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, search_fragment1).commitAllowingStateLoss(); //bottomnavigationview의 아이콘을 선택 했을때 원하는 프래그먼트가 띄워질 수 있도록 리스너를 추가합니다.
+    // 각 프래그먼트에 addToBackStack 선언 뒤로가기를 누르면 스택에 쌓인 프래그먼트가 없어지는 형태
+    // https://youngest-programming.tistory.com/21
+    // 고민 : 프래그먼트를 뒤로가기로 변경할 때 하단 네비게이션 바를 어떻게 같이 변환시킬까?
+
+    private void set_navigation() {
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, search_fragment1,"search").addToBackStack(null).commitAllowingStateLoss(); //bottomnavigationview의 아이콘을 선택 했을때 원하는 프래그먼트가 띄워질 수 있도록 리스너를 추가합니다.
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+
                 switch (menuItem.getItemId()) { //menu_bottom.xml에서 지정해줬던 아이디 값을 받아와서 각 아이디값마다 다른 이벤트를 발생시킵니다.
                     case R.id.tab1: {
 
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, search_fragment1).commitAllowingStateLoss();
-                        return true;
+                        fragmentTransaction.replace(R.id.main_layout, search_fragment1, "search");
+                        break;
                     }
                     case R.id.tab2: {
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, hotdeal_fragment2).commitAllowingStateLoss(); //로그인 완료 창
+                        hotdeal_fragment2 = new hotdeal_fragment(); // 스마켓 홈 창
+                        fragmentTransaction.replace(R.id.main_layout, hotdeal_fragment2, "hotDeal");
                         //getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, user_fragment2).commitAllowingStateLoss(); // 로그인 창
-                        return true;
+                        break;
                     }
                     case R.id.tab3: {
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, user_fragment3).commitAllowingStateLoss();
-                        return true;
+                        user_fragment3 = new user_login_fragment(); // 로그인 창
+                        fragmentTransaction.replace(R.id.main_layout, user_fragment3, "login");
+                        break;
                     }
 
                     case R.id.tab4: {
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, alarm_fragment4).commitAllowingStateLoss();
-                        return true;
+                        alarm_fragment4 = new alarm_fragment(); // 최저가 알림창
+                        fragmentTransaction.replace(R.id.main_layout, alarm_fragment4, "alarm");
+                        break;
                     }
 
                     default:
-                        return false;
+                        break;
                 }
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                fragmentTransaction.commitAllowingStateLoss(); //로그인 완료 창
+
+                return true;
             }
         });
+    }
+
+    public void updateBottomMenu(BottomNavigationView bottomNavigationView) {
+        Fragment search = getSupportFragmentManager().findFragmentByTag("search");
+        Fragment hotDeal = getSupportFragmentManager().findFragmentByTag("hotDeal");
+        Fragment login = getSupportFragmentManager().findFragmentByTag("login");
+        Fragment alarm = getSupportFragmentManager().findFragmentByTag("alarm");
+
+        if (search != null && search.isVisible())
+            bottomNavigationView.getMenu().findItem(R.id.tab1).setChecked(true);
+        else if (hotDeal != null && hotDeal.isVisible())
+            bottomNavigationView.getMenu().findItem(R.id.tab2).setChecked(true);
+        else if (login != null && login.isVisible())
+            bottomNavigationView.getMenu().findItem(R.id.tab3).setChecked(true);
+        else if (alarm != null && alarm.isVisible())
+            bottomNavigationView.getMenu().findItem(R.id.tab4).setChecked(true);
+    }
+
+    //뒤로가기 버튼
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        BottomNavigationView bnv = findViewById(R.id.bottomNavigationView);
+        updateBottomMenu(bnv);
     }
 
     // 설정된 알람 삭제
