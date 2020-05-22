@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,6 +67,7 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
         private String item_id;
         private String item_type;
         private int item_lprice;
+        private int item_updated_price;
         private TextView alarm_message;
         private TextView alarm_lprice;
         private TextView alarm_won;
@@ -101,8 +103,9 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
             set_item_image();
             item_lprice = Integer.parseInt(data.getItem_price());
             item_price.setText(String.format("%,d", item_lprice));
-
-            alarm_message.setText(data.getAlarm_message());
+            item_updated_price = Integer.parseInt(data.getUpdated_price());
+            alarm_message.setText(String.format("%,d", item_updated_price)+"원");
+            Log.d("alarmmessage", "onBind: "+alarm_message.getText().toString());
             alarm_type.setText(data.getAlarm_type());
 
 
