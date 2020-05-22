@@ -72,6 +72,7 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
         private TextView item_price;
         private TextView alarm_type;
         private ImageView direction;
+        private ImageView direction2;
         //private TextView alarm_posted;
 
         private String item_image_url;
@@ -90,7 +91,7 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
             alarm_message = itemView.findViewById(R.id.alarm_message_textView);
             alarm_type = itemView.findViewById(R.id.alarm_type_textView);
             direction = itemView.findViewById(R.id.direction_imageView);
-
+            direction2 = itemView.findViewById(R.id.direction_imageView2);
             //alarm_posted = itemView.findViewById(R.id.alarm_posted_textView);
         }
 
@@ -153,23 +154,27 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
 
         // direction ImageView 설정정
         void set_alarmType_down() {
-            alarm_type.setBackground(mContext.getResources().getDrawable(R.drawable.alarm_type_down));
-            direction.setColorFilter(itemView.getResources().getColor(R.color.red), PorterDuff.Mode.SRC_IN);
-            alarm_lprice.setTextColor(mContext.getResources().getColor(R.color.red));
-            alarm_message.setTextColor(mContext.getResources().getColor(R.color.red));
-            alarm_won.setTextColor(mContext.getResources().getColor(R.color.red));
-            item_price.setTextColor(mContext.getResources().getColor(R.color.red));
-            direction.setRotationX(0);
-        }
-
-        void set_alarmType_up() {
             alarm_type.setBackground(mContext.getResources().getDrawable(R.drawable.alarm_type_up));
             direction.setColorFilter(itemView.getResources().getColor(R.color.blue), PorterDuff.Mode.SRC_IN);
+            direction2.setColorFilter(itemView.getResources().getColor(R.color.blue), PorterDuff.Mode.SRC_IN);
             alarm_lprice.setTextColor(mContext.getResources().getColor(R.color.blue));
             alarm_won.setTextColor(mContext.getResources().getColor(R.color.blue));
             alarm_message.setTextColor(mContext.getResources().getColor(R.color.blue));
             item_price.setTextColor(mContext.getResources().getColor(R.color.blue));
+            direction.setRotationX(0);
+            direction2.setRotationX(0);
+        }
+
+        void set_alarmType_up() {
+            alarm_type.setBackground(mContext.getResources().getDrawable(R.drawable.alarm_type_down));
+            direction.setColorFilter(itemView.getResources().getColor(R.color.red), PorterDuff.Mode.SRC_IN);
+            direction2.setColorFilter(itemView.getResources().getColor(R.color.red), PorterDuff.Mode.SRC_IN);
+            alarm_lprice.setTextColor(mContext.getResources().getColor(R.color.red));
+            alarm_message.setTextColor(mContext.getResources().getColor(R.color.red));
+            alarm_won.setTextColor(mContext.getResources().getColor(R.color.red));
+            item_price.setTextColor(mContext.getResources().getColor(R.color.red));
             direction.setRotationX(180);
+            direction2.setRotationX(180);
         }
     }
 }

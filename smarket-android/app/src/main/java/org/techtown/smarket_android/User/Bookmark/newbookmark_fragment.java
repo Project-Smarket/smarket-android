@@ -33,6 +33,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -167,7 +168,20 @@ public class newbookmark_fragment extends Fragment {
 
     // 북마크 폴더 스피너 설정
     private void set_bookmark_spinner() {
-        spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, bookmarkFolderList);
+        spinnerAdapter = new ArrayAdapter<String>(getContext(), R.layout.bookmark_spinner_text, bookmarkFolderList) {
+
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View v = super.getView(position, convertView, parent);
+                ((TextView) v).setGravity(Gravity.CENTER);
+                return v;
+            }
+
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                View v = super.getDropDownView(position, convertView, parent);
+                ((TextView) v).setGravity(Gravity.CENTER);
+                return v;
+            }
+        };
         bookmark_spinner = (Spinner) viewGroup.findViewById(R.id.bookmarkFolder_spinner);
         iCurrentSelection = bookmark_spinner.getSelectedItemPosition();
         bookmark_spinner.setAdapter(spinnerAdapter);

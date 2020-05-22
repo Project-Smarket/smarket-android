@@ -57,7 +57,7 @@ public class SearchedItem {
         this.item_mallName = item_mallName;
         this.alarm_type = alarm_type;
         this.updated_price = updated_price;
-        alarm_message = updated_price + "원 " + alarm_type + "했습니다";
+        alarm_message = updated_price + "원";
     }
 
     public String getUser_id() {
