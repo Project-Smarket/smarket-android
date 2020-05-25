@@ -24,6 +24,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager.widget.PagerAdapter;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -89,7 +90,11 @@ public class user_login_success extends Fragment {
 
 
         // 현재 로그인된 아이디 가져오기
-        get_userFile();
+//        get_userFile();
+
+        if(userID==null) {
+            getActivity().finish();
+        }
 
         // 현재 로그인된 아이디와 일치하는 사용자 정보(alarm_check)를 가져온다
         get_userInfoList();
@@ -174,7 +179,7 @@ public class user_login_success extends Fragment {
                 // 현재 로그인된 id와 access_token 제거
                 null_userFile();
                 FragmentManager fragmentManager = getFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.main_layout, user_login_fragment.newInstance(),"login").addToBackStack(null).commit();
+                fragmentManager.beginTransaction().replace(R.id.main_layout, user_login_fragment.newInstance(),"logout").addToBackStack(null).commit();
             }
         });
 
@@ -456,5 +461,21 @@ public class user_login_success extends Fragment {
 
         RequestQueue requestQueue = Volley.newRequestQueue(getContext());
         requestQueue.add(stringRequest);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        get_userFile();
+        Fragment logout = getFragmentManager().findFragmentByTag("logout");
+        if(logout!=null && userID==null){
+            getActivity().finish();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        null_userFile();
     }
 }
