@@ -34,16 +34,22 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.smarket_android.NewSearch.newsearch_fragment;
 import org.techtown.smarket_android.R;
+import org.techtown.smarket_android.smarketClass.userInfo;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -60,6 +66,7 @@ public class user_login_fragment extends Fragment {
 
     // ** 로그인 및 토큰 정보 ** //
     private SharedPreferences userFile;
+    private List<userInfo> userInfoList;
     private String user_id;
     private String access_token;
     private String refresh_token;
@@ -77,6 +84,8 @@ public class user_login_fragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.user_login_main, container, false);
 
+        // 단말기에 저장된 모든 userInfoList를 불러옴
+        get_userInfoList();
         /* user 정보가 유효한지 검사
          * validate_user()
          * 유효하면 로그인 성공화면으로 이동
@@ -148,17 +157,17 @@ public class user_login_fragment extends Fragment {
 
                         FragmentManager fragmentManager = getFragmentManager();
                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                        fragmentTransaction.replace(R.id.main_layout, user_login_success.newInstance(),"login")
+                        fragmentTransaction.replace(R.id.main_layout, user_login_success.newInstance(), "login")
                                 .addToBackStack(null).commit(); // 로그인 성공화면으로 이동
-                    } else if(!success)
+                    } else if (!success)
                         // ** 로그인 실패 시 ** //
-                        Toast.makeText(getContext(), jsonObject.toString() , Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
 
                 } catch (JSONException e) {
                     e.printStackTrace();
 
                 }
-                }
+            }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
@@ -261,7 +270,7 @@ public class user_login_fragment extends Fragment {
         requestQueue.add(stringRequest);
     }
 
-    private void error_handling(VolleyError error){
+    private void error_handling(VolleyError error) {
         NetworkResponse response = error.networkResponse;
         if (error instanceof ClientError && response != null) {
             try {
@@ -272,11 +281,11 @@ public class user_login_fragment extends Fragment {
                 JsonElement element = parser.parse(res);
                 JsonElement comment_element = element.getAsJsonObject().get("comment");
                 String comment = " ";
-                if(!comment_element.isJsonNull())
+                if (!comment_element.isJsonNull())
                     comment = comment_element.getAsString();
-                Toast.makeText(getContext(), comment,  Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), comment, Toast.LENGTH_LONG).show();
                 //String name = data.get("name").getAsString();
-               // String msg = data.get("msg").getAsString();
+                // String msg = data.get("msg").getAsString();
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -284,34 +293,50 @@ public class user_login_fragment extends Fragment {
         }
     }
 
-    private void generate_userFile(){
+    // SharedPreference의 userInfoList 데이터를 가져온다
+    private void get_userInfoList() {
+        userFile = getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE);
+        // 저장된 userInfoList가 있을 경우
+        if (userFile.getString("userInfoList", null) != null) {
+            String userInfo = userFile.getString("userInfoList", null);
+            Type listType = new TypeToken<ArrayList<userInfo>>() {
+            }.getType();
+            userInfoList = new GsonBuilder().create().fromJson(userInfo, listType);
+
+        }// 저장된 userInfoList가 없을 경우
+        else {
+            userInfoList = new ArrayList<>();
+        }
+    }
+
+    private void generate_userFile() {
         userFile = getActivity().getSharedPreferences("userFile", MODE_PRIVATE);
     } // user의 로그인 정보를 젖아하는 userFile 생성
 
-    private void set_userFile(String user_id, String access_token, String refresh_token){
+    private void set_userFile(String user_id, String access_token, String refresh_token) {
         SharedPreferences.Editor editor = userFile.edit();
-        editor.putString("user_id", user_id); //First라는 key값으로 infoFirst 데이터를 저장한다.
-        editor.putString("access_token", access_token); //Second라는 key값으로 infoSecond 데이터를 저장한다.
+        editor.putString("user_id", user_id);
+        editor.putString("access_token", access_token);
         editor.putString("refresh_token", refresh_token);
         editor.commit(); //완료한다.
     } // 로그인 시 user의 아이디와 토큰 정보를 저장
 
-    private void validate_user(){
+    private void validate_user() {
         generate_userFile();
         String user_id = userFile.getString("user_id", null);
         String access_token = userFile.getString("access_token", null);
 
-        if(user_id != null && access_token != null){
+        if (user_id != null && access_token != null) {
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.main_layout, user_login_success.newInstance(),"login").addToBackStack(null).commit(); // 로그인 성공화면으로 이동
+            fragmentTransaction.replace(R.id.main_layout, user_login_success.newInstance(), "login").addToBackStack(null).commit(); // 로그인 성공화면으로 이동
 
         }
     }
 
     private void goto_register() {
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.main_layout, user_register_fragment.newInstance(getContext()),"login").addToBackStack(null).commit();
+        fragmentManager.beginTransaction().replace(R.id.main_layout, user_register_fragment.newInstance(getContext()), "login").addToBackStack(null).commit();
     }
 
 }

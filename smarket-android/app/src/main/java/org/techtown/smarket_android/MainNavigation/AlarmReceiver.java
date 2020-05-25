@@ -71,7 +71,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         Calendar calendar = Calendar.getInstance();
 
         // TODO : 각 시간별로 최저가 알람이 설정된 제품의 가격 정보 조회를 요청
-        int hour = calendar.get(Calendar.MINUTE);
+        int hour = calendar.get(Calendar.SECOND);
         Toast.makeText(context, String.valueOf(hour), Toast.LENGTH_SHORT).show();
         int selection;
         switch (hour) {
@@ -97,22 +97,22 @@ public class AlarmReceiver extends BroadcastReceiver {
         request_classified_bookmarkAlarmList(selection, context);
 
         // 알람 10분 - 오후 12시
-        if (calendar.get(Calendar.MINUTE) >= 0 && calendar.get(Calendar.MINUTE) < 10) {
-            calendar.set(Calendar.MINUTE, 10);
+        if (calendar.get(Calendar.SECOND) >= 0 && calendar.get(Calendar.SECOND) < 10) {
+            calendar.set(Calendar.SECOND, 10);
         }
         // 알람 20분 - 오후 3시
-        else if (calendar.get(Calendar.MINUTE) >= 10 && calendar.get(Calendar.MINUTE) < 20) {
-            calendar.set(Calendar.MINUTE, 20);
+        else if (calendar.get(Calendar.SECOND) >= 10 && calendar.get(Calendar.SECOND) < 20) {
+            calendar.set(Calendar.SECOND, 20);
         }
         // 알람 30분 - 오후 6시
-        else if (calendar.get(Calendar.MINUTE) >= 20 && calendar.get(Calendar.MINUTE) < 30) {
-            calendar.set(Calendar.MINUTE, 30);
+        else if (calendar.get(Calendar.SECOND) >= 20 && calendar.get(Calendar.SECOND) < 30) {
+            calendar.set(Calendar.SECOND, 30);
         } // 알람 40분 - 오후 9시
-        else if (calendar.get(Calendar.MINUTE) >= 30 && calendar.get(Calendar.MINUTE) < 40) {
-            calendar.set(Calendar.MINUTE, 40);
+        else if (calendar.get(Calendar.SECOND) >= 30 && calendar.get(Calendar.SECOND) < 40) {
+            calendar.set(Calendar.SECOND, 40);
         } else {
-            calendar.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY) + 1);
-            calendar.set(Calendar.MINUTE, 10);
+            calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) + 1);
+            calendar.set(Calendar.SECOND, 10);
         }
 
 
@@ -132,7 +132,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Log.d("알람", date.toString() + " : 알람이 " + calendar.get(Calendar.MINUTE) + "분로 설정되었습니다");
+            Log.d("알람", date.toString() + " : 알람이 " + calendar.get(Calendar.SECOND) + "분로 설정되었습니다");
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
         }
     }

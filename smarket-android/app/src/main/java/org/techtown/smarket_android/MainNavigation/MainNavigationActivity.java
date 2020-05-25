@@ -49,9 +49,6 @@ public class MainNavigationActivity extends AppCompatActivity {
     private user_login_fragment user_fragment3; // 로그인 창
     private alarm_fragment alarm_fragment4;
 
-    private static final String SETTINGS_BOOKMARK_JSON = "settings_bookmark_json";
-
-    private int alarm_unique_id = 1212;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +66,6 @@ public class MainNavigationActivity extends AppCompatActivity {
 
         set_navigation();
         //check_alarmManager();
-        set_Time();
 
     }
 
@@ -145,68 +141,6 @@ public class MainNavigationActivity extends AppCompatActivity {
         updateBottomMenu(bnv);
     }
 
-    // 설정된 알람 삭제
-    private void check_alarmManager() {
-
-        AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(this, AlarmReceiver.class);
-        PendingIntent sender = PendingIntent.getBroadcast(this, alarm_unique_id, intent, PendingIntent.FLAG_NO_CREATE);
-
-        if (sender == null) {
-            // TODO: 이미 설정된 알람이 없는 경우
-            Log.d(TAG, "check_alarmManager: 알람이 없습니다");
-        } else {
-            // TODO: 이미 설정된 알람이 있는 경우
-            sender = PendingIntent.getBroadcast(this, 0, intent, 0);
-            Log.d(TAG, "check_alarmManager: 알람을 지웁니다");
-            am.cancel(sender);
-            sender.cancel();
-
-        }
-
-    }
-
-    private void set_Time() {
-
-        // 알람 시간 설정
-        Calendar calendar = Calendar.getInstance();
-
-        // 알람 10분 - 오후 12시
-        if (calendar.get(Calendar.MINUTE) >= 0 && calendar.get(Calendar.MINUTE) < 10) {
-            calendar.set(Calendar.MINUTE, 10);
-        }
-        // 알람 20분 - 오후 3시
-        else if (calendar.get(Calendar.MINUTE) >= 10 && calendar.get(Calendar.MINUTE) < 20) {
-            calendar.set(Calendar.MINUTE, 20);
-        }
-        // 알람 30분 - 오후 6시
-        else if (calendar.get(Calendar.MINUTE) >= 20 && calendar.get(Calendar.MINUTE) < 30) {
-            calendar.set(Calendar.MINUTE, 30);
-        } // 알람 40분 - 오후 9시
-        else if (calendar.get(Calendar.MINUTE) >= 30 && calendar.get(Calendar.MINUTE) < 40) {
-            calendar.set(Calendar.MINUTE, 40);
-        } else {
-            calendar.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY) + 1);
-            calendar.set(Calendar.MINUTE, 10);
-        }
-
-
-        set_alarmManager(calendar);
-    }
-
-    private void set_alarmManager(Calendar calendar) {
-        // 현재 시간
-        Date date = new Date();
-
-        AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(this, AlarmReceiver.class);
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(this, alarm_unique_id, intent, 0);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Log.d("알람", date.toString() + " : 알람이 " + calendar.get(Calendar.MINUTE) + "분로 설정되었습니다");
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
-        }
-    }
 
 }
 

@@ -3,6 +3,7 @@ package org.techtown.smarket_android.User.UserLogin;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.text.InputFilter;
@@ -31,16 +32,22 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONObject;
 import org.techtown.smarket_android.R;
+import org.techtown.smarket_android.smarketClass.BookmarkAlarm;
+import org.techtown.smarket_android.smarketClass.userInfo;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import static com.android.volley.VolleyLog.TAG;
@@ -72,13 +79,15 @@ public class user_register_fragment extends Fragment {
     private AlertDialog dialog;
     private boolean validate_id = false;
     private boolean validate_nickname = false;
-    Button validate_id_btn;
-    Button validate_nickname_btn;
+
+    private SharedPreferences userFile;
+    private List<userInfo> userInfoList;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.user_register_main, container, false);
+        get_userInfoList();
 
         register_id = viewGroup.findViewById(R.id.register_id_et); // 사용자 아이디
         register_id.setFilters(new InputFilter[]{filterEng});
@@ -280,7 +289,7 @@ public class user_register_fragment extends Fragment {
     }
 
     private void register() {
-        String userID = register_id.getText().toString();
+        final String userID = register_id.getText().toString();
         String userPW = register_pw.getText().toString();
         String userName = register_name.getText().toString();
         String userNick = register_nickname.getText().toString();
@@ -314,13 +323,15 @@ public class user_register_fragment extends Fragment {
                     boolean success = jsonObject.getBoolean("success");
                     if (success) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        userInfoList.add(new userInfo(userID));
+                        save_userInfoList();
                         dialog = builder.setMessage("회원등록에 성공했습니다.")
                                 .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         FragmentManager fragmentManager = getFragmentManager();
                                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                        fragmentTransaction.replace(R.id.main_layout, user_login_fragment.newInstance(),"login").commit();
+                                        fragmentTransaction.replace(R.id.main_layout, user_login_fragment.newInstance(), "login").commit();
                                     }
                                 })
                                 .create();
@@ -369,6 +380,34 @@ public class user_register_fragment extends Fragment {
         });
         RequestQueue queue = Volley.newRequestQueue(mContext);
         queue.add(registerRequest);
+    }
+
+    // SharedPreference의 userInfoList 데이터를 가져온다
+    private void get_userInfoList() {
+        userFile = getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE);
+        // 저장된 userInfoList가 있을 경우
+        if (userFile.getString("userInfoList", null) != null) {
+            String info = userFile.getString("userInfoList", null);
+            Type listType = new TypeToken<ArrayList<userInfo>>() {
+            }.getType();
+            userInfoList = new GsonBuilder().create().fromJson(info, listType);
+
+        }// 저장된 userInfoList가 없을 경우
+        else {
+            userInfoList = new ArrayList<>();
+        }
+    }
+
+    private void save_userInfoList() {
+        // List<userInfo> 클래스 객체를 String 객체로 변환
+        Type listType = new TypeToken<ArrayList<userInfo>>() {}.getType();
+        String json = new GsonBuilder().create().toJson(userInfoList, listType);
+
+        // 스트링 객체로 변환된 데이터를 userInfoList에 저장
+        SharedPreferences.Editor editor = userFile.edit();
+        editor.putString("userInfoList", json);
+        editor.apply();
+
     }
 
     @Override
