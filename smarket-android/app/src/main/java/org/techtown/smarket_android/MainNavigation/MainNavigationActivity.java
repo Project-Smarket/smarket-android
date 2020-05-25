@@ -83,25 +83,25 @@ public class MainNavigationActivity extends AppCompatActivity {
 
                 switch (menuItem.getItemId()) { //menu_bottom.xml에서 지정해줬던 아이디 값을 받아와서 각 아이디값마다 다른 이벤트를 발생시킵니다.
                     case R.id.tab1: {
-
-                        fragmentTransaction.replace(R.id.main_layout, search_fragment1, "search");
+                            search_fragment1 = new newsearch_fragment();
+                            fragmentTransaction.replace(R.id.main_layout, search_fragment1, "search");
                         break;
                     }
                     case R.id.tab2: {
-                        hotdeal_fragment2 = new hotdeal_fragment(); // 스마켓 홈 창
-                        fragmentTransaction.replace(R.id.main_layout, hotdeal_fragment2, "hotDeal");
+                            hotdeal_fragment2 = new hotdeal_fragment(); // 스마켓 홈 창
+                            fragmentTransaction.replace(R.id.main_layout, hotdeal_fragment2, "hotDeal");
                         //getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, user_fragment2).commitAllowingStateLoss(); // 로그인 창
                         break;
                     }
                     case R.id.tab3: {
-                        user_fragment3 = new user_login_fragment(); // 로그인 창
-                        fragmentTransaction.replace(R.id.main_layout, user_fragment3, "login");
+                            user_fragment3 = new user_login_fragment(); // 로그인 창
+                            fragmentTransaction.replace(R.id.main_layout, user_fragment3, "login");
                         break;
                     }
 
                     case R.id.tab4: {
-                        alarm_fragment4 = new alarm_fragment(); // 최저가 알림창
-                        fragmentTransaction.replace(R.id.main_layout, alarm_fragment4, "alarm");
+                            alarm_fragment4 = new alarm_fragment(); // 최저가 알림창
+                            fragmentTransaction.replace(R.id.main_layout, alarm_fragment4, "alarm");
                         break;
                     }
 
@@ -122,6 +122,7 @@ public class MainNavigationActivity extends AppCompatActivity {
         Fragment hotDeal = getSupportFragmentManager().findFragmentByTag("hotDeal");
         Fragment login = getSupportFragmentManager().findFragmentByTag("login");
         Fragment alarm = getSupportFragmentManager().findFragmentByTag("alarm");
+        Fragment logout = getSupportFragmentManager().findFragmentByTag("logout");
 
         if (search != null && search.isVisible())
             bottomNavigationView.getMenu().findItem(R.id.tab1).setChecked(true);
@@ -131,16 +132,22 @@ public class MainNavigationActivity extends AppCompatActivity {
             bottomNavigationView.getMenu().findItem(R.id.tab3).setChecked(true);
         else if (alarm != null && alarm.isVisible())
             bottomNavigationView.getMenu().findItem(R.id.tab4).setChecked(true);
+        else if(logout != null && logout.isVisible())
+            bottomNavigationView.getMenu().findItem(R.id.tab3).setChecked(true);
     }
 
     //뒤로가기 버튼
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        BottomNavigationView bnv = findViewById(R.id.bottomNavigationView);
-        updateBottomMenu(bnv);
-    }
+        Fragment logout = getSupportFragmentManager().findFragmentByTag("logout");
+        if(logout != null && logout.isVisible()){
 
+        } else {
+            super.onBackPressed();
+            BottomNavigationView bnv = findViewById(R.id.bottomNavigationView);
+            updateBottomMenu(bnv);
+        }
+    }
 
 }
 
