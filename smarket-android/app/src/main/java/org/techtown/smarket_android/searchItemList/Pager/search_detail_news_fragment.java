@@ -37,6 +37,7 @@ public class search_detail_news_fragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.search_detail_news_fragment_layout, container, false);
 
+        savedInstanceState.clear();
         get_newsList();
 
         CreateList(viewGroup);
