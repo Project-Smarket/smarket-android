@@ -341,7 +341,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             item_mall = itemView.findViewById(R.id.search_list_item_mallName);
             item_productype = itemView.findViewById(R.id.search_list_item_productype);
             heart_btn = itemView.findViewById(R.id.heart_btn);
-            item_data = new String[8];
+            item_data = new String[9];
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -373,6 +373,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             item_data[5] = data.getItem_category2();
             item_data[6] = data.getItem_category3();
             item_data[7] = data.getItem_category4();
+            item_data[8] = data.getItem_type();
 
 
             set_item_image();

@@ -13,7 +13,7 @@ import org.techtown.smarket_android.R;
 import java.util.HashMap;
 import java.util.Map;
 
-public class  user_register_request extends StringRequest {
+public class user_register_request extends StringRequest {
 
     private Map<String, String> parameters;
     private String userID;

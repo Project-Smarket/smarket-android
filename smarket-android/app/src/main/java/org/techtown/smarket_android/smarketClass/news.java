@@ -1,6 +1,9 @@
 package org.techtown.smarket_android.smarketClass;
 
-public class news {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class news implements Parcelable {
     private String newsImg;
     private String newsTitle;
     private String newsUrl;
@@ -68,4 +71,42 @@ public class news {
     public void setNewsDate(String newsDate) {
         this.newsDate = newsDate;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    protected news(Parcel in){
+        readFromParcel(in);
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(newsImg);
+        dest.writeString(newsTitle);
+        dest.writeString(newsUrl);
+        dest.writeString(newsUser);
+        dest.writeString(newsHit);
+        dest.writeString(newsDate);
+    }
+
+    public void readFromParcel(Parcel in){
+        newsImg = in.readString();
+        newsTitle = in.readString();
+        newsUrl= in.readString();
+        newsUser = in.readString();
+        newsHit = in.readString();
+        newsDate = in.readString();
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public news createFromParcel(Parcel in) {
+            return new news(in);
+        }
+
+        public news[] newArray(int size) {
+            return new news[size];
+        }
+    };
 }

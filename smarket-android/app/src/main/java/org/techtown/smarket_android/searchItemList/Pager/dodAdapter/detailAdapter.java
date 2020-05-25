@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.techtown.smarket_android.smarketClass.specList;
+import org.techtown.smarket_android.smarketClass.spec;
 import org.techtown.smarket_android.R;
 
 import java.util.List;
@@ -17,9 +17,9 @@ import java.util.List;
 public class detailAdapter extends RecyclerView.Adapter<detailAdapter.ViewHolder> {
 
     private LayoutInflater layoutInflater;
-    private List<specList> data;
+    private List<spec> data;
 
-    public detailAdapter(Context context, List<specList> data){
+    public detailAdapter(Context context, List<spec> data){
         this.layoutInflater = LayoutInflater.from(context);
         this.data = data;
     }

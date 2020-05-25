@@ -21,15 +21,14 @@ public class reviewAdapter extends RecyclerView.Adapter<reviewAdapter.ViewHolder
     private List<review> reviewList;
 
 
-    public reviewAdapter(Context context, List<review> reviewList){
-        this.layoutInflater = LayoutInflater.from(context);
+    public reviewAdapter(List<review> reviewList){
         this.reviewList = reviewList;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = layoutInflater.inflate(R.layout.review_list, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.review_list, parent, false);
         final ViewHolder viewHolder = new ViewHolder(view);
         return viewHolder;
     }
