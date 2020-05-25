@@ -44,8 +44,9 @@ public class search_detail_of_detail_fragment extends Fragment {
     public ViewGroup onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.search_detail_of_detail_fragment_layout, container, false);
 
-        specList = new ArrayList<>();
-
+        savedInstanceState = getArguments();
+        specList = savedInstanceState.getParcelableArrayList("spec");
+        savedInstanceState.clear();
         //get_specList();
 
         CreateList(viewGroup);
@@ -61,23 +62,4 @@ public class search_detail_of_detail_fragment extends Fragment {
         recyclerView.setAdapter(dodAdapter);
     }
 
-    public void set_data(List<spec> list){
-        specList = list;
-        dodAdapter.notifyDataSetChanged();
-    }
-    // SharedPreference의 specList 데이터를 가져온다
-    private void get_specList() {
-        itemDetail = getActivity().getSharedPreferences("itemDetail", Context.MODE_PRIVATE);
-        // 저장된 userInfoList가 있을 경우
-        if (itemDetail.getString("specList", null) != null) {
-            String spec = itemDetail.getString("specList", null);
-            Type listType = new TypeToken<ArrayList<spec>>() {
-            }.getType();
-            specList = new GsonBuilder().create().fromJson(spec, listType);
-
-        }// 저장된 userInfoList가 없을 경우
-        else {
-            specList = new ArrayList<>();
-        }
-    }
 }

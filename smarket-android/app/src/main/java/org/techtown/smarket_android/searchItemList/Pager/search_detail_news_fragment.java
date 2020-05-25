@@ -37,8 +37,10 @@ public class search_detail_news_fragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.search_detail_news_fragment_layout, container, false);
 
+        savedInstanceState = getArguments();
+        newsList = savedInstanceState.getParcelableArrayList("news");
         savedInstanceState.clear();
-        get_newsList();
+        //get_newsList();
 
         CreateList(viewGroup);
 
@@ -51,21 +53,5 @@ public class search_detail_news_fragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         newsAdapter = new newsAdapter(getContext(), newsList);
         recyclerView.setAdapter(newsAdapter);
-    }
-
-    // SharedPreference의 newsList 데이터를 가져온다
-    private void get_newsList() {
-        itemDetail = getActivity().getSharedPreferences("itemDetail", Context.MODE_PRIVATE);
-        // 저장된 userInfoList가 있을 경우
-        if (itemDetail.getString("newsList", null) != null) {
-            String news = itemDetail.getString("newsList", null);
-            Type listType = new TypeToken<ArrayList<news>>() {
-            }.getType();
-            newsList = new GsonBuilder().create().fromJson(news, listType);
-
-        }// 저장된 userInfoList가 없을 경우
-        else {
-            newsList = new ArrayList<>();
-        }
     }
 }

@@ -14,16 +14,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -51,6 +48,7 @@ import org.techtown.smarket_android.searchItemList.RecyclerDecoration;
 import org.techtown.smarket_android.searchItemList.Request.searchRequest;
 import org.techtown.smarket_android.searchItemList.searchdetail_fragment;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -86,10 +84,12 @@ public class newsearch_fragment extends Fragment {
     // 검색한 데이터 가져오기
     private List<SearchedItem> itemList;
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.activity_newsearch_fragment, container, false);
+
         mAppBarLayout = viewGroup.findViewById(R.id.app_bar);
         collapsingToolbarLayout = viewGroup.findViewById(R.id.newsearch_collaps);
         toolbar = viewGroup.findViewById(R.id.toolbar);
@@ -108,6 +108,7 @@ public class newsearch_fragment extends Fragment {
         getActivity().setTitle("");
 
 
+
         final AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) collapsingToolbarLayout.getLayoutParams();
         params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED);
 
@@ -122,10 +123,8 @@ public class newsearch_fragment extends Fragment {
                 itemList.clear();
                 params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED);
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    // 검색되었던 제품명과 현재 검색한 제품명이 다를 경우, start 초기화
-                    if (!searched_item.equals(search_text.getText().toString())) {
-                        start = 1;
-                    }
+                    // "검색" 버튼을 누를 경우 start 초기화
+                    start = 1;
                     try {
                         // 현재 검색된 제품명 저장
                         searched_item = search_text.getText().toString();
