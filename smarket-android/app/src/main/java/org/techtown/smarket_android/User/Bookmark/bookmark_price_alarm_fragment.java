@@ -7,6 +7,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -15,9 +18,13 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
@@ -40,13 +47,12 @@ public class bookmark_price_alarm_fragment extends Fragment {
     }
 
 
-    private LineChart lineChart;
     private ConstraintLayout timeSet_view;
     private ViewGroup viewGroup;
     private int nSelectItem = -1;
     private TextView timeSet_tv;
     private Switch alarm_switch;
-    private ImageView back_btn;
+    private Toolbar toolbar;
 
     private SharedPreferences userFile;
     private List<BookmarkAlarm> bookmarkAlarmList;
@@ -75,10 +81,7 @@ public class bookmark_price_alarm_fragment extends Fragment {
         // 선택된 bookmark_title을 이용해 SharedPreference에서 북마크 알람 파일 가져오기
         get_this_bookmarkAlarmList();
 
-        lineChart = (LineChart) viewGroup.findViewById(R.id.linechart);
 
-        // 그래프 설정
-        set_chart();
 
         alarm_switch = viewGroup.findViewById(R.id.alarm_setting_switch);
         alarm_switch.setChecked(this_alarm_check);
@@ -112,40 +115,38 @@ public class bookmark_price_alarm_fragment extends Fragment {
             }
         });
 
-        back_btn = viewGroup.findViewById(R.id.price_alarm_back_btn);
-        back_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                set_myBookmarks();
-                getActivity().onBackPressed();
-            }
-        });
+        //상단 메뉴바설정
+        settingToolbar();
+        setHasOptionsMenu(true);
+
+
         return viewGroup;
     }
 
-    private void set_chart(){
-        List<Entry> entries = new ArrayList<>();
-        entries.add(new Entry(1, 1));
-        entries.add(new Entry(2, 2));
-        entries.add(new Entry(3, 0));
-        entries.add(new Entry(4, 4));
+    private void settingToolbar(){
+        toolbar = viewGroup.findViewById(R.id.bookmarkToolbar);
 
-        LineDataSet lineDataSet = new LineDataSet(entries, "속성명1");
+        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:{
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                fm.beginTransaction().remove(bookmark_price_alarm_fragment.this).commit();
+                fm.popBackStack();
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-        lineDataSet.setLineWidth(2); // 선 굵기
-        lineDataSet.setCircleRadius(6); // 곡률
-        lineDataSet.setCircleColor(ContextCompat.getColor(getContext(), R.color.graphColor)); // LineChart에서 Line Circle Color 설정
-        lineDataSet.setCircleHoleColor(ContextCompat.getColor(getContext(), R.color.graphColor)); // LineChart에서 Line Hole Circle Color 설정
-        lineDataSet.setColor(ContextCompat.getColor(getContext(), R.color.graphColor));
-
-        LineData lineData = new LineData(lineDataSet);
-
-        lineData.setValueTextColor(ContextCompat.getColor(getContext(), R.color.colorBlack));
-        lineData.setValueTextSize(9);
-
-        lineChart.setData(lineData);
-        lineChart.invalidate();
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.bookmark_menu, menu);
     }
 
     private void set_timer() {
