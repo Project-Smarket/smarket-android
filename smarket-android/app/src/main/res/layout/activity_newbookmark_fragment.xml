@@ -7,9 +7,9 @@
     tools:context=".User.Bookmark.newbookmark_fragment">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar"
+        android:id="@+id/bookmark_app_bar"
         android:layout_width="match_parent"
-        android:layout_height="170dp"
+        android:layout_height="150dp"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
@@ -25,8 +25,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="bottom"
-                android:orientation="vertical"
-                android:paddingBottom="22dp">
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -84,7 +83,7 @@
                                 android:layout_weight="1"
                                 android:background="?attr/selectableItemBackground"
                                 android:gravity="center"
-                                android:text="삭제"
+                                android:text="폴더 삭제"
                                 android:textColor="@color/colorBlack"
                                 android:textSize="20sp"
                                 app:layout_constraintBottom_toBottomOf="parent"
@@ -96,7 +95,7 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
+                        android:layout_height="?attr/actionBarSize"
                         android:orientation="vertical"
                         android:paddingLeft="16dp"
                         android:paddingTop="8dp"
@@ -108,7 +107,7 @@
                         <Spinner
                             android:id="@+id/bookmarkFolder_spinner"
                             android:layout_width="match_parent"
-                            android:layout_height="44dp"
+                            android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:background="@drawable/border"
                             android:popupBackground="@drawable/border"
@@ -119,7 +118,7 @@
             </LinearLayout>
 
             <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
+                android:id="@+id/newbookmark_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
