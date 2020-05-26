@@ -131,7 +131,6 @@ public class user_login_fragment extends Fragment {
 
     private void hideKeyboard() {
         imm.hideSoftInputFromWindow(login_id.getWindowToken(), 0);
-        imm.hideSoftInputFromWindow(login_pw.getWindowToken(), 0);
     }// 키보드 입력 후 엔터 입력시 키보드 창 내림
 
 
