@@ -87,7 +87,7 @@ public class user_register_fragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.user_register_main, container, false);
-        get_userInfoList();
+        //get_userInfoList();
 
         register_id = viewGroup.findViewById(R.id.register_id_et); // 사용자 아이디
         register_id.setFilters(new InputFilter[]{filterEng});
@@ -323,8 +323,8 @@ public class user_register_fragment extends Fragment {
                     boolean success = jsonObject.getBoolean("success");
                     if (success) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                        userInfoList.add(new userInfo(userID));
-                        save_userInfoList();
+                        //userInfoList.add(new userInfo(userID));
+                        //save_userInfoList();
                         dialog = builder.setMessage("회원등록에 성공했습니다.")
                                 .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                                     @Override
@@ -395,6 +395,7 @@ public class user_register_fragment extends Fragment {
         }// 저장된 userInfoList가 없을 경우
         else {
             userInfoList = new ArrayList<>();
+            save_userInfoList();
         }
     }
 
