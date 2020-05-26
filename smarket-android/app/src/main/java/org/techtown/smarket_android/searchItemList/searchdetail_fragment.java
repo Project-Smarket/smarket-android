@@ -310,13 +310,7 @@ public class searchdetail_fragment extends Fragment {
             keyList.add(s);
         }
         for (int j = 0; j < keyList.size(); j++) {
-
-            if (data.getJSONObject(0).getString(keyList.get(j)).equals("○")) {
-                String s = "";
-                keyValueList.add(s);
-            } else {
-                keyValueList.add(data.getJSONObject(0).getString(keyList.get(j)));
-            }
+            keyValueList.add(data.getJSONObject(0).getString(keyList.get(j)));
         }
         for (int i = 0; i < keyList.size(); i++) {
             specList.add(new spec(keyList.get(i), keyValueList.get(i)));
