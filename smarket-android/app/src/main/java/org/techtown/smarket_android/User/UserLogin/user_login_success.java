@@ -88,6 +88,7 @@ public class user_login_success extends Fragment {
     private String user_name = "";
 
     private int alarm_unique_id = 1212;
+    private Boolean alarm_check = false;
 
     @Nullable
     @Override
@@ -103,15 +104,17 @@ public class user_login_success extends Fragment {
         }
 
         // 현재 로그인된 아이디와 일치하는 사용자 정보(alarm_check)를 가져온다
-        get_userInfoList();
-        get_userAlarm();
+        //get_userInfoList();
+        //get_userAlarm();
 
         // 로그인된 아이디의 alarm_check = true 일 경우 알람 설정 됨
-        if(user_alarm!=null){
+        /*if(user_alarm!=null){
             if (user_alarm) {
                 on_alarm();
             }
-        }
+        }*/
+
+
         // 현재 로그인된 아이디와 일치하는 사용자 이름을 가져온다
         get_userName();
         get_deviceToken();
@@ -157,21 +160,26 @@ public class user_login_success extends Fragment {
         });
 
 
-        final Switch autoReboot = viewGroup.findViewById(R.id.autoreboot_switch);
-        autoReboot.setChecked(user_alarm);
+        // alarm_check : true로 설정되어 있을경우 알람 시작
+        if(alarm_check){
+            on_alarm();
+        }
 
-        autoReboot.setOnClickListener(new View.OnClickListener() {
+        final Switch priceAlarm = viewGroup.findViewById(R.id.priceAlarm_switch);
+        priceAlarm.setChecked(alarm_check);
+
+        priceAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // 알람 On 일 경우 - 알람을 Off로 설정하고, alarm_check = false 설정(알람 제거)
-                if(user_alarm) {
-                    user_alarm = false;
+                if(alarm_check) {
+                    alarm_check = false;
                     off_alarm();
                     Toast.makeText(getContext(), "가격 변동 알람 : OFF", Toast.LENGTH_LONG).show();
                 }
                 // 알람이 Off일 경우 - 알람을 On으로 설정하고, alarm_check = true 설정(알람 설정)
                 else{
-                    user_alarm = true;
+                    alarm_check = true;
                     on_alarm();
                     Toast.makeText(getContext(), "가격 변동 알람 : ON", Toast.LENGTH_LONG).show();
                 }
@@ -204,6 +212,7 @@ public class user_login_success extends Fragment {
         userID = userFile.getString("user_id", null);
         access_token = userFile.getString("access_token", null);
         refresh_token = userFile.getString("refresh_token", null);
+        alarm_check = userFile.getBoolean("alarm_check", false);
         Log.d("TOKEN", "access_token: " + access_token);
         Log.d("TOKEN", "refresh_token: " + refresh_token);
     }
@@ -249,7 +258,8 @@ public class user_login_success extends Fragment {
             am.cancel(sender);
             sender.cancel();
 
-            save_userInfoList();
+            //save_userInfoList();
+            save_alarmCheck();
         }
 
     }
@@ -295,7 +305,7 @@ public class user_login_success extends Fragment {
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
 
         }
-        save_userInfoList();
+        save_alarmCheck();
     }
 
     // 변경된 alarm_check로 userInfoList 저장
@@ -314,6 +324,12 @@ public class user_login_success extends Fragment {
         editor.putString("userInfoList", json);
         editor.apply();
 
+    }
+
+    private void save_alarmCheck(){
+        SharedPreferences.Editor editor = userFile.edit();
+        editor.putBoolean("alarm_check", alarm_check);
+        editor.apply();
     }
 
     // 회원 정보 수정 전 비밀번호 확인
