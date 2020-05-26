@@ -1,5 +1,6 @@
 package org.techtown.smarket_android.Hotdeal;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -65,6 +66,8 @@ public class hotdeal_webView extends AppCompatActivity {
                 progressBar.setVisibility(View.GONE);
             }
         });
+
+
     }
 
     public void onBackPressed(){

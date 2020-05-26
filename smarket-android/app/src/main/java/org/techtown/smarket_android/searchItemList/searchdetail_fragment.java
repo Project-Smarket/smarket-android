@@ -36,17 +36,15 @@ import org.techtown.smarket_android.Hotdeal.hotdeal_webView;
 import org.techtown.smarket_android.smarketClass.news;
 import org.techtown.smarket_android.smarketClass.review;
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.smarketClass.specList;
-import org.techtown.smarket_android.searchItemList.Pager.search_detail_news_fragment;
-import org.techtown.smarket_android.searchItemList.Pager.search_detail_of_detail_fragment;
-import org.techtown.smarket_android.searchItemList.Pager.search_detail_review_fragment;
+import org.techtown.smarket_android.smarketClass.spec;
+import org.techtown.smarket_android.searchItemList.Pager.news.search_detail_news_fragment;
+import org.techtown.smarket_android.searchItemList.Pager.spec.search_detail_spec_fragment;
+import org.techtown.smarket_android.searchItemList.Pager.review.search_detail_review_fragment;
 import org.techtown.smarket_android.searchItemList.Request.danawaRequest;
 
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import static com.android.volley.VolleyLog.TAG;
 
@@ -57,15 +55,17 @@ public class searchdetail_fragment extends Fragment {
     private int pos = 0;
     private Toolbar toolbar;
     private search_detail_news_fragment detail_news_fragment;
-    private search_detail_of_detail_fragment detail_of_detail_fragment;
+    private search_detail_spec_fragment detail_of_detail_fragment;
     private search_detail_review_fragment detail_review_fragment;
     private FragmentManager fragmentManager;
-    private ArrayList<specList> spec;
+    private ArrayList<spec> specList;
     private ArrayList<String> keyList;
     private ArrayList<String> keyValueList;
     private ArrayList<review> reviewList;
     private ArrayList<news> newsList;
     private String item_link = "";
+
+    private String item_productType;
 
 
     @Nullable
@@ -73,7 +73,7 @@ public class searchdetail_fragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.search_item_detail, container, false);
 
-        spec = new ArrayList<>();
+        specList = new ArrayList<>();
         keyList = new ArrayList<>();
         keyValueList = new ArrayList<>();
         reviewList = new ArrayList<>();
@@ -93,7 +93,7 @@ public class searchdetail_fragment extends Fragment {
             public void onClick(View v) {
                 if (!item_link.equals("")) {
                     Intent intent = new Intent(getActivity(), hotdeal_webView.class);
-                    intent.putExtra("url", "https://search.shopping.naver.com/gate.nhn?id=22000081936");
+                    intent.putExtra("url", item_link);
                     getContext().startActivity(intent);
                 }
             }
@@ -101,7 +101,6 @@ public class searchdetail_fragment extends Fragment {
 
         settingToolbar();
         setHasOptionsMenu(true);
-
 
 
         Tab();
@@ -165,9 +164,11 @@ public class searchdetail_fragment extends Fragment {
                 }
             }
             item_category.setText(category);
-        }
 
-        bundle.clear();
+            item_productType = item_data[8];
+            Log.d(TAG, "productType : "+ item_data[8]);
+            bundle.clear();
+        }
 
     }
 
@@ -205,12 +206,11 @@ public class searchdetail_fragment extends Fragment {
             case 0: {
                 if (detail_review_fragment == null) {
                     detail_review_fragment = new search_detail_review_fragment();
-                    Bundle reviewBundle = new Bundle();
-                    List<review> list = new ArrayList<>();
-                    list = reviewList;
-                    reviewBundle.putSerializable("review", (Serializable) list);
-                    detail_review_fragment.setArguments(reviewBundle);
-                    fragmentManager.beginTransaction().add(R.id.detail_frame, detail_review_fragment, "search").addToBackStack(null).commit();
+                    Bundle reviewbundle = new Bundle();
+                    reviewbundle.putParcelableArrayList("review", reviewList);
+                    detail_review_fragment.setArguments(reviewbundle);
+                    fragmentManager.beginTransaction().replace(R.id.detail_frame, detail_review_fragment, "search").addToBackStack(null).commitAllowingStateLoss();
+
                 }
                 if (detail_news_fragment != null)
                     fragmentManager.beginTransaction().hide(detail_news_fragment).commit();
@@ -223,12 +223,11 @@ public class searchdetail_fragment extends Fragment {
             }
             case 1: {
                 if (detail_of_detail_fragment == null) {
-                    detail_of_detail_fragment = new search_detail_of_detail_fragment();
-                    Bundle dodBundle = new Bundle();
-                    List<specList> list = new ArrayList<>();
-                    list = spec;
-                    dodBundle.putSerializable("spec", (Serializable) list);
-                    detail_of_detail_fragment.setArguments(dodBundle);
+                    detail_of_detail_fragment = new search_detail_spec_fragment();
+                    Bundle specBundle = new Bundle();
+                    specBundle.putParcelableArrayList("spec", specList);
+
+                    detail_of_detail_fragment.setArguments(specBundle);
                     fragmentManager.beginTransaction().add(R.id.detail_frame, detail_of_detail_fragment, "search").addToBackStack(null).commit();
                 }
 
@@ -245,9 +244,7 @@ public class searchdetail_fragment extends Fragment {
                 if (detail_news_fragment == null) {
                     detail_news_fragment = new search_detail_news_fragment();
                     Bundle newsBundle = new Bundle();
-                    List<news> list = new ArrayList<>();
-                    list = newsList;
-                    newsBundle.putSerializable("news", (Serializable) list);
+                    newsBundle.putParcelableArrayList("news", newsList);
                     detail_news_fragment.setArguments(newsBundle);
                     fragmentManager.beginTransaction().add(R.id.detail_frame, detail_news_fragment, "search").addToBackStack(null).commit();
                 }
@@ -273,19 +270,22 @@ public class searchdetail_fragment extends Fragment {
                 try {
                     JSONObject jsonObject = new JSONObject(response);
 
-                    dodJson(jsonObject); //상세정보 json파싱
 
                     reviewJson(jsonObject); //리뷰 json파싱
-
-                    newsJson(jsonObject); //뉴스 json파싱
-
                     fragmentManager = getChildFragmentManager();
                     detail_review_fragment = new search_detail_review_fragment();
                     Bundle reviewbundle = new Bundle();
-                    List<review> list = reviewList;
-                    reviewbundle.putSerializable("review", (Serializable) list);
+                    reviewbundle.putParcelableArrayList("review", reviewList);
                     detail_review_fragment.setArguments(reviewbundle);
                     fragmentManager.beginTransaction().replace(R.id.detail_frame, detail_review_fragment, "search").addToBackStack(null).commitAllowingStateLoss();
+
+                    if (item_productType.equals("2")) {
+                        specList = null;
+                    } else {
+                        specJson(jsonObject); //상세정보 json파싱
+                    }
+                    newsJson(jsonObject); //뉴스 json파싱
+
 
                 } catch (JSONException e) {
                     Log.d(TAG, "getJson: " + e.toString());
@@ -301,7 +301,7 @@ public class searchdetail_fragment extends Fragment {
         queue.add(detailRequest);
     }
 
-    private void dodJson(JSONObject jsonObject) throws JSONException {
+    private void specJson(JSONObject jsonObject) throws JSONException {
         JSONArray data = jsonObject.getJSONArray("spec");
 
         Iterator key = data.getJSONObject(0).keys();
@@ -309,13 +309,11 @@ public class searchdetail_fragment extends Fragment {
             String s = key.next().toString();
             keyList.add(s);
         }
-
         for (int j = 0; j < keyList.size(); j++) {
-                keyValueList.add(data.getJSONObject(0).getString(keyList.get(j)));
+            keyValueList.add(data.getJSONObject(0).getString(keyList.get(j)));
         }
-
         for (int i = 0; i < keyList.size(); i++) {
-            spec.add(new specList(keyList.get(i), keyValueList.get(i)));
+            specList.add(new spec(keyList.get(i), keyValueList.get(i)));
         }
     }
 
@@ -331,7 +329,8 @@ public class searchdetail_fragment extends Fragment {
             String date = review.getJSONObject(i).getString("date");
 
             Log.d(TAG, "reviewJson: " + title + " " + content + " " + user);
-            reviewList.add(new review(title, content, user, score, mall, date));
+            review review1 = new review(title, content, user, score, mall, date);
+            reviewList.add(review1);
         }
     }
 
@@ -351,4 +350,3 @@ public class searchdetail_fragment extends Fragment {
     }
 
 }
-

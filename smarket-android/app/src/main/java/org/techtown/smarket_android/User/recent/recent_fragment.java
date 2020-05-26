@@ -249,6 +249,7 @@ public class recent_fragment extends Fragment {
             bookmarkAlarmList_foldername.setText("북마크가 없습니다");
             bookmarkAlarmList_userId.setText("북마크가 없습니다");
             bookmarkAlarmList_price.setText("북마크가 없습니다");
+            bookmarkAlarmList_time.setText("북마크가 없습니다");
         } else {
             for (int i = 0; i < bookmarks.size(); i++) {
                 set1 += bookmarks.get(i).getBookmark_id() + "\n";

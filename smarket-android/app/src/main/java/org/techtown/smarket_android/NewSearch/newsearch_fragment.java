@@ -40,6 +40,8 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.techtown.smarket_android.MainActivity;
+import org.techtown.smarket_android.MainNavigation.MainNavigationActivity;
 import org.techtown.smarket_android.smarketClass.SearchedItem;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.searchItemList.ClearEditText;
@@ -48,13 +50,14 @@ import org.techtown.smarket_android.searchItemList.RecyclerDecoration;
 import org.techtown.smarket_android.searchItemList.Request.searchRequest;
 import org.techtown.smarket_android.searchItemList.searchdetail_fragment;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.android.volley.VolleyLog.TAG;
 
-public class newsearch_fragment extends Fragment {
+public class newsearch_fragment extends Fragment implements OnBackpressedListener{
 
     private ViewGroup viewGroup;
     private RecyclerView recyclerView;
@@ -83,10 +86,14 @@ public class newsearch_fragment extends Fragment {
     // 검색한 데이터 가져오기
     private List<SearchedItem> itemList;
 
+    private Boolean back_check = false;
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.activity_newsearch_fragment, container, false);
+
         mAppBarLayout = viewGroup.findViewById(R.id.app_bar);
         collapsingToolbarLayout = viewGroup.findViewById(R.id.newsearch_collaps);
         toolbar = viewGroup.findViewById(R.id.toolbar);
@@ -105,6 +112,7 @@ public class newsearch_fragment extends Fragment {
         getActivity().setTitle("");
 
 
+
         final AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) collapsingToolbarLayout.getLayoutParams();
         params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED);
 
@@ -119,10 +127,9 @@ public class newsearch_fragment extends Fragment {
                 itemList.clear();
                 params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED);
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    // 검색되었던 제품명과 현재 검색한 제품명이 다를 경우, start 초기화
-                    if (!searched_item.equals(search_text.getText().toString())) {
-                        start = 1;
-                    }
+                    // "검색" 버튼을 누를 경우 start 초기화
+                    start = 1;
+                    back_check = true;
                     try {
                         // 현재 검색된 제품명 저장
                         searched_item = search_text.getText().toString();
@@ -151,7 +158,6 @@ public class newsearch_fragment extends Fragment {
         toolbar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 mAppBarLayout.setExpanded(true);
             }
         });
@@ -311,5 +317,13 @@ public class newsearch_fragment extends Fragment {
     private void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(search_text.getWindowToken(), 0);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(back_check){
+            mAppBarLayout.setExpanded(true);
+            back_check = false;
+        }
     }
 }

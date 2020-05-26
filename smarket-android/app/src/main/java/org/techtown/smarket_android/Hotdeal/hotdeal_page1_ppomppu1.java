@@ -101,4 +101,6 @@ public class hotdeal_page1_ppomppu1 extends Fragment {
         RequestQueue requestQueue = Volley.newRequestQueue(getContext());
         requestQueue.add(stringRequest);
     }
+
+
 }
