@@ -346,20 +346,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             heart_btn = itemView.findViewById(R.id.heart_btn);
             item_data = new String[9];
 
-            item_layout.setOnClickListener(new View.OnClickListener() {
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    int pos = getAdapterPosition();
-                    if (pos != RecyclerView.NO_POSITION) {
-                        if (onRecyclerClickListener != null) {
-                            onRecyclerClickListener.OnRecyclerClickListener(v, pos, item_data);
-                        }
+                    if(v.equals(heart_btn)){
+                        Toast.makeText(mContext, "추가", Toast.LENGTH_LONG).show();
                     }
-                }
-            });
-            item_layout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
                     int pos = getAdapterPosition();
                     if (pos != RecyclerView.NO_POSITION) {
                         if (onRecyclerClickListener != null) {
@@ -387,7 +379,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             item_data[5] = data.getItem_category2();
             item_data[6] = data.getItem_category3();
             item_data[7] = data.getItem_category4();
-            item_data[8] = data.getItem_type();
+            item_data[8] = data.getItem_type(); // productType
 
 
             set_item_image();

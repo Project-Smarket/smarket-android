@@ -23,21 +23,24 @@ public class search_detail_news_fragment extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter newsAdapter;
 
-    private SharedPreferences itemDetail;
+    private ViewGroup viewGroup;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.search_detail_news_fragment_layout, container, false);
+
 
         savedInstanceState = getArguments();
         newsList = savedInstanceState.getParcelableArrayList("news");
         savedInstanceState.clear();
-        //get_newsList();
 
-        CreateList(viewGroup);
-
-
+        if(newsList.size() == 0){
+            viewGroup = (ViewGroup) inflater.inflate(R.layout.search_detail_news_none_fragment_layout, container, false);
+        }
+        else{
+            viewGroup = (ViewGroup) inflater.inflate(R.layout.search_detail_news_fragment_layout, container, false);
+            CreateList(viewGroup);
+        }
         return viewGroup;
     }
 

@@ -65,6 +65,8 @@ public class searchdetail_fragment extends Fragment {
     private ArrayList<news> newsList;
     private String item_link = "";
 
+    private String item_productType;
+
 
     @Nullable
     @Override
@@ -99,7 +101,6 @@ public class searchdetail_fragment extends Fragment {
 
         settingToolbar();
         setHasOptionsMenu(true);
-
 
 
         Tab();
@@ -163,6 +164,9 @@ public class searchdetail_fragment extends Fragment {
                 }
             }
             item_category.setText(category);
+
+            item_productType = item_data[8];
+            Log.d(TAG, "productType : "+ item_data[8]);
             bundle.clear();
         }
 
@@ -201,6 +205,12 @@ public class searchdetail_fragment extends Fragment {
         switch (index) {
             case 0: {
                 if (detail_review_fragment == null) {
+                    detail_review_fragment = new search_detail_review_fragment();
+                    Bundle reviewbundle = new Bundle();
+                    reviewbundle.putParcelableArrayList("review", reviewList);
+                    detail_review_fragment.setArguments(reviewbundle);
+                    fragmentManager.beginTransaction().replace(R.id.detail_frame, detail_review_fragment, "search").addToBackStack(null).commitAllowingStateLoss();
+
                 }
                 if (detail_news_fragment != null)
                     fragmentManager.beginTransaction().hide(detail_news_fragment).commit();
@@ -214,10 +224,10 @@ public class searchdetail_fragment extends Fragment {
             case 1: {
                 if (detail_of_detail_fragment == null) {
                     detail_of_detail_fragment = new search_detail_spec_fragment();
-                    Bundle dodBundle = new Bundle();
-                    dodBundle.putParcelableArrayList("spec", specList);
+                    Bundle specBundle = new Bundle();
+                    specBundle.putParcelableArrayList("spec", specList);
 
-                    detail_of_detail_fragment.setArguments(dodBundle);
+                    detail_of_detail_fragment.setArguments(specBundle);
                     fragmentManager.beginTransaction().add(R.id.detail_frame, detail_of_detail_fragment, "search").addToBackStack(null).commit();
                 }
 
@@ -269,10 +279,12 @@ public class searchdetail_fragment extends Fragment {
                     detail_review_fragment.setArguments(reviewbundle);
                     fragmentManager.beginTransaction().replace(R.id.detail_frame, detail_review_fragment, "search").addToBackStack(null).commitAllowingStateLoss();
 
-                    dodJson(jsonObject); //상세정보 json파싱
+                    if (item_productType.equals("2")) {
+                        specList = null;
+                    } else {
+                        specJson(jsonObject); //상세정보 json파싱
+                    }
                     newsJson(jsonObject); //뉴스 json파싱
-
-
 
 
                 } catch (JSONException e) {
@@ -289,7 +301,7 @@ public class searchdetail_fragment extends Fragment {
         queue.add(detailRequest);
     }
 
-    private void dodJson(JSONObject jsonObject) throws JSONException {
+    private void specJson(JSONObject jsonObject) throws JSONException {
         JSONArray data = jsonObject.getJSONArray("spec");
 
         Iterator key = data.getJSONObject(0).keys();
@@ -323,7 +335,8 @@ public class searchdetail_fragment extends Fragment {
             String date = review.getJSONObject(i).getString("date");
 
             Log.d(TAG, "reviewJson: " + title + " " + content + " " + user);
-            reviewList.add(new review(title, content, user, score, mall, date));
+            review review1 = new review(title, content, user, score, mall, date);
+            reviewList.add(review1);
         }
     }
 

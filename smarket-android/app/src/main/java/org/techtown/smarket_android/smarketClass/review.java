@@ -107,5 +107,15 @@ public class review implements Parcelable {
         this.date = date;
     }
 
-
+    @Override
+    public String toString() {
+        return "review{" +
+                "title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", user='" + user + '\'' +
+                ", score='" + score + '\'' +
+                ", mall='" + mall + '\'' +
+                ", date='" + date + '\'' +
+                '}';
+    }
 }

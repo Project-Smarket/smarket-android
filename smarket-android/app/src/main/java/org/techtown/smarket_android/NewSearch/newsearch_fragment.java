@@ -40,6 +40,8 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.techtown.smarket_android.MainActivity;
+import org.techtown.smarket_android.MainNavigation.MainNavigationActivity;
 import org.techtown.smarket_android.smarketClass.SearchedItem;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.searchItemList.ClearEditText;
@@ -314,4 +316,5 @@ public class newsearch_fragment extends Fragment {
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(search_text.getWindowToken(), 0);
     }
+
 }

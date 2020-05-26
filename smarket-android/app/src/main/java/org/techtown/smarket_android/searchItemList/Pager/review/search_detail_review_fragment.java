@@ -24,20 +24,22 @@ public class search_detail_review_fragment extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter reviewAdapter;
 
-    private SharedPreferences itemDetail;
+    private ViewGroup viewGroup;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.search_detail_review_fragment, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) { viewGroup = (ViewGroup) inflater.inflate(R.layout.search_detail_review_fragment, container, false);
 
-        //getBundle();
         savedInstanceState = getArguments();
         reviewList = savedInstanceState.getParcelableArrayList("review");
         savedInstanceState.clear();
-        CreateList(viewGroup);
 
-
+        if(reviewList.size() == 0){
+            viewGroup = (ViewGroup) inflater.inflate(R.layout.search_detail_review_none_fragment, container, false);
+        }else{
+            viewGroup = (ViewGroup) inflater.inflate(R.layout.search_detail_review_fragment, container, false);
+            CreateList(viewGroup);
+        }
         return viewGroup;
     }
 

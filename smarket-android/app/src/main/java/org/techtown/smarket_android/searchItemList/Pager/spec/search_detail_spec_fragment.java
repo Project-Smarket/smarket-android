@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.searchItemList.Pager.spec.specAdapter;
 import org.techtown.smarket_android.smarketClass.spec;
 
 import java.util.List;
@@ -26,6 +25,7 @@ public class search_detail_spec_fragment extends Fragment {
 
     private SharedPreferences itemDetail;
 
+    private ViewGroup viewGroup;
     public search_detail_spec_fragment() {
 
     }
@@ -33,16 +33,20 @@ public class search_detail_spec_fragment extends Fragment {
     @Nullable
     @Override
     public ViewGroup onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.search_detail_of_detail_fragment_layout, container, false);
 
         savedInstanceState = getArguments();
         specList = savedInstanceState.getParcelableArrayList("spec");
         savedInstanceState.clear();
-        //get_specList();
 
-        CreateList(viewGroup);
-
-
+        // specList가 null인 경우 "상세보기를 지원하지 않습니다"
+        if (specList == null) {
+            viewGroup = (ViewGroup) inflater.inflate(R.layout.search_detail_spec_none_fragment_layout, container, false);
+        }
+        // specList가 null이 아닌 경우 상세정보 제공
+        else {
+            viewGroup = (ViewGroup) inflater.inflate(R.layout.search_detail_spec_fragment_layout, container, false);
+            CreateList(viewGroup);
+        }
         return viewGroup;
     }
 
