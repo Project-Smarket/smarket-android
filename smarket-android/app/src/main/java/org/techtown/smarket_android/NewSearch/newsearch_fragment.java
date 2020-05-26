@@ -57,7 +57,7 @@ import java.util.List;
 
 import static com.android.volley.VolleyLog.TAG;
 
-public class newsearch_fragment extends Fragment {
+public class newsearch_fragment extends Fragment implements OnBackpressedListener{
 
     private ViewGroup viewGroup;
     private RecyclerView recyclerView;
@@ -85,6 +85,8 @@ public class newsearch_fragment extends Fragment {
 
     // 검색한 데이터 가져오기
     private List<SearchedItem> itemList;
+
+    private Boolean back_check = false;
 
 
     @Nullable
@@ -127,6 +129,7 @@ public class newsearch_fragment extends Fragment {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     // "검색" 버튼을 누를 경우 start 초기화
                     start = 1;
+                    back_check = true;
                     try {
                         // 현재 검색된 제품명 저장
                         searched_item = search_text.getText().toString();
@@ -155,7 +158,6 @@ public class newsearch_fragment extends Fragment {
         toolbar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 mAppBarLayout.setExpanded(true);
             }
         });
@@ -317,4 +319,11 @@ public class newsearch_fragment extends Fragment {
         imm.hideSoftInputFromWindow(search_text.getWindowToken(), 0);
     }
 
+    @Override
+    public void onBackPressed() {
+        if(back_check){
+            mAppBarLayout.setExpanded(true);
+            back_check = false;
+        }
+    }
 }

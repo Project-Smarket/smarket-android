@@ -1,6 +1,7 @@
 package org.techtown.smarket_android.MainNavigation;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -12,9 +13,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.techtown.smarket_android.Alarm.alarm_fragment;
 import org.techtown.smarket_android.Hotdeal.hotdeal_fragment;
+import org.techtown.smarket_android.NewSearch.OnBackpressedListener;
 import org.techtown.smarket_android.NewSearch.newsearch_fragment;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
+
+import java.util.List;
 
 
 public class MainNavigationActivity extends AppCompatActivity {
@@ -128,7 +132,14 @@ public class MainNavigationActivity extends AppCompatActivity {
         Fragment loginS = getSupportFragmentManager().findFragmentByTag("loginS");
 
         if (first != null && first.isVisible()) { //첫화면 뒤로가기 종료
-            this.finish();
+            //this.finish();
+
+            List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
+            for (Fragment fragment : fragmentList){
+                if(fragment instanceof OnBackpressedListener){
+                    ((OnBackpressedListener)fragment).onBackPressed();
+                }
+            }
         } else if (logout != null && logout.isVisible()) { // 로그아웃 후 뒤로가기 방지
 
         } else if (loginS != null && loginS.isVisible()) { //로그인 후 뒤로가기 방지

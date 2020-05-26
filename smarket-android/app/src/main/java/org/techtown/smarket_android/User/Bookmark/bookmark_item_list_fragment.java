@@ -273,7 +273,7 @@ public class bookmark_item_list_fragment extends Fragment {
             public void onClick(View v) {
                 LayoutInflater inflater = getLayoutInflater();
 
-                final View dialogView = inflater.inflate(R.layout.custom_dialog_editText, null);
+                final View dialogView = inflater.inflate(R.layout.custom_dialog_edittext, null);
                 bookmark_folder_name = dialogView.findViewById(R.id.dialog_editText);
                 bookmark_folder_name.setOnKeyListener(new View.OnKeyListener() {
                     @Override

@@ -246,7 +246,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
         // 북마크 폴더 리스트 다이얼로그
         LayoutInflater inflater = mActivity.getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.custom_dialog_editText, null);
+        final View dialogView = inflater.inflate(R.layout.custom_dialog_edittext, null);
         bookmark_folder_name = dialogView.findViewById(R.id.dialog_editText);
         bookmark_folder_name.setOnKeyListener(new View.OnKeyListener() {
             @Override

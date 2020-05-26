@@ -315,7 +315,7 @@ public class user_login_success extends Fragment {
 
         // custom_dialog_editText
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.custom_dialog_editText, null);
+        final View dialogView = inflater.inflate(R.layout.custom_dialog_edittext, null);
         final EditText password = dialogView.findViewById(R.id.dialog_editText);
         password.setHint("비밀번호를 입력해주세요");
         password.setTransformationMethod(PasswordTransformationMethod.getInstance());
