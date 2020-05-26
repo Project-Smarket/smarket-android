@@ -120,7 +120,7 @@ public class user_login_success extends Fragment {
             public void onClick(View v) {
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_layout, newbookmark_fragment.newInstance());
+                fragmentTransaction.replace(R.id.main_layout, newbookmark_fragment.newInstance(),"login");
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             }

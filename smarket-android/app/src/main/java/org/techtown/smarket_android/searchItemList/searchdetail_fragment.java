@@ -167,6 +167,8 @@ public class searchdetail_fragment extends Fragment {
             item_category.setText(category);
         }
 
+        bundle.clear();
+
     }
 
     private void settingToolbar() {
@@ -226,7 +228,6 @@ public class searchdetail_fragment extends Fragment {
                     List<specList> list = new ArrayList<>();
                     list = spec;
                     dodBundle.putSerializable("spec", (Serializable) list);
-
                     detail_of_detail_fragment.setArguments(dodBundle);
                     fragmentManager.beginTransaction().add(R.id.detail_frame, detail_of_detail_fragment, "search").addToBackStack(null).commit();
                 }

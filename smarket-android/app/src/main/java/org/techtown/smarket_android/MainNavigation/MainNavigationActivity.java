@@ -1,42 +1,20 @@
 package org.techtown.smarket_android.MainNavigation;
 
-import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.util.Log;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import org.json.JSONArray;
 import org.techtown.smarket_android.Alarm.alarm_fragment;
 import org.techtown.smarket_android.Hotdeal.hotdeal_fragment;
-import org.techtown.smarket_android.MainActivity;
 import org.techtown.smarket_android.NewSearch.newsearch_fragment;
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.User.Bookmark.newbookmark_fragment;
 import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
-import org.techtown.smarket_android.searchItemList.search_fragment;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 
 public class MainNavigationActivity extends AppCompatActivity {
@@ -69,12 +47,12 @@ public class MainNavigationActivity extends AppCompatActivity {
 
     }
 
-    // 각 프래그먼트에 addToBackStack 선언 뒤로가기를 누르면 스택에 쌓인 프래그먼트가 없어지는 형태
+    // 각 프래그먼트에 addToBackStack 선언 = 뒤로가기를 누르면 스택에 쌓인 프래그먼트가 없어지는 형태
     // https://youngest-programming.tistory.com/21
     // https://hwanine.github.io/android/backStack/
 
     private void set_navigation() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, search_fragment1, "search").addToBackStack(null).commitAllowingStateLoss(); //bottomnavigationview의 아이콘을 선택 했을때 원하는 프래그먼트가 띄워질 수 있도록 리스너를 추가합니다.
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, search_fragment1, "first").addToBackStack(null).commitAllowingStateLoss(); //bottomnavigationview의 아이콘을 선택 했을때 원하는 프래그먼트가 띄워질 수 있도록 리스너를 추가합니다.
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -83,25 +61,25 @@ public class MainNavigationActivity extends AppCompatActivity {
 
                 switch (menuItem.getItemId()) { //menu_bottom.xml에서 지정해줬던 아이디 값을 받아와서 각 아이디값마다 다른 이벤트를 발생시킵니다.
                     case R.id.tab1: {
-                            search_fragment1 = new newsearch_fragment();
-                            fragmentTransaction.replace(R.id.main_layout, search_fragment1, "search");
+                        search_fragment1 = new newsearch_fragment();
+                        fragmentTransaction.replace(R.id.main_layout, search_fragment1, "search");
                         break;
                     }
                     case R.id.tab2: {
-                            hotdeal_fragment2 = new hotdeal_fragment(); // 스마켓 홈 창
-                            fragmentTransaction.replace(R.id.main_layout, hotdeal_fragment2, "hotDeal");
+                        hotdeal_fragment2 = new hotdeal_fragment(); // 스마켓 홈 창
+                        fragmentTransaction.replace(R.id.main_layout, hotdeal_fragment2, "hotDeal");
                         //getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, user_fragment2).commitAllowingStateLoss(); // 로그인 창
                         break;
                     }
                     case R.id.tab3: {
-                            user_fragment3 = new user_login_fragment(); // 로그인 창
-                            fragmentTransaction.replace(R.id.main_layout, user_fragment3, "login");
+                        user_fragment3 = new user_login_fragment(); // 로그인 창
+                        fragmentTransaction.replace(R.id.main_layout, user_fragment3, "login");
                         break;
                     }
 
                     case R.id.tab4: {
-                            alarm_fragment4 = new alarm_fragment(); // 최저가 알림창
-                            fragmentTransaction.replace(R.id.main_layout, alarm_fragment4, "alarm");
+                        alarm_fragment4 = new alarm_fragment(); // 최저가 알림창
+                        fragmentTransaction.replace(R.id.main_layout, alarm_fragment4, "alarm");
                         break;
                     }
 
@@ -123,6 +101,8 @@ public class MainNavigationActivity extends AppCompatActivity {
         Fragment login = getSupportFragmentManager().findFragmentByTag("login");
         Fragment alarm = getSupportFragmentManager().findFragmentByTag("alarm");
         Fragment logout = getSupportFragmentManager().findFragmentByTag("logout");
+        Fragment loginS = getSupportFragmentManager().findFragmentByTag("loginS");
+        Fragment first = getSupportFragmentManager().findFragmentByTag("first");
 
         if (search != null && search.isVisible())
             bottomNavigationView.getMenu().findItem(R.id.tab1).setChecked(true);
@@ -132,21 +112,33 @@ public class MainNavigationActivity extends AppCompatActivity {
             bottomNavigationView.getMenu().findItem(R.id.tab3).setChecked(true);
         else if (alarm != null && alarm.isVisible())
             bottomNavigationView.getMenu().findItem(R.id.tab4).setChecked(true);
-        else if(logout != null && logout.isVisible())
+        else if (logout != null && logout.isVisible())
             bottomNavigationView.getMenu().findItem(R.id.tab3).setChecked(true);
+        else if (loginS != null && loginS.isVisible())
+            bottomNavigationView.getMenu().findItem(R.id.tab3).setChecked(true);
+        else if (first != null && first.isVisible())
+            bottomNavigationView.getMenu().findItem(R.id.tab1).setChecked(true);
     }
 
     //뒤로가기 버튼
     @Override
     public void onBackPressed() {
+        Fragment first = getSupportFragmentManager().findFragmentByTag("first");
         Fragment logout = getSupportFragmentManager().findFragmentByTag("logout");
-        if(logout != null && logout.isVisible()){
+        Fragment loginS = getSupportFragmentManager().findFragmentByTag("loginS");
+
+        if (first != null && first.isVisible()) { //첫화면 뒤로가기 종료
+            this.finish();
+        } else if (logout != null && logout.isVisible()) { // 로그아웃 후 뒤로가기 방지
+
+        } else if (loginS != null && loginS.isVisible()) { //로그인 후 뒤로가기 방지
 
         } else {
             super.onBackPressed();
             BottomNavigationView bnv = findViewById(R.id.bottomNavigationView);
             updateBottomMenu(bnv);
         }
+
     }
 
 }

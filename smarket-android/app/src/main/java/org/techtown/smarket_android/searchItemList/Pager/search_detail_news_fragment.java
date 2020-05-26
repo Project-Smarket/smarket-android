@@ -49,5 +49,6 @@ public class search_detail_news_fragment extends Fragment {
             List<news> list = (List<news>) getArguments().getSerializable("news");
             newsList = list;
         }
+        getArguments().clear();
     }
 }

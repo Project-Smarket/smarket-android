@@ -52,5 +52,6 @@ public class search_detail_review_fragment extends Fragment {
             List<review> list = (List<review>) getArguments().getSerializable("review");
             reviewList = list;
         }
+        getArguments().clear();
     }
 }

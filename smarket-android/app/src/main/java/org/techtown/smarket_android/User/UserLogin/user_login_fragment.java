@@ -157,7 +157,7 @@ public class user_login_fragment extends Fragment {
 
                         FragmentManager fragmentManager = getFragmentManager();
                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                        fragmentTransaction.replace(R.id.main_layout, user_login_success.newInstance(), "login")
+                        fragmentTransaction.replace(R.id.main_layout, user_login_success.newInstance(), "loginS")
                                 .addToBackStack(null).commit(); // 로그인 성공화면으로 이동
                     } else if (!success)
                         // ** 로그인 실패 시 ** //
@@ -329,7 +329,7 @@ public class user_login_fragment extends Fragment {
         if (user_id != null && access_token != null) {
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.main_layout, user_login_success.newInstance(), "login").addToBackStack(null).commit(); // 로그인 성공화면으로 이동
+            fragmentTransaction.replace(R.id.main_layout, user_login_success.newInstance(), "loginS").addToBackStack(null).commit(); // 로그인 성공화면으로 이동
 
         }
     }

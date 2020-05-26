@@ -58,7 +58,7 @@ public class search_detail_of_detail_fragment extends Fragment {
         if (bundle != null) {
             List<specList> list = (List<specList>) bundle.getSerializable("spec");
             spec = list;
-            Log.d(TAG, "dod: " + spec);
         }
+        bundle.clear();
     }
 }
