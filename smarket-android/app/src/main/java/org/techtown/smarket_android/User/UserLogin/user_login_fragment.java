@@ -84,8 +84,9 @@ public class user_login_fragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.user_login_main, container, false);
 
+
         // 단말기에 저장된 모든 userInfoList를 불러옴
-        get_userInfoList();
+        //get_userInfoList();
         /* user 정보가 유효한지 검사
          * validate_user()
          * 유효하면 로그인 성공화면으로 이동

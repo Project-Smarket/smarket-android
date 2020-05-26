@@ -1,5 +1,5 @@
 <resources>
-    <dimen name="search_bar_height">400dp</dimen>
+    <dimen name="search_bar_height">320dp</dimen>
     <dimen name="bookmark_bar_height">160dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="text_margin">16dp</dimen>
