@@ -309,15 +309,11 @@ public class searchdetail_fragment extends Fragment {
             String s = key.next().toString();
             keyList.add(s);
         }
-        for (int j = 0; j < keyList.size(); j++) {
 
-            if (data.getJSONObject(0).getString(keyList.get(j)).equals("○")) {
-                String s = "";
-                keyValueList.add(s);
-            } else {
+        for (int j = 0; j < keyList.size(); j++) {
                 keyValueList.add(data.getJSONObject(0).getString(keyList.get(j)));
-            }
         }
+
         for (int i = 0; i < keyList.size(); i++) {
             spec.add(new specList(keyList.get(i), keyValueList.get(i)));
         }
