@@ -491,8 +491,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                         Toast.makeText(mContext, folder_name + " 폴더에 북마크 등록 되었습니다.", Toast.LENGTH_LONG).show();
                         // 최저가 알림 설정
                         String item_id = holder.item_id;
-                        //String item_price = String.valueOf(holder.item_lprice);
-                        String item_price = "1000";
+                        String item_price = String.valueOf(holder.item_lprice);
+                        //String item_price = "1000";
                         set_lpriceAlarm(id, item_price);
                     } else if (!success)
                         // ** 북마크 등록 실패 시 ** //

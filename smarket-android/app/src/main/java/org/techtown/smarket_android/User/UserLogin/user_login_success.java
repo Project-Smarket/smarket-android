@@ -29,13 +29,18 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
@@ -47,6 +52,7 @@ import org.techtown.smarket_android.User.UserInfrom.userinform_fragment;
 import org.techtown.smarket_android.User.recent.recent_fragment;
 import org.techtown.smarket_android.smarketClass.userInfo;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -366,16 +372,6 @@ public class user_login_success extends Fragment {
 
     }
 
-    // 현재 로그인된 id와 access_token, refresh_token 제거
-    private void null_userFile() {
-        userFile = getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = userFile.edit();
-        editor.putString("user_id", null);
-        editor.putString("access_token", null);
-        editor.putString("refresh_token", null);
-        editor.commit();
-    }
-
     // 서버로부터 device_token 가져옴
     public void get_deviceToken() {
         String url = getContext().getResources().getString(R.string.fcmEndpoint) + "/select";
@@ -446,7 +442,8 @@ public class user_login_success extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                //error_handling(error);
+                String request_type = "request_get_userName";
+                error_handling(error, request_type);
             }
         }
         ) {
@@ -466,6 +463,132 @@ public class user_login_success extends Fragment {
         RequestQueue requestQueue = Volley.newRequestQueue(getContext());
         requestQueue.add(stringRequest);
     }
+
+    // Error Handling - request 오류(bookmarkList 조회, bookmarkFolder 삭제, bookmark 삭제 오류) 처리 - 실패 시 access-token 갱신 요청
+    private void error_handling(VolleyError error, String request_type ) {
+        NetworkResponse response = error.networkResponse;
+        if (error instanceof AuthFailureError && response != null) {
+            try {
+                String res = new String(response.data, HttpHeaderParser.parseCharset(response.headers, "utf-8"));
+
+                JsonParser parser = new JsonParser();
+                JsonElement element = parser.parse(res);
+                JsonObject data = element.getAsJsonObject().get("data").getAsJsonObject();
+                String name = data.get("name").getAsString();
+                String msg = data.get("msg").getAsString();
+
+                // access-token 만료 시 refresh-token을 통해 토큰 갱신
+                if (name.equals("TokenExpiredError") && msg.equals("jwt expired"))
+                    refresh_accessToken(request_type);
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // access-token 갱신 요청 후 폴더 목록 재요청 - 실패 시 logout
+    private void refresh_accessToken(final String request_type) {
+        String url = getString(R.string.authEndpoint) + "/refresh"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(response);
+                    boolean success = jsonObject.getBoolean("success");
+                    if (success) {
+                        // ** access-token 갱신 성공 시 ** // access-token 업데이트
+                        String data = jsonObject.getString("data");
+                        // SharedPreference 의 access-token 갱신
+                        update_accessToken(data);
+                        switch (request_type) {
+                            // 사용자 이름 가져오기 요청
+                            case "request_get_userName":
+                                get_userName();
+                                break;
+                        }
+
+                    } else if (!success)
+                        Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // ** access-token 갱신 실패 시 ** // refresh-token 만료로 인해 logout
+                Log.d("REQUESTERROR", "onErrorResponse: refresh-toke이 만료되었습니다");
+                NetworkResponse response = error.networkResponse;
+                if (error instanceof AuthFailureError && response != null) {
+                    try {
+                        String res = new String(response.data, HttpHeaderParser.parseCharset(response.headers, "utf-8"));
+                        JsonParser parser = new JsonParser();
+                        JsonElement element = parser.parse(res);
+                        JsonObject data = element.getAsJsonObject().get("data").getAsJsonObject();
+                        String name = data.get("name").getAsString();
+                        String msg = data.get("msg").getAsString();
+
+                        // refresh-token 만료되어 logout
+                        if (name.equals("TokenExpiredError") && msg.equals("jwt expired"))
+                            logout();
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        ) {
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("x-refresh-token", refresh_token);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+        requestQueue.add(stringRequest);
+    }
+
+    // 만료된 access-token을 새로 갱신한 access-token으로 교체
+    private void update_accessToken(String new_token) {
+        access_token = new_token;
+        SharedPreferences.Editor editor = userFile.edit();
+        editor.putString("access_token", access_token); //Second라는 key값으로 infoSecond 데이터를 저장한다.
+        editor.commit();
+    }
+
+    // 사용자 정보를 지우고 로그인 화면으로 이동
+    private void logout() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
+                .setTitle("로그아웃")
+                .setMessage("재로그인이 필요합니다.")
+                .setCancelable(false)
+                .setPositiveButton("로그아웃", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        null_userFile();
+                        FragmentManager fragmentManager = getFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.main_layout, user_login_fragment.newInstance(),"login").commit();
+                    }
+                });
+        builder.create();
+        builder.show();
+    }
+
+    // 현재 로그인된 id와 access_token 제거
+    private void null_userFile() {
+        SharedPreferences.Editor editor = userFile.edit();
+        editor.putString("user_id", null);
+        editor.putString("access_token", null);
+        editor.putString("refresh_token", null);
+        editor.apply();
+    }
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

@@ -240,6 +240,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                             // 수정된 alarmList 저장
                             save_alarmList();
                         }
+                        if(count>=1)
                         request_notification(item_title, count, context);
 
                     } else if (!success) {
@@ -350,12 +351,24 @@ public class AlarmReceiver extends BroadcastReceiver {
 
             public Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                // 긴 item_title 자르기
+
+
                 String item_title_s = "";
+                // item_title이 16자 이상일 경우 글자를 자르고 "..."로 생략
                 if(item_title.length()>=16){
                     item_title_s = item_title.substring(0,16) + "...";
                 }
-                String pushtitle = item_title_s + "외 " + count + "개의 가격정보가 변동되었습니다.";
+
+                String pushtitle = "";
+                // 푸쉬 count가 1개일 경우
+                if(count == 1){
+                    pushtitle = item_title_s + "의 가격 정보가 변동되었습니다.";
+                }
+                // 푸쉬 count가 2개 이상일 경우
+                else if(count > 1){
+                    pushtitle = item_title_s + "외 " + count + "개의 가격정보가 변동되었습니다.";
+                }
+
                 params.put("pushtitle", pushtitle);
                 String pushbody = "터치하면 가격 변동 리스트로 이동합니다. 지금 확인해보세요!";
                 params.put("pushbody", pushbody);
@@ -449,7 +462,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 
                         // refresh-token 만료되어 logout
                         if (name.equals("TokenExpiredError") && msg.equals("jwt expired"))
-                            logout(context);
+                            null_userFile();
+                            //logout(context);
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
