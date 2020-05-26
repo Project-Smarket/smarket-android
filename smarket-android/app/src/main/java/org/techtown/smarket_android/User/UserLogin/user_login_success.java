@@ -9,10 +9,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -24,7 +27,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.viewpager.widget.PagerAdapter;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -34,14 +36,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.smarket_android.MainNavigation.AlarmReceiver;
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.User.Bookmark.bookmark_item_list_fragment;
 import org.techtown.smarket_android.User.Bookmark.newbookmark_fragment;
 import org.techtown.smarket_android.User.UserInfrom.userinform_fragment;
 import org.techtown.smarket_android.User.recent.recent_fragment;
@@ -145,7 +145,7 @@ public class user_login_success extends Fragment {
             @Override
             public void onClick(View v) {
                 // 회원 정보 수정 전 비밀번호 확인
-                passwordconfirm();
+                password_confirm();
 
             }
         });
@@ -311,54 +311,58 @@ public class user_login_success extends Fragment {
     }
 
     // 회원 정보 수정 전 비밀번호 확인
-    private void passwordconfirm() {
-        final EditText password = new EditText(getActivity());
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
-                .setTitle("비밀번호 확인")       // 제목 설정
-                .setView(password) // EditText 삽입
-                // 확인 버튼
-                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String userPW = password.getText().toString();
-                        Log.d("PASSWORD", "onClick: " + userPW);
-                        Response.Listener<String> responseListener = new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String response) {
-                                try {
-                                    JSONObject jsonObject = new JSONObject(response);
-                                    boolean success = jsonObject.getBoolean("success");
-                                    if (success) {
-                                        FragmentManager fragmentManager = getFragmentManager();
-                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                        fragmentTransaction.replace(R.id.main_layout, userinform_fragment.newInstance(),"login")
-                                                .addToBackStack(null).commit();
-                                    } else {
-                                        AlertDialog alertDialog = new AlertDialog.Builder(getContext())
-                                                .setMessage("비밀번호가 일치하지 않습니다.")
-                                                .setNegativeButton("확인", null)
-                                                .create();
-                                        alertDialog.show();
-                                    }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        };
+    private void password_confirm() {
 
-                        user_passwordconfirm passwordconfirm_request = new user_passwordconfirm(userPW, getActivity(), responseListener);
-                        RequestQueue queue = Volley.newRequestQueue(getContext());
-                        queue.add(passwordconfirm_request);
-                    }
-                })
-                .setNegativeButton("취소", new DialogInterface.OnClickListener() {
+        // custom_dialog_editText
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.custom_dialog_editText, null);
+        final EditText password = dialogView.findViewById(R.id.dialog_editText);
+        password.setHint("비밀번호를 입력해주세요");
+        password.setTransformationMethod(PasswordTransformationMethod.getInstance());
+
+        // 비밀번호 입력 다이얼로그
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setView(dialogView);
+        builder.setTitle("비밀번호 확인");
+        builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String userPW = password.getText().toString();
+                Response.Listener<String> responseListener = new Response.Listener<String>() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            boolean success = jsonObject.getBoolean("success");
+                            if (success) {
+                                FragmentManager fragmentManager = getFragmentManager();
+                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction.replace(R.id.main_layout, userinform_fragment.newInstance(),"login")
+                                        .addToBackStack(null).commit();
+                            } else {
+                                AlertDialog alertDialog = new AlertDialog.Builder(getContext())
+                                        .setMessage("비밀번호가 일치하지 않습니다.")
+                                        .setNegativeButton("확인", null)
+                                        .create();
+                                alertDialog.show();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
-                });
-        // 창 띄우기
-        builder.show();
+                };
+
+                user_passwordconfirm passwordconfirm_request = new user_passwordconfirm(userPW, getActivity(), responseListener);
+                RequestQueue queue = Volley.newRequestQueue(getContext());
+                queue.add(passwordconfirm_request);
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE); // 다이얼로그 생성시 EditText 활성화 1
+        dialog.show();
+        if (password.requestFocus())
+            ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(password, 0); // 다이얼로그 생성시 EditText 활성화 2
 
     }
 

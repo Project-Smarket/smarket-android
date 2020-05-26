@@ -102,5 +102,5 @@ public class hotdeal_page1_ppomppu1 extends Fragment {
         requestQueue.add(stringRequest);
     }
 
-    
+
 }

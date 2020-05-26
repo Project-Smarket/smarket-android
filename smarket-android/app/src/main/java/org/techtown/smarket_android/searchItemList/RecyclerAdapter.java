@@ -172,7 +172,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
             // gson을 통해 타 클래스 객체를 스트링으로 변경
             Gson gson = new GsonBuilder().create();
-            Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {}.getType();
+            Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {
+            }.getType();
             String json = gson.toJson(bookmarkAlarmList, listType);
 
             // 스트링 객체로 변환된 데이터를 myBookmarks에 저장
@@ -182,7 +183,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             Log.d("New bookmarkAlarmList", "bookmarkAlarmList: Complete setting bookmarkAlarmList");
         } else {
             String bookmarkAlarm = userFile.getString("bookmarkAlarmList", null);
-            Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {}.getType();
+            Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {
+            }.getType();
             bookmarkAlarmList = new GsonBuilder().create().fromJson(bookmarkAlarm, listType);
             Log.d("Get bookmarkAlarmList", "bookmarkAlarmList: Complete Getting bookmarkAlarmList");
         }
@@ -244,8 +246,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
         // 북마크 폴더 리스트 다이얼로그
         LayoutInflater inflater = mActivity.getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.bookmark_plus_dialog, null);
-        bookmark_folder_name = dialogView.findViewById(R.id.bookmark_folder_name);
+        final View dialogView = inflater.inflate(R.layout.custom_dialog_editText, null);
+        bookmark_folder_name = dialogView.findViewById(R.id.dialog_editText);
         bookmark_folder_name.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -349,7 +351,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(v.equals(heart_btn)){
+                    if (v.equals(heart_btn)) {
                         Toast.makeText(mContext, "추가", Toast.LENGTH_LONG).show();
                     }
                     int pos = getAdapterPosition();
@@ -430,8 +432,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             }
         }
 
-        void onType(String item_type){
-            if(!item_type.equals("1")){
+        void onType(String item_type) {
+            if (!item_type.equals("1")) {
                 item_productype.setText("");
             }
         }
@@ -564,7 +566,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     // access-token 갱신 요청 후 폴더 목록 재요청 - 실패 시 logout
     private void refresh_accessToken(final String request_type, final ItemViewHolder holder) {
         Log.d(TAG, "refresh_accessToken: access-token을 갱신합니다.");
-        String url = mContext.getString(R.string.authEndpoint)+"/refresh"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        String url = mContext.getString(R.string.authEndpoint) + "/refresh"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -692,7 +694,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
     }
 
-    private void save_bookmarkAlarmList(String id, String item_price){
+    private void save_bookmarkAlarmList(String id, String item_price) {
         BookmarkAlarm bookmarkAlarm = new BookmarkAlarm(user_id, folder_name, id, item_price, alarm_time, alarm_check);
         bookmarkAlarmList.add(bookmarkAlarm);
 

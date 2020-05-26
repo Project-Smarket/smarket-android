@@ -15,8 +15,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -25,8 +23,6 @@ import com.google.gson.reflect.TypeToken;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -43,7 +39,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -290,8 +285,8 @@ public class newbookmark_fragment extends Fragment {
             public void onClick(View v) {
                 LayoutInflater inflater = getLayoutInflater();
 
-                final View dialogView = inflater.inflate(R.layout.bookmark_plus_dialog, null);
-                bookmark_folder_name = dialogView.findViewById(R.id.bookmark_folder_name);
+                final View dialogView = inflater.inflate(R.layout.custom_dialog_editText, null);
+                bookmark_folder_name = dialogView.findViewById(R.id.dialog_editText);
                 bookmark_folder_name.setOnKeyListener(new View.OnKeyListener() {
                     @Override
                     public boolean onKey(View v, int keyCode, KeyEvent event) {
