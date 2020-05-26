@@ -90,7 +90,7 @@ public class user_login_success extends Fragment {
 
 
         // 현재 로그인된 아이디 가져오기
-//        get_userFile();
+        get_userFile();
 
         if(userID==null) {
             getActivity().finish();

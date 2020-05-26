@@ -37,16 +37,14 @@ import org.techtown.smarket_android.smarketClass.news;
 import org.techtown.smarket_android.smarketClass.review;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.smarketClass.spec;
-import org.techtown.smarket_android.searchItemList.Pager.search_detail_news_fragment;
-import org.techtown.smarket_android.searchItemList.Pager.search_detail_of_detail_fragment;
-import org.techtown.smarket_android.searchItemList.Pager.search_detail_review_fragment;
+import org.techtown.smarket_android.searchItemList.Pager.news.search_detail_news_fragment;
+import org.techtown.smarket_android.searchItemList.Pager.spec.search_detail_spec_fragment;
+import org.techtown.smarket_android.searchItemList.Pager.review.search_detail_review_fragment;
 import org.techtown.smarket_android.searchItemList.Request.danawaRequest;
 
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import static com.android.volley.VolleyLog.TAG;
 
@@ -57,7 +55,7 @@ public class searchdetail_fragment extends Fragment {
     private int pos = 0;
     private Toolbar toolbar;
     private search_detail_news_fragment detail_news_fragment;
-    private search_detail_of_detail_fragment detail_of_detail_fragment;
+    private search_detail_spec_fragment detail_of_detail_fragment;
     private search_detail_review_fragment detail_review_fragment;
     private FragmentManager fragmentManager;
     private ArrayList<spec> specList;
@@ -215,7 +213,7 @@ public class searchdetail_fragment extends Fragment {
             }
             case 1: {
                 if (detail_of_detail_fragment == null) {
-                    detail_of_detail_fragment = new search_detail_of_detail_fragment();
+                    detail_of_detail_fragment = new search_detail_spec_fragment();
                     Bundle dodBundle = new Bundle();
                     dodBundle.putParcelableArrayList("spec", specList);
 

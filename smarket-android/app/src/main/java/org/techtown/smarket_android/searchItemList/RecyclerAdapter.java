@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -315,6 +316,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     // 여기서 subView를 setting 해줍니다.
     class ItemViewHolder extends RecyclerView.ViewHolder {
 
+        private ConstraintLayout item_layout;
         private TextView item_title;
         private String item_id;
         private String item_type;
@@ -335,6 +337,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         ItemViewHolder(final View itemView) {
             super(itemView);
 
+            item_layout = itemView.findViewById(R.id.search_list_item_layout);
             item_title = itemView.findViewById(R.id.search_list_item_title);
             item_price = itemView.findViewById(R.id.search_list_item_price);
             item_image = itemView.findViewById(R.id.search_list_item_image);
@@ -343,7 +346,18 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             heart_btn = itemView.findViewById(R.id.heart_btn);
             item_data = new String[9];
 
-            itemView.setOnClickListener(new View.OnClickListener() {
+            item_layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = getAdapterPosition();
+                    if (pos != RecyclerView.NO_POSITION) {
+                        if (onRecyclerClickListener != null) {
+                            onRecyclerClickListener.OnRecyclerClickListener(v, pos, item_data);
+                        }
+                    }
+                }
+            });
+            item_layout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int pos = getAdapterPosition();
