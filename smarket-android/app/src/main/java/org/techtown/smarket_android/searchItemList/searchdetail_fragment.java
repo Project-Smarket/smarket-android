@@ -1,5 +1,6 @@
 package org.techtown.smarket_android.searchItemList;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -67,11 +68,14 @@ public class searchdetail_fragment extends Fragment {
 
     private String item_productType;
 
+    private ProgressDialog progressDialog;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.search_item_detail, container, false);
+
+        progressDialog = ProgressDialog.show(getContext(),"","로딩");
 
         specList = new ArrayList<>();
         keyList = new ArrayList<>();
@@ -286,7 +290,7 @@ public class searchdetail_fragment extends Fragment {
                     }
                     newsJson(jsonObject); //뉴스 json파싱
 
-
+                    progressDialog.dismiss();
                 } catch (JSONException e) {
                     Log.d(TAG, "getJson: " + e.toString());
                 }

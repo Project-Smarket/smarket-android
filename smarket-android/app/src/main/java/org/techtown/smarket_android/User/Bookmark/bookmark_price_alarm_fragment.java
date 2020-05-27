@@ -135,6 +135,7 @@ public class bookmark_price_alarm_fragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case android.R.id.home:{
+                set_myBookmarks();
                 FragmentManager fm = getActivity().getSupportFragmentManager();
                 fm.beginTransaction().remove(bookmark_price_alarm_fragment.this).commit();
                 fm.popBackStack();

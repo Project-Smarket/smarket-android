@@ -27,7 +27,6 @@
             android:layout_marginRight="16dp"
             android:layout_toEndOf="@+id/search_list_item_image"
             android:layout_toRightOf="@+id/search_list_item_image"
-            android:inputType="textMultiLine"
             android:text="titletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitle"
             android:textSize="16sp"
             android:textColor="@color/colorBlack"

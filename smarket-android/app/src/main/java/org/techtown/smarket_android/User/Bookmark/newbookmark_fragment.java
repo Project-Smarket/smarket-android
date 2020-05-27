@@ -15,6 +15,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -23,6 +24,8 @@ import com.google.gson.reflect.TypeToken;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -73,6 +76,7 @@ public class newbookmark_fragment extends Fragment {
 
     private ViewGroup viewGroup;
 
+    private Toolbar toolbar;
     private Spinner bookmark_spinner; // 북마크 스피너
     private ArrayAdapter spinnerAdapter; // 스피너 어댑터
     private List<String> bookmarkFolderList = new ArrayList<>(); // SharedPreference에 저장된 bookmarkFolderList
@@ -98,6 +102,7 @@ public class newbookmark_fragment extends Fragment {
     private String access_token;
     private String refresh_token;
 
+
     // 스피너 중복 실행 방지 변수
     int iCurrentSelection;
     @Nullable
@@ -118,6 +123,15 @@ public class newbookmark_fragment extends Fragment {
         set_plus_btn(); // 북마크 추가 버튼 설정
         set_trashcan_btn(); // 북마크 삭제 버튼 설정
 
+        toolbar =  viewGroup.findViewById(R.id.newbookmark_toolbar);
+
+        toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AppBarLayout mAppbar = viewGroup.findViewById(R.id.bookmark_app_bar);
+                mAppbar.setExpanded(true);
+            }
+        });
         return viewGroup;
     }
     // SharedPreference의 bookmarkAlarmList 데이터를 가져온다
