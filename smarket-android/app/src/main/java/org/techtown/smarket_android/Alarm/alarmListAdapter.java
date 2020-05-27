@@ -75,6 +75,7 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
         private TextView alarm_type;
         private ImageView direction;
         private ImageView direction2;
+        private TextView alarm_date;
         //private TextView alarm_posted;
 
         private String item_image_url;
@@ -94,6 +95,7 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
             alarm_type = itemView.findViewById(R.id.alarm_type_textView);
             direction = itemView.findViewById(R.id.direction_imageView);
             direction2 = itemView.findViewById(R.id.direction_imageView2);
+            alarm_date = itemView.findViewById(R.id.alarm_date_textView);
             //alarm_posted = itemView.findViewById(R.id.alarm_posted_textView);
         }
 
@@ -107,8 +109,7 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
             alarm_message.setText(String.format("%,d", item_updated_price)+"원");
             Log.d("alarmmessage", "onBind: "+alarm_message.getText().toString());
             alarm_type.setText(data.getAlarm_type());
-
-
+            alarm_date.setText(data.getAlarm_date());
         }
 
         void set_item_image() {

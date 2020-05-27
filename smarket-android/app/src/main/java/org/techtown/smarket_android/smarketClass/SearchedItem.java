@@ -24,6 +24,7 @@ public class SearchedItem {
     private String alarm_type;
     private String updated_price;
     private String alarm_message;
+    private String alarm_date;
 
 
 
@@ -46,7 +47,7 @@ public class SearchedItem {
     }
 
     // alarm에서 사용하는 클래스 생성자
-    public SearchedItem(String user_id, String id, String item_title, String item_id, String item_type, String item_price, String item_image, String item_mallName, String alarm_type, String updated_price) {
+    public SearchedItem(String user_id, String id, String item_title, String item_id, String item_type, String item_price, String item_image, String item_mallName, String alarm_type, String updated_price, String alarm_date) {
         this.user_id = user_id;
         this.id = id;
         this.item_title = item_title;
@@ -58,6 +59,15 @@ public class SearchedItem {
         this.alarm_type = alarm_type;
         this.updated_price = updated_price;
         alarm_message = updated_price + "원";
+        this.alarm_date = alarm_date;
+    }
+
+    public String getAlarm_date() {
+        return alarm_date;
+    }
+
+    public void setAlarm_date(String alarm_date) {
+        this.alarm_date = alarm_date;
     }
 
     public String getUser_id() {

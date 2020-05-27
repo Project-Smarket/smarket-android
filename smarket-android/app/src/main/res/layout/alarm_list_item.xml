@@ -24,7 +24,7 @@
         app:layout_constraintTop_toBottomOf="@+id/alarm_type_textView" />
 
     <TextView
-        android:id="@+id/alarm_posted_textView"
+        android:id="@+id/alarm_date_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"

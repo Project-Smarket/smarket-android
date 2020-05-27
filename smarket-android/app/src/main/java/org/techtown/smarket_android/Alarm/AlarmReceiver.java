@@ -41,11 +41,13 @@ import org.techtown.smarket_android.R;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -66,6 +68,8 @@ public class AlarmReceiver extends BroadcastReceiver {
     private List<BookmarkAlarm> myBookmarkAlarmList;
     private List<SearchedItem> alarmList;
 
+    private String alarm_date;
+
     @Override
     public void onReceive(Context context, Intent intent) {
 
@@ -85,6 +89,10 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         // TODO : 각 시간별로 최저가 알람이 설정된 제품의 가격 정보 조회를 요청
         int hour = calendar.get(Calendar.SECOND);
+        Date currentTime = Calendar.getInstance().getTime();
+        alarm_date = new SimpleDateFormat("yy/MM/dd", Locale.getDefault()).format(currentTime);
+
+
         Toast.makeText(context, String.valueOf(hour), Toast.LENGTH_SHORT).show();
         int selection;
         switch (hour) {
@@ -231,7 +239,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                                 String updated_price_string = String.valueOf(updated_price);
 
                                 SearchedItem alarm = new SearchedItem(user_id, id, item_title, item_id, item_type, item_lprice, item_image, item_mallName,
-                                        alarm_type, updated_price_string);
+                                        alarm_type, updated_price_string, alarm_date);
                                 // 갱신된 가격으로 북마크알람의 가격 수정
                                 edit_bookmarkAlarmList(id, item_lprice);
                                 Log.d(TAG, "alarm: " + alarm.toString());
@@ -253,10 +261,13 @@ public class AlarmReceiver extends BroadcastReceiver {
                     }
 
                 } catch (JSONException e) {
+
                     e.printStackTrace();
                     Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
+                    Log.d(TAG, "JSONexception: " +e);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    Log.d(TAG, "exception: " +e);
                 }
             }
         }, new Response.ErrorListener() {

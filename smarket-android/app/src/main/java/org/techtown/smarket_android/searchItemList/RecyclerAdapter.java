@@ -70,7 +70,7 @@ import static com.android.volley.VolleyLog.TAG;
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemViewHolder> {
 
     public interface OnRecyclerClickListener {
-        void OnRecyclerClickListener(View v, int position, String[] item_data, String item_id, String item_type);
+        void OnRecyclerClickListener(View v, int position, String[] item_data, String item_id, String item_type, int item_price);
     }
 
     private OnRecyclerClickListener onRecyclerClickListener = null;
@@ -358,7 +358,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                     int pos = getAdapterPosition();
                     if (pos != RecyclerView.NO_POSITION) {
                         if (onRecyclerClickListener != null) {
-                            onRecyclerClickListener.OnRecyclerClickListener(v, pos, item_data, item_id, item_type);
+                            onRecyclerClickListener.OnRecyclerClickListener(v, pos, item_data, item_id, item_type, item_lprice);
                         }
                     }
                 }

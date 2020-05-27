@@ -212,9 +212,9 @@ public class newsearch_fragment extends Fragment implements OnBackpressedListene
 
         adapter.setOnRecyclerClickListener(new RecyclerAdapter.OnRecyclerClickListener() {
             @Override
-            public void OnRecyclerClickListener(View v, int position, String[] item_data, String item_id, String item_type) {
+            public void OnRecyclerClickListener(View v, int position, String[] item_data, String item_id, String item_type, int item_price) {
                 searchdetail_fragment searchdetailFragment = new searchdetail_fragment();
-                Bundle bundle = settingBundle(v, item_data, item_id, item_type);
+                Bundle bundle = settingBundle(v, item_data, item_id, item_type, item_price);
                 searchdetailFragment.setArguments(bundle);
                 //listClear();
                 adapter.notifyDataSetChanged();
@@ -306,19 +306,19 @@ public class newsearch_fragment extends Fragment implements OnBackpressedListene
         return html.replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", "");
     }
 
-    private Bundle settingBundle(View v, String[] item_data, String item_id, String item_type) {
+    private Bundle settingBundle(View v, String[] item_data, String item_id, String item_type, int item_price) {
         Bundle bundle = new Bundle();
-        TextView item_name = v.findViewById(R.id.search_list_item_title);
-        TextView item_value = v.findViewById(R.id.search_list_item_price);
+        TextView item_title_textView = v.findViewById(R.id.search_list_item_title);
+        TextView item_price_textView = v.findViewById(R.id.search_list_item_price);
         ImageView item_image = v.findViewById(R.id.search_list_item_image);
 
         Drawable d = item_image.getDrawable();
         Bitmap bitmap = ((BitmapDrawable) d).getBitmap();
 
-        bundle.putString("item_title", item_name.getText().toString());
+        bundle.putString("item_title", item_title_textView.getText().toString());
         bundle.putString("item_id", item_id);
         bundle.putString("item_type", item_type);
-        bundle.putString("item_price", item_value.getText().toString());
+        bundle.putString("item_price", String.valueOf(item_price));
         bundle.putParcelable("item_image", bitmap);
         bundle.putStringArray("item_data", item_data);
 
