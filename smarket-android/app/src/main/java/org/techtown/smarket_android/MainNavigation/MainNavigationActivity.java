@@ -1,6 +1,7 @@
 package org.techtown.smarket_android.MainNavigation;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -48,6 +49,8 @@ public class MainNavigationActivity extends AppCompatActivity {
 
         set_navigation();
         //check_alarmManager();
+
+        checkNotification();     //알림으로 들어올시 실행되는 메소드
 
     }
 
@@ -150,6 +153,24 @@ public class MainNavigationActivity extends AppCompatActivity {
             updateBottomMenu(bnv);
         }
 
+    }
+
+    //참고사이트 https://featherwing.tistory.com/9
+    private void checkNotification(){
+        String str = getIntent().getStringExtra("notification");
+
+        if(str !=null){
+            if(str.equals("Notification")){
+
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        bottomNavigationView.setSelectedItemId(R.id.tab4);
+                    }
+                },300);
+            }
+        }
     }
 
 }

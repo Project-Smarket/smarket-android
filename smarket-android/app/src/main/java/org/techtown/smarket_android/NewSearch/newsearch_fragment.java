@@ -209,6 +209,7 @@ public class newsearch_fragment extends Fragment implements OnBackpressedListene
                 searchdetailFragment.setArguments(bundle);
                 //listClear();
                 adapter.notifyDataSetChanged();
+                Log.d(TAG, "OnRecyclerClickListener: 클릭했다 이눔아");
 
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.main_layout, searchdetailFragment, "search").addToBackStack(null);
