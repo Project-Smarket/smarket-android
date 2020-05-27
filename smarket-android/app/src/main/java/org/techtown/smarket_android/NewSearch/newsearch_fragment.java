@@ -59,6 +59,8 @@ import static com.android.volley.VolleyLog.TAG;
 
 public class newsearch_fragment extends Fragment implements OnBackpressedListener{
 
+    public static newsearch_fragment newInstance(){return new newsearch_fragment();}
+
     private ViewGroup viewGroup;
     private RecyclerView recyclerView;
     private RecyclerAdapter adapter;
@@ -87,6 +89,8 @@ public class newsearch_fragment extends Fragment implements OnBackpressedListene
     private List<SearchedItem> itemList;
 
     private Boolean back_check = false;
+
+
 
 
     @Nullable

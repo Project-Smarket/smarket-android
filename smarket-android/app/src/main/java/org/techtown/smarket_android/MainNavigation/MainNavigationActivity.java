@@ -4,10 +4,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -38,6 +40,9 @@ public class MainNavigationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
         bottomNavigationView = findViewById(R.id.bottomNavigationView); //프래그먼트 생성
+
+        checkNotification();     //알림으로 들어올시 실행되는 메소드
+
         search_fragment1 = new newsearch_fragment();//제일 처음 띄워줄 뷰를 세팅해줍니다. commit();까지 해줘야 합니다.
 
 //        hotdeal_fragment2 = new hotdeal_fragment(); // 스마켓 홈 창
@@ -50,7 +55,6 @@ public class MainNavigationActivity extends AppCompatActivity {
         set_navigation();
         //check_alarmManager();
 
-        checkNotification();     //알림으로 들어올시 실행되는 메소드
 
     }
 
@@ -59,7 +63,7 @@ public class MainNavigationActivity extends AppCompatActivity {
     // https://hwanine.github.io/android/backStack/
 
     private void set_navigation() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, search_fragment1, "first").addToBackStack(null).commitAllowingStateLoss(); //bottomnavigationview의 아이콘을 선택 했을때 원하는 프래그먼트가 띄워질 수 있도록 리스너를 추가합니다.
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, search_fragment1, "search").addToBackStack(null).commitAllowingStateLoss(); //bottomnavigationview의 아이콘을 선택 했을때 원하는 프래그먼트가 띄워질 수 있도록 리스너를 추가합니다.
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -109,7 +113,6 @@ public class MainNavigationActivity extends AppCompatActivity {
         Fragment alarm = getSupportFragmentManager().findFragmentByTag("alarm");
         Fragment logout = getSupportFragmentManager().findFragmentByTag("logout");
         Fragment loginS = getSupportFragmentManager().findFragmentByTag("loginS");
-        Fragment first = getSupportFragmentManager().findFragmentByTag("first");
 
         if (search != null && search.isVisible())
             bottomNavigationView.getMenu().findItem(R.id.tab1).setChecked(true);
@@ -123,26 +126,33 @@ public class MainNavigationActivity extends AppCompatActivity {
             bottomNavigationView.getMenu().findItem(R.id.tab3).setChecked(true);
         else if (loginS != null && loginS.isVisible())
             bottomNavigationView.getMenu().findItem(R.id.tab3).setChecked(true);
-        else if (first != null && first.isVisible())
-            bottomNavigationView.getMenu().findItem(R.id.tab1).setChecked(true);
     }
 
     //뒤로가기 버튼
     @Override
     public void onBackPressed() {
-        Fragment first = getSupportFragmentManager().findFragmentByTag("first");
+        Fragment search = getSupportFragmentManager().findFragmentByTag("search");
         Fragment logout = getSupportFragmentManager().findFragmentByTag("logout");
         Fragment loginS = getSupportFragmentManager().findFragmentByTag("loginS");
 
-        if (first != null && first.isVisible()) { //첫화면 뒤로가기 종료
+        if (search != null && search.isVisible()) { //첫화면 뒤로가기 종료
             //this.finish();
 
-            List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
-            for (Fragment fragment : fragmentList){
-                if(fragment instanceof OnBackpressedListener){
-                    ((OnBackpressedListener)fragment).onBackPressed();
+            if(System.currentTimeMillis() > backKeyPressedTime + 2000) {
+                backKeyPressedTime = System.currentTimeMillis();
+                List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
+                for (Fragment fragment : fragmentList){
+                    if(fragment instanceof OnBackpressedListener){
+                        ((OnBackpressedListener)fragment).onBackPressed();
+                    }
                 }
+                return;
             }
+
+            if(System.currentTimeMillis() <= backKeyPressedTime + 2000){
+                this.finish();
+            }
+
         } else if (logout != null && logout.isVisible()) { // 로그아웃 후 뒤로가기 방지
 
         } else if (loginS != null && loginS.isVisible()) { //로그인 후 뒤로가기 방지
@@ -159,17 +169,16 @@ public class MainNavigationActivity extends AppCompatActivity {
     private void checkNotification(){
         String str = getIntent().getStringExtra("notification");
 
-        if(str !=null){
-            if(str.equals("Notification")){
-
+        if(str !=null && str.equals("Notification")){
                 Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
+                handler.postDelayed(
+
+                        new Runnable() {
                     @Override
                     public void run() {
                         bottomNavigationView.setSelectedItemId(R.id.tab4);
                     }
                 },300);
-            }
         }
     }
 

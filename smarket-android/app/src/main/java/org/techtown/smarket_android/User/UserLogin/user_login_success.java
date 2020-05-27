@@ -166,7 +166,7 @@ public class user_login_success extends Fragment {
         }
 
         final Switch priceAlarm = viewGroup.findViewById(R.id.priceAlarm_switch);
-//        priceAlarm.setChecked(alarm_check);
+        priceAlarm.setChecked(alarm_check);
 
         priceAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
