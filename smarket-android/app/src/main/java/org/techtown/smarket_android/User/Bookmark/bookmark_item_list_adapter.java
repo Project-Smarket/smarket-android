@@ -73,7 +73,7 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_list_item, parent, false);
         get_userFile();
 
-        View delete_btn = view.findViewById(R.id.heart_btn);
+        View delete_btn = view.findViewById(R.id.bookmark_btn);
         delete_btn.setBackgroundResource(R.drawable.delete_btn);
 
         bmViewHolder itemViewHolder = new bookmark_item_list_adapter.bmViewHolder(view);
@@ -154,8 +154,8 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
             bookmark_price = itemView.findViewById(R.id.search_list_item_price);
             bookmark_productype = itemView.findViewById(R.id.search_list_item_productype);
 
-            heart_btn = itemView.findViewById(R.id.heart_btn);
-            cash_btn = itemView.findViewById(R.id.cash_btn);
+            heart_btn = itemView.findViewById(R.id.bookmark_btn);
+            cash_btn = itemView.findViewById(R.id.alarm_btn);
 
             heart_btn.setOnClickListener(new View.OnClickListener() {
                 @Override

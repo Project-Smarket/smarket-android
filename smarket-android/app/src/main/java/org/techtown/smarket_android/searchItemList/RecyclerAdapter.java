@@ -69,7 +69,7 @@ import static com.android.volley.VolleyLog.TAG;
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemViewHolder> {
 
     public interface OnRecyclerClickListener {
-        void OnRecyclerClickListener(View v, int position, String[] item_data);
+        void OnRecyclerClickListener(View v, int position, String[] item_data, String item_id, String item_type);
     }
 
     private OnRecyclerClickListener onRecyclerClickListener = null;
@@ -129,7 +129,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         // SharedPreference의 bookmarkAlarmList 데이터를 가져옴
         get_bookmarkAlarmList();
 
-        View cashBtn = view.findViewById(R.id.cash_btn);
+        View cashBtn = view.findViewById(R.id.alarm_btn);
         cashBtn.setVisibility(View.GONE);
 
         final ItemViewHolder itemViewHolder = new ItemViewHolder(view);
@@ -345,7 +345,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             item_image = itemView.findViewById(R.id.search_list_item_image);
             item_mall = itemView.findViewById(R.id.search_list_item_mallName);
             item_productype = itemView.findViewById(R.id.search_list_item_productype);
-            heart_btn = itemView.findViewById(R.id.heart_btn);
+            heart_btn = itemView.findViewById(R.id.bookmark_btn);
             item_data = new String[9];
 
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -357,7 +357,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                     int pos = getAdapterPosition();
                     if (pos != RecyclerView.NO_POSITION) {
                         if (onRecyclerClickListener != null) {
-                            onRecyclerClickListener.OnRecyclerClickListener(v, pos, item_data);
+                            onRecyclerClickListener.OnRecyclerClickListener(v, pos, item_data, item_id, item_type);
                         }
                     }
                 }
@@ -719,7 +719,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
     // 키보드 입력 후 엔터 입력시 키보드 창 내림
     private void hideKeyboard() {
-        imm.hideSoftInputFromWindow(bookmark_folder_name.getWindowToken(), 0);
         imm.hideSoftInputFromWindow(bookmark_folder_name.getWindowToken(), 0);
     }
 

@@ -16,23 +16,23 @@
     <string name="detailTab3">영상보기</string>
     <string name="detailTab4">리뷰</string>
 
-    <!--<string name="authEndpoint"> http://10.0.2.2:3000/api/auth </string>
+    <string name="authEndpoint"> http://10.0.2.2:3000/api/auth </string>
     <string name="usersEndpoint"> http://10.0.2.2:3000/api/users </string>
     <string name="bookmarksEndpoint">http://10.0.2.2:3000/api/bookmarks</string>
     <string name="fcmEndpoint"> http://10.0.2.2:3000/api/fcm </string>
     <string name="crawlingEndpoint"> http://10.0.2.2:3000/api/crawling </string>
     <string name="naverEndpoint"> http://10.0.2.2:3000/api/naver </string>
     <string name="detailEndpoint">http://10.0.2.2:3000/api/item/detail?query=</string>
-    <string name="youtubeEndpoint"> http://10.0.2.2:3000/api/youtube </string>-->
+    <string name="youtubeEndpoint"> http://10.0.2.2:3000/api/youtube </string>
 
-    <string name="authEndpoint"> http://118.47.184.245:8080/api/auth </string>
+    <!--<string name="authEndpoint"> http://118.47.184.245:8080/api/auth </string>
     <string name="usersEndpoint"> http://118.47.184.245:8080/api/users </string>
     <string name="bookmarksEndpoint">http://118.47.184.245:8080/api/bookmarks</string>
     <string name="fcmEndpoint"> http://118.47.184.245:8080/api/fcm </string>
     <string name="crawlingEndpoint"> http://118.47.184.245:8080/api/crawling </string>
     <string name="naverEndpoint"> http://118.47.184.245:8080/api/naver </string>
     <string name="detailEndpoint">http://118.47.184.245:8080/api/item/detail?query=</string>
-    <string name="youtubeEndpoint"> http://118.47.184.245:8080/api/youtube </string>
+    <string name="youtubeEndpoint"> http://118.47.184.245:8080/api/youtube </string>-->
 
     <string name="reviewTitle">리뷰제목</string>
     <string name="reviewContent">리뷰내용입니다 가나다라마바사아자차카타파하 abcdefghijklmnopqrxtuvwxyz</string>

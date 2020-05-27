@@ -280,8 +280,8 @@ public class search_list_fragment extends Fragment {
         Drawable d = item_image.getDrawable();
         Bitmap bitmap = ((BitmapDrawable) d).getBitmap();
 
-        bundle.putString("item_name", item_name.getText().toString());
-        bundle.putString("item_value", item_value.getText().toString());
+        bundle.putString("item_title", item_name.getText().toString());
+        bundle.putString("item_price", item_value.getText().toString());
         bundle.putParcelable("item_image", bitmap);
         bundle.putString("txt", txt);
 
