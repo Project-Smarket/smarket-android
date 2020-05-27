@@ -33,6 +33,7 @@ public class MainNavigationActivity extends AppCompatActivity {
     //user_login_success user_fragment2; // 로그인 완료 창
     private user_login_fragment user_fragment3; // 로그인 창
     private alarm_fragment alarm_fragment4;
+    private boolean checkbackbtn = false;
 
 
     @Override
@@ -138,8 +139,9 @@ public class MainNavigationActivity extends AppCompatActivity {
         if (search != null && search.isVisible()) { //첫화면 뒤로가기 종료
             //this.finish();
 
-            if(System.currentTimeMillis() > backKeyPressedTime + 2000) {
+            if(System.currentTimeMillis() > backKeyPressedTime + 1000) {
                 backKeyPressedTime = System.currentTimeMillis();
+                checkbackbtn = false;
                 List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
                 for (Fragment fragment : fragmentList){
                     if(fragment instanceof OnBackpressedListener){
@@ -149,8 +151,18 @@ public class MainNavigationActivity extends AppCompatActivity {
                 return;
             }
 
-            if(System.currentTimeMillis() <= backKeyPressedTime + 2000){
+            if(checkbackbtn){
+                Toast.makeText(this, "한번 더 누르면 종료",Toast.LENGTH_SHORT).cancel();
                 this.finish();
+            }
+
+            if(System.currentTimeMillis() <= backKeyPressedTime + 1000){
+                checkbackbtn = true;
+                backKeyPressedTime = System.currentTimeMillis();
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.main_layout, newsearch_fragment.newInstance(), "search").addToBackStack(null).commit();
+                Toast.makeText(this, "한 번더 누르면 종료",Toast.LENGTH_SHORT).show();
+                return;
             }
 
         } else if (logout != null && logout.isVisible()) { // 로그아웃 후 뒤로가기 방지
