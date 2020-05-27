@@ -588,14 +588,18 @@ public class searchdetail_fragment extends Fragment {
 
             ImageView item_image = viewGroup.findViewById(R.id.detail_item_image);
             TextView item_title_textView = viewGroup.findViewById(R.id.detail_item_name);
+            TextView item_type_textView = viewGroup.findViewById(R.id.detail_item_type);
             TextView item_price_textView = viewGroup.findViewById(R.id.detail_item_value);
             TextView item_mall_textView = viewGroup.findViewById(R.id.detail_firm_name);
             TextView item_brand_textView = viewGroup.findViewById(R.id.detail_item_brand);
             TextView item_maker_textView = viewGroup.findViewById(R.id.detail_item_maker);
             TextView item_category_textView = viewGroup.findViewById(R.id.detail_item_category);
 
+
             item_image.setImageBitmap(bitmap);
             item_title_textView.setText(item_title);
+            if(!item_type.equals("1"))
+                item_type_textView.setText("");
             item_price_textView.setText(item_price);
             item_mall_textView.setText("판매처 : " + item_data[0]);
             item_link = item_data[1];
@@ -816,11 +820,12 @@ public class searchdetail_fragment extends Fragment {
     }
 
     public static ProgressDialog createProgressDialog(Context context) {
-        progressDialog = new ProgressDialog(context);
+        progressDialog = new ProgressDialog(context, R.style.custom_progress);
         progressDialog.setCancelable(false);
         progressDialog.getWindow()
                 .setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         progressDialog.setContentView(R.layout.progress_dialog);
+
         // dialog.setMessage(Message);
         return progressDialog;
     }
