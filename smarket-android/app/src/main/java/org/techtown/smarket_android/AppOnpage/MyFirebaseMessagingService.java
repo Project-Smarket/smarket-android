@@ -25,6 +25,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import org.techtown.smarket_android.MainActivity;
+import org.techtown.smarket_android.MainNavigation.MainNavigationActivity;
 import org.techtown.smarket_android.R;
 
 import java.util.HashMap;
@@ -38,6 +39,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private String color = "";
     private String device_token = "";
     private String user_id = "";
+    private int cnt = 0;
 
     private Context mContext;
 
@@ -99,14 +101,21 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
 
+    // 참고사이트 https://webnautes.tistory.com/665
+    // https://stackoverflow.com/questions/20881226/pending-intent-in-notification-not-working
+    // https://like-tomato.tistory.com/156
+    // https://medium.com/@logishudson0218/intent-flag%EC%97%90-%EB%8C%80%ED%95%9C-%EC%9D%B4%ED%95%B4-d8c91ddd3bfc
+
     private void sendNotification(String title, String body) { //Notification으로 전송하는 메소드.
         if(title == null){
             title = "푸시 알림";
         }
-        Intent intent = new Intent(this, MainActivity.class);//Intent는 아직 모름ㅠ
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, (int)(System.currentTimeMillis()/1000), intent,
-                PendingIntent.FLAG_ONE_SHOT);
+        Intent intent = new Intent(this, MainNavigationActivity.class);//Intent는 아직 모름ㅠ
+        intent.putExtra("notification", "Notification");
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), (int)(System.currentTimeMillis()/1000), intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
 
         String channelId = "채널 ID";
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -117,11 +126,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         .setContentText(body) // body 적용
                         .setAutoCancel(true) // 노티바에서 터치하면 자동으로 삭제되도록 설정
                         .setSound(defaultSoundUri)
-                        .setContentIntent(pendingIntent)
-                        .setPriority(Notification.PRIORITY_HIGH);
+                        .setPriority(Notification.PRIORITY_HIGH)
+                        .setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
         // Since android Oreo notification channel is needed.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

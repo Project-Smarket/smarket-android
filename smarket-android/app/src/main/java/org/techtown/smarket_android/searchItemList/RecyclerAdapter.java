@@ -36,6 +36,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -388,49 +389,58 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
         }
 
-        void set_item_image() {
-            //안드로이드에서 네트워크와 관련된 작업을 할 때,
-            //반드시 메인 쓰레드가 아닌 별도의 작업 쓰레드를 생성하여 작업해야 한다.
-            Thread mThread = new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        try {
-                            URL url = new URL(item_image_url);
-
-                            //웹에서 이미지를 가져온 뒤
-                            //이미지뷰에 지정할 비트맵을 만든다
-                            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                            connection.setDoInput(true); //서버로부터 응답 수신
-                            connection.connect();
-
-                            InputStream is = connection.getInputStream(); //inputStream 값 가져오기
-                            bitmap = BitmapFactory.decodeStream(is); // Bitmap으로 변환
-                        } catch (MalformedURLException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
-            mThread.setDaemon(true);
-            mThread.start(); //쓰레드 실행
-
+        void set_item_image(){
             try {
-                // 메인 쓰레드는 별도의 작업 쓰레드가 작업을 완료할 때까지 대기
-                // join()을 호출하여 별도의 작업 쓰레드가 종료될 때까지 메인 쓰레드가 기다리게 한다.
-                mThread.join();
-
-                // 작업 쓰레드에서 이미지를 불러오는 작업을 완료한 뒤
-                // UI 작업을 할 수 있는 메인 쓰레드에서 imageView에 이미지를 지정한다.
-                item_image.setImageBitmap(bitmap);
-            } catch (InterruptedException e) {
+                Glide.with(mContext).asBitmap().load(item_image_url).into(item_image);
+            } catch (Exception e){
                 e.printStackTrace();
+                Log.d(TAG, "RecyclerImageError: "+ e.toString());
             }
         }
+
+//        void set_item_image() {
+//            //안드로이드에서 네트워크와 관련된 작업을 할 때,
+//            //반드시 메인 쓰레드가 아닌 별도의 작업 쓰레드를 생성하여 작업해야 한다.
+//            Thread mThread = new Thread() {
+//                @Override
+//                public void run() {
+//                    try {
+//                        try {
+//                            URL url = new URL(item_image_url);
+//
+//                            //웹에서 이미지를 가져온 뒤
+//                            //이미지뷰에 지정할 비트맵을 만든다
+//                            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//                            connection.setDoInput(true); //서버로부터 응답 수신
+//                            connection.connect();
+//
+//                            InputStream is = connection.getInputStream(); //inputStream 값 가져오기
+//                            bitmap = BitmapFactory.decodeStream(is); // Bitmap으로 변환
+//                        } catch (MalformedURLException e) {
+//                            e.printStackTrace();
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            };
+//            mThread.setDaemon(true);
+//            mThread.start(); //쓰레드 실행
+//
+//            try {
+//                // 메인 쓰레드는 별도의 작업 쓰레드가 작업을 완료할 때까지 대기
+//                // join()을 호출하여 별도의 작업 쓰레드가 종료될 때까지 메인 쓰레드가 기다리게 한다.
+//                mThread.join();
+//
+//                // 작업 쓰레드에서 이미지를 불러오는 작업을 완료한 뒤
+//                // UI 작업을 할 수 있는 메인 쓰레드에서 imageView에 이미지를 지정한다.
+//                item_image.setImageBitmap(bitmap);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
 
         void onType(String item_type) {
             if (!item_type.equals("1")) {

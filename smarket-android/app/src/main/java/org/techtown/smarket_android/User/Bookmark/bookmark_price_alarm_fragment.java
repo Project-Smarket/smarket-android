@@ -54,6 +54,8 @@ public class bookmark_price_alarm_fragment extends Fragment {
     private Switch alarm_switch;
     private Toolbar toolbar;
 
+
+
     private SharedPreferences userFile;
     private List<BookmarkAlarm> bookmarkAlarmList;
 
