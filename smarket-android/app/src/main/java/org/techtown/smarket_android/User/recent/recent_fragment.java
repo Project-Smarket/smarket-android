@@ -21,7 +21,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import org.techtown.smarket_android.smarketClass.SearchedItem;
-import org.techtown.smarket_android.MainNavigation.AlarmReceiver;
+import org.techtown.smarket_android.Alarm.AlarmReceiver;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.smarketClass.BookmarkAlarm;
 

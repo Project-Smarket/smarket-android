@@ -65,5 +65,14 @@ public class BookmarkAlarm {
     public void setAlarm_check(Boolean alarm_check) {
         this.alarm_check = alarm_check;
     }
+
+    @Override
+    public String toString() {
+        return "BookmarkAlarm{" +
+                "folder_name='" + folder_name + '\'' +
+                ", bookmark_id='" + bookmark_id + '\'' +
+                ", bookmark_price='" + bookmark_price + '\'' +
+                '}';
+    }
 }
 

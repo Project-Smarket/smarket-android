@@ -14,7 +14,7 @@ public class danawaRequest extends StringRequest {
     private Response.ErrorListener errorListener;
 
     public danawaRequest(String url, String detailItem, Response.Listener<String> responseListener, Response.ErrorListener errorListener) throws UnsupportedEncodingException{
-        super(Method.GET, url+ URLEncoder.encode(detailItem, "UTF-8")+"&reviewcount=5", responseListener, errorListener);
+        super(Method.GET, url+ URLEncoder.encode(detailItem, "UTF-8")+"&reviewcount=10", responseListener, errorListener);
         this.responseListener = responseListener;
         this.errorListener = errorListener;
     }

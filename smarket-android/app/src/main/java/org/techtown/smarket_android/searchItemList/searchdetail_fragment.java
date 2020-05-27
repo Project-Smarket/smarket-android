@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -77,6 +78,9 @@ import java.util.Map;
 import static com.android.volley.VolleyLog.TAG;
 
 public class searchdetail_fragment extends Fragment {
+
+    private static ProgressDialog progressDialog;
+
     private ViewGroup viewGroup;
     private Bundle bundle;
     private Toolbar toolbar;
@@ -92,8 +96,6 @@ public class searchdetail_fragment extends Fragment {
     private String item_link = "";
 
     private String item_productType;
-
-    private ProgressDialog progressDialog;
 
     // 북마크
     private bookmark_recyclerview_adapater bookmarkRecyclerviewAdapter;
@@ -123,7 +125,10 @@ public class searchdetail_fragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.search_item_detail, container, false);
-        progressDialog = ProgressDialog.show(getContext(), "", "로딩");
+        //progressDialog = ProgressDialog.show(getContext(), "", "로딩");
+        progressDialog = createProgressDialog(getContext());
+        progressDialog.show();
+
         userFile = getContext().getSharedPreferences("userFile", Context.MODE_PRIVATE);
         get_userFile();
 
@@ -808,5 +813,15 @@ public class searchdetail_fragment extends Fragment {
     private void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(bookmark_folder_name.getWindowToken(), 0);
+    }
+
+    public static ProgressDialog createProgressDialog(Context context) {
+        progressDialog = new ProgressDialog(context);
+        progressDialog.setCancelable(false);
+        progressDialog.getWindow()
+                .setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        progressDialog.setContentView(R.layout.progress_dialog);
+        // dialog.setMessage(Message);
+        return progressDialog;
     }
 }

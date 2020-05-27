@@ -13,7 +13,6 @@ import android.widget.Toast;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import org.techtown.smarket_android.MainNavigation.AlarmReceiver;
 import org.techtown.smarket_android.smarketClass.userInfo;
 
 import java.lang.reflect.Type;

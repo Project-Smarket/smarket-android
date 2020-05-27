@@ -25,6 +25,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -131,25 +132,32 @@ public class newsearch_fragment extends Fragment implements OnBackpressedListene
                     // "검색" 버튼을 누를 경우 start 초기화
                     start = 1;
                     back_check = true;
-                    try {
-                        // 현재 검색된 제품명 저장
-                        searched_item = search_text.getText().toString();
-                        // Appbar 축소
-                        mAppBarLayout.setExpanded(false);
-                        // AppBar 그림자 설정
-                        StateListAnimator stateListAnimator = null;
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                            stateListAnimator = new StateListAnimator();
-                            stateListAnimator.addState(new int[0], ObjectAnimator.ofFloat(mAppBarLayout, "elevation", 16));
-                            mAppBarLayout.setStateListAnimator(stateListAnimator);
-                        }
-                        // 프로그레스바 실행
-                        search_progressBar.setVisibility(View.VISIBLE);
-                        // 검색된 제품명으로 서버에 요청
-                        getJson();
-                    } catch (UnsupportedEncodingException e) {
-
+                    // 현재 검색된 제품명 저장
+                    searched_item = search_text.getText().toString();
+                    // Appbar 축소
+                    mAppBarLayout.setExpanded(false);
+                    // AppBar 그림자 설정
+                    StateListAnimator stateListAnimator = null;
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                        stateListAnimator = new StateListAnimator();
+                        stateListAnimator.addState(new int[0], ObjectAnimator.ofFloat(mAppBarLayout, "elevation", 16));
+                        mAppBarLayout.setStateListAnimator(stateListAnimator);
                     }
+                    // 프로그레스바 실행
+                    search_progressBar.setVisibility(View.VISIBLE);
+                    // 검색된 제품명으로 서버에 요청
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                getJson();
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    },300);
+
                 }
                 return false;
             }

@@ -1,4 +1,4 @@
-package org.techtown.smarket_android.MainNavigation;
+package org.techtown.smarket_android.Alarm;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -170,8 +170,12 @@ public class AlarmReceiver extends BroadcastReceiver {
 
             // 임의 시간으로 분류된 bookmarkAlarmList로 상품 조회
             // 분류된 리스트가 적어도 1개는 있어야 실행
-            if (classifiedList.size() > 0)
+            if (classifiedList.size() > 0){
+                for (int i = 0; i < classifiedList.size(); i++) {
+                    Log.d(TAG, "request_classified_bookmarkAlarmList: " + classifiedList.get(i).toString());
+                }
                 request_get_item_price(classifiedList, context);
+            }
         }
     }
 
@@ -274,8 +278,10 @@ public class AlarmReceiver extends BroadcastReceiver {
                 Map<String, String> params = new HashMap<>();
                 JSONArray jsonArray = new JSONArray();
 
+                Log.d(TAG, "getParams: "+ list.size());
                 for (int i = 0; i < list.size(); i++) {
                     jsonArray.put(Integer.parseInt(list.get(i).getBookmark_id()));
+                    Log.d(TAG, "getParams: " + list.get(i).getBookmark_id());
                 }
                 params.put("id", jsonArray.toString());
 
@@ -352,6 +358,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             public Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
 
+                int mCount = count;
 
                 String item_title_s = "";
                 // item_title이 16자 이상일 경우 글자를 자르고 "..."로 생략
@@ -361,12 +368,13 @@ public class AlarmReceiver extends BroadcastReceiver {
 
                 String pushtitle = "";
                 // 푸쉬 count가 1개일 경우
-                if(count == 1){
+                if(mCount == 1){
                     pushtitle = item_title_s + "의 가격 정보가 변동되었습니다.";
                 }
                 // 푸쉬 count가 2개 이상일 경우
-                else if(count > 1){
-                    pushtitle = item_title_s + "외 " + count + "개의 가격정보가 변동되었습니다.";
+                else if(mCount > 1){
+                    mCount -= 1;
+                    pushtitle = item_title_s + "외 " + mCount + "개의 가격정보가 변동되었습니다.";
                 }
 
                 params.put("pushtitle", pushtitle);

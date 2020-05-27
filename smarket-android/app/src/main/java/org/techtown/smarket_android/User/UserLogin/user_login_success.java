@@ -45,7 +45,7 @@ import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.techtown.smarket_android.MainNavigation.AlarmReceiver;
+import org.techtown.smarket_android.Alarm.AlarmReceiver;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.User.Bookmark.newbookmark_fragment;
 import org.techtown.smarket_android.User.UserInfrom.userinform_fragment;

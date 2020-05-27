@@ -49,7 +49,7 @@
             </intent-filter>
         </receiver>
         -->
-        <receiver android:name=".MainNavigation.AlarmReceiver" />
+        <receiver android:name=".Alarm.AlarmReceiver" />
         <receiver android:name=".Alarm.DeviceBootReceiver"
             android:enabled="true">
             <intent-filter>
