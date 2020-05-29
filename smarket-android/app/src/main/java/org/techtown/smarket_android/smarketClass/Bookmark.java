@@ -2,28 +2,46 @@ package org.techtown.smarket_android.smarketClass;
 
 // bookmark_item_list_adapter에서 적용될 Bookmark_client 클래스 입니다.
 public class Bookmark {
+    private String id;
+    private String user_id;
     private String folder_name;
-    private String bookmark_id;
-    private String bookmark_title;
-    private String bookmark_itemId;
-    private String bookmark_type;
-    private Boolean bookmark_selling;
-    private String bookmark_lprice;
-    private String bookmark_link;
-    private String bookmark_image_url;
-    private BookmarkAlarm bookmarkAlarm ;
+    private boolean item_selling;
+    private boolean item_alarm;
+    private String item_title;
+    private String item_link;
+    private String item_image;
+    private String item_lprice;
+    private String item_id;
+    private String item_type;
 
-    public Bookmark(String bookmark_id, String folder_name, String bookmark_title, String bookmark_itemId, String bookmark_type, Boolean bookmark_selling, String bookmark_lprice, String bookmark_link, String bookmark_image_url, BookmarkAlarm bookmarkAlarm) {
-        this.bookmark_id = bookmark_id;
+    public Bookmark(String id, String user_id, String folder_name, boolean item_selling, boolean item_alarm, String item_title, String item_link, String item_image, String item_lprice, String item_id, String item_type) {
+        this.id = id;
+        this.user_id = user_id;
         this.folder_name = folder_name;
-        this.bookmark_title = bookmark_title;
-        this.bookmark_itemId = bookmark_itemId;
-        this.bookmark_type = bookmark_type;
-        this.bookmark_selling = bookmark_selling;
-        this.bookmark_lprice = bookmark_lprice;
-        this.bookmark_link = bookmark_link;
-        this.bookmark_image_url = bookmark_image_url;
-        this.bookmarkAlarm = bookmarkAlarm;
+        this.item_selling = item_selling;
+        this.item_alarm = item_alarm;
+        this.item_title = item_title;
+        this.item_link = item_link;
+        this.item_image = item_image;
+        this.item_lprice = item_lprice;
+        this.item_id = item_id;
+        this.item_type = item_type;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
     }
 
     public String getFolder_name() {
@@ -34,86 +52,67 @@ public class Bookmark {
         this.folder_name = folder_name;
     }
 
-    public String getBookmark_id() {
-        return bookmark_id;
+    public boolean isItem_selling() {
+        return item_selling;
     }
 
-    public void setBookmark_id(String bookmark_id) {
-        this.bookmark_id = bookmark_id;
+    public void setItem_selling(boolean item_selling) {
+        this.item_selling = item_selling;
     }
 
-    public String getBookmark_title() {
-        return bookmark_title;
+    public boolean isItem_alarm() {
+        return item_alarm;
     }
 
-    public void setBookmark_title(String bookmark_title) {
-        this.bookmark_title = bookmark_title;
+    public void setItem_alarm(boolean item_alarm) {
+        this.item_alarm = item_alarm;
     }
 
-    public String getBookmark_itemId() {
-        return bookmark_itemId;
+    public String getItem_title() {
+        return item_title;
     }
 
-    public void setBookmark_itemId(String bookmark_itemId) {
-        this.bookmark_itemId = bookmark_itemId;
+    public void setItem_title(String item_title) {
+        this.item_title = item_title;
     }
 
-    public String getBookmark_type() {
-        return bookmark_type;
+    public String getItem_link() {
+        return item_link;
     }
 
-    public void setBookmark_type(String bookmark_type) {
-        this.bookmark_type = bookmark_type;
+    public void setItem_link(String item_link) {
+        this.item_link = item_link;
     }
 
-    public Boolean getBookmark_selling() {
-        return bookmark_selling;
+    public String getItem_image() {
+        return item_image;
     }
 
-    public void setBookmark_selling(Boolean bookmark_selling) {
-        this.bookmark_selling = bookmark_selling;
+    public void setItem_image(String item_image) {
+        this.item_image = item_image;
     }
 
-    public String getBookmark_lprice() {
-        return bookmark_lprice;
+    public String getItem_lprice() {
+        return item_lprice;
     }
 
-    public void setBookmark_lprice(String bookmark_lprice) {
-        this.bookmark_lprice = bookmark_lprice;
+    public void setItem_lprice(String item_lprice) {
+        this.item_lprice = item_lprice;
     }
 
-    public String getBookmark_link() {
-        return bookmark_link;
+    public String getItem_id() {
+        return item_id;
     }
 
-    public void setBookmark_link(String bookmark_link) {
-        this.bookmark_link = bookmark_link;
+    public void setItem_id(String item_id) {
+        this.item_id = item_id;
     }
 
-    public String getBookmark_image_url() {
-        return bookmark_image_url;
+    public String getItem_type() {
+        return item_type;
     }
 
-    public void setBookmark_image_url(String bookmark_image_url) {
-        this.bookmark_image_url = bookmark_image_url;
-    }
-
-    public BookmarkAlarm getBookmarkAlarm() {
-        return bookmarkAlarm;
-    }
-
-    public void setBookmarkAlarm(BookmarkAlarm bookmarkAlarm) {
-        this.bookmarkAlarm = bookmarkAlarm;
-    }
-
-    @Override
-    public String toString() {
-        return "Bookmark{" +
-                "folder_name='" + folder_name + '\'' +
-                ", bookmark_id='" + bookmark_id + '\'' +
-                ", bookmark_title='" + bookmark_title + '\'' +
-                ", bookmark_itemId='" + bookmark_itemId + '\'' +
-                '}';
+    public void setItem_type(String item_type) {
+        this.item_type = item_type;
     }
 }
-

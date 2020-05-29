@@ -89,8 +89,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     private bookmark_recyclerview_adapater bookmarkRecyclerviewAdapter;
     private bookmark_dialog bookmarkDialog;
     private List<String> bookmarkFolderList;
-    private int bmfCount = 0;
-    private int addCount;
 
     private EditText bookmark_folder_name;
     private InputMethodManager imm;
@@ -120,10 +118,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         userFile = mContext.getSharedPreferences("userFile", Context.MODE_PRIVATE);
         get_userFile();
 
-        // Request - 서버로부터 북마크 폴더 리스트를 조회
-        bookmarkFolderList = new ArrayList<>();
-        request_bookmarkFolderList();
-
         View cashBtn = view.findViewById(R.id.alarm_btn);
         cashBtn.setVisibility(View.GONE);
 
@@ -146,6 +140,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                 if (user_id == null && access_token == null) {
                     goto_login();
                 } else {
+
+                    // Request - 서버로부터 북마크 폴더 리스트를 조회
+                    bookmarkFolderList = new ArrayList<>();
+                    request_bookmarkFolderList();
+
                     bookmarkRecyclerviewAdapter = new bookmark_recyclerview_adapater(bookmarkFolderList, mActivity);
                     bookmarkDialog = new bookmark_dialog(mActivity, "북마크 폴더 리스트", bookmarkRecyclerviewAdapter, bookmarkFolderList, mClickAddListener);
 
@@ -297,7 +296,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                                 bookmarkFolderList.add(data.getJSONObject(i).getString("folder_name"));
                             }
                         }
-
+                        bookmarkRecyclerviewAdapter.notifyDataSetChanged();
+                        Log.d(TAG, "북마크 폴더 조회 요청: ");
                     } else if (!success)
                         // ** 북마크 조회 실패 시 ** //
                         Toast.makeText(mContext, jsonObject.toString(), Toast.LENGTH_LONG).show();
@@ -388,7 +388,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
     // Request - 서버에 bookmarkFolder 등록 요청
     private void request_add_bookmarkFolder(final String folder_name) {
-        String request_url = mContext.getResources().getString(R.string.bookmarksEndpoint) + "/folders"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        String request_url = mContext.getResources().getString(R.string.bookmarksEndpoint) + "/folder"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.POST, request_url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -423,6 +423,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap();
                 params.put("x-access-token", access_token);
+                return params;
+            }
+
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("user_id", user_id);
+                params.put("folder_name", folder_name);
                 return params;
             }
         };

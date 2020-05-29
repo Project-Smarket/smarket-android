@@ -50,6 +50,7 @@ import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.User.Bookmark.newbookmark_fragment;
 import org.techtown.smarket_android.User.UserInfrom.userinform_fragment;
 import org.techtown.smarket_android.User.recent.recent_fragment;
+import org.techtown.smarket_android.User.recent.retrofit_fragment;
 import org.techtown.smarket_android.smarketClass.userInfo;
 
 import java.io.UnsupportedEncodingException;
@@ -142,7 +143,7 @@ public class user_login_success extends Fragment {
             public void onClick(View v) {
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_layout, recent_fragment.newInstance(),"login");
+                fragmentTransaction.replace(R.id.main_layout, retrofit_fragment.newInstance(),"login");
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             }

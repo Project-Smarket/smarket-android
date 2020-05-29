@@ -79,17 +79,11 @@ public class bookmark_item_list_fragment extends Fragment {
     private List<String> bookmarkFolderList = new ArrayList<>(); // SharedPreference에 저장된 bookmarkFolderList
     private List<BookmarkAlarm> bookmarkAlarmList; // SharedPreference에 저장된 bookmarkAlarmList
 
-
     private EditText bookmark_folder_name; // 추가할 북마크 이름
 
     private RecyclerView recyclerView;// 북마크 아이템 리스트 리사이클러뷰
     private bookmark_item_list_adapter adapter;// 북마크 아이템 리스트 어댑터
-    private List<Bookmark> requestedBookmarkList; // DB에 저장된 북마크의 데이터를 수집하여 저장할 bookmarkList
-    private List<Bookmark> matchedBookmarkList; // Spinner에서 선택된 folder_name과 일치하는 bookmark만 저장하는 bookmarkList
     private List<Bookmark> bookmarkList;
-    private InputMethodManager imm; // 키보드 설정
-
-    private static final String SETTINGS_BOOKMARK_JSON = "settings_bookmark_json"; // 북마크 폴더 리스트 가져오기 위한 SharedPreference Data Key
 
     // ** 로그인 및 토큰 정보 ** //
     private SharedPreferences userFile;
@@ -105,15 +99,15 @@ public class bookmark_item_list_fragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.bookmark_main, container, false);
-        userFile = getContext().getSharedPreferences("userFile", MODE_PRIVATE);
-        imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        requestedBookmarkList = new ArrayList<>();
+
 
         get_userFile(); // SharedPreference의 user 데이터 수집
-        get_bookmarkAlarmList(); // SharedPreference의 bookmarkAlarmList 데이터 수집
-        get_bookmarkFolderList();// SharedPreference의 bookmarkFolderList 데이터 수집
 
         set_bookmarkList_recyclerView(); // 북마크리스트 리사이클러 뷰 설정
+        // Request - 서버로부터 북마크 폴더 리스트를 조회
+        request_bookmarkFolderList();
+
+
         set_bookmark_spinner(); // 북마크 스피너 설정
 
         set_plus_btn(); // 북마크 추가 버튼 설정
@@ -155,6 +149,7 @@ public class bookmark_item_list_fragment extends Fragment {
 
     // 북마크리스트 리사이클러 뷰 설정
     private void set_bookmarkList_recyclerView() {
+        bookmarkList = new ArrayList<>();
         // 아이템 줄간격 설정
         RecyclerDecoration spaceDecoration = new RecyclerDecoration(20);
 
@@ -162,6 +157,7 @@ public class bookmark_item_list_fragment extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.addItemDecoration(spaceDecoration);
+
     }
 
     // 북마크 폴더 스피너 설정
@@ -175,9 +171,9 @@ public class bookmark_item_list_fragment extends Fragment {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 // 중복 실행 방지
                 if (iCurrentSelection != i) {
-                    // 현재 로그인된 user_id 와 스피너에 선택된 folder_name이 일치하는 북마크만 가져옴
-                    bookmarkList = new ArrayList<>();
-                    Log.d(TAG, "request: request");
+                    // 현재 로그인된 user_i 와 스피너에 선택된 folder_name이 일치하는 북마크만 가져옴
+
+
                     set_bookmarkList(spinnerAdapter.getItem(i).toString());
                 }
                 iCurrentSelection = i;
@@ -235,9 +231,7 @@ public class bookmark_item_list_fragment extends Fragment {
                         // ** 북마크 폴더 조회 성공 시 ** //
                         for (int i = 0; i < data.length(); i++) {
                             // user_id가 일치하는 북마크 폴더만 가져온다
-                            if (user_id.equals(data.getJSONObject(i).getString("user_id"))) {
-                                bookmarkFolderList.add(data.getJSONObject(i).getString("folder_name"));
-                            }
+                            bookmarkFolderList.add(data.getJSONObject(i).getString("folder_name"));
                         }
 
                     } else if (!success)
@@ -505,7 +499,7 @@ public class bookmark_item_list_fragment extends Fragment {
     // bookmarkList에서 bookmark_id와 일치하는 bookmark 삭제
     private void remove_bookmark_in_bookmarkList(String bookmark_id) {
         for (int i = 0; i < bookmarkList.size(); i++) {
-            if (bookmarkList.get(i).getBookmark_id().equals(bookmark_id)) {
+            if (bookmarkList.get(i).getId().equals(bookmark_id)) {
                 bookmarkList.remove(i);
                 break;
             }
@@ -651,8 +645,7 @@ public class bookmark_item_list_fragment extends Fragment {
                             for (int j = 0; j < bookmarkAlarmList.size(); j++) {
                                 if (bookmarkAlarmList.get(j).getBookmark_id().equals(id)) {
                                     bookmarkAlarm = bookmarkAlarmList.get(j);
-                                    Bookmark bookmark_client = new Bookmark(id, folder_name, item_title, item_id, item_type, item_selling, item_lprice, item_link, item_image, bookmarkAlarm);
-                                    bookmarkList.add(bookmark_client);
+
                                     adapter.notifyDataSetChanged();
                                     break;
                                 }
@@ -826,6 +819,7 @@ public class bookmark_item_list_fragment extends Fragment {
 
     // userFile에 저장된 user_id 와 access_token 값 가져오기
     private void get_userFile() {
+        userFile = getContext().getSharedPreferences("userFile", MODE_PRIVATE);
         user_id = userFile.getString("user_id", null);
         access_token = userFile.getString("access_token", null);
         refresh_token = userFile.getString("refresh_token", null);
@@ -833,7 +827,8 @@ public class bookmark_item_list_fragment extends Fragment {
 
     // 키보드 입력 후 엔터 입력시 키보드 창 내림
     private void hideKeyboard() {
-        imm.hideSoftInputFromWindow(bookmark_folder_name.getWindowToken(), 0);
+        InputMethodManager imm; // 키보드 설정
+        imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(bookmark_folder_name.getWindowToken(), 0);
     }
 }

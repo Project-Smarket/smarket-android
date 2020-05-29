@@ -42,8 +42,8 @@ import java.util.List;
 
 public class bookmark_price_alarm_fragment extends Fragment {
 
-    public static bookmark_price_alarm_fragment newInstance(bookmark_item_list_adapter.bmViewHolder bmViewHolder) {
-        return new bookmark_price_alarm_fragment(bmViewHolder);
+    public static bookmark_price_alarm_fragment newInstance() {
+        return new bookmark_price_alarm_fragment();
     }
 
 
@@ -68,11 +68,6 @@ public class bookmark_price_alarm_fragment extends Fragment {
     private BookmarkAlarm this_bookmarkAlarm; // 선택된 북마크알람 객체
     private int this_bookmarkAlarm_index; // 선택된 북마크 인덱스
 
-    bookmark_price_alarm_fragment(bookmark_item_list_adapter.bmViewHolder bmViewHolder) {
-        this_bookmark_id = bmViewHolder.getBookmark_id();
-        this_alarm_check = bmViewHolder.getAlarm_check();
-        this_alarm_time = bmViewHolder.getAlarm_time();
-    }
 
     @Nullable
     @Override
