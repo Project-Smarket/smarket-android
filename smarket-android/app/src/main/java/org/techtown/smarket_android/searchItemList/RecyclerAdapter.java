@@ -34,6 +34,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
@@ -44,6 +45,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.smarket_android.smarketClass.BookmarkAlarm;
@@ -87,6 +89,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     private bookmark_recyclerview_adapater bookmarkRecyclerviewAdapter;
     private bookmark_dialog bookmarkDialog;
     private List<String> bookmarkFolderList;
+    private int bmfCount = 0;
+    private int addCount;
+
     private EditText bookmark_folder_name;
     private InputMethodManager imm;
     //private static final String SETTINGS_BOOKMARK_JSON = "settings_bookmark_json"; // SharedPreference 북마크 리스트 Data Key
@@ -97,16 +102,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     private String access_token;
     private String refresh_token;
 
-    // ** 북마크 정보 ** //
-    private String folder_name;
-    private String item_title;
-    private String item_id;
-    private String item_type;
-
-    final private int alarm_time = 3;
-    private Boolean alarm_check;
-
-    private List<BookmarkAlarm> bookmarkAlarmList;
 
     public RecyclerAdapter(Context context, Activity activity, List<SearchedItem> itemList) {
         mContext = context;
@@ -121,14 +116,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         // LayoutInflater를 이용하여 전 단계에서 만들었던 item.xml을 inflate 시킵니다.
         // return 인자는 ViewHolder 입니다.
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_list_item, parent, false);
-        imm = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+
         userFile = mContext.getSharedPreferences("userFile", Context.MODE_PRIVATE);
         get_userFile();
-        // SharedPreference의 bookmarkFolderList 데이터를 가져옴
-        get_bookmarkFolderList();
 
-        // SharedPreference의 bookmarkAlarmList 데이터를 가져옴
-        get_bookmarkAlarmList();
+        // Request - 서버로부터 북마크 폴더 리스트를 조회
+        bookmarkFolderList = new ArrayList<>();
+        request_bookmarkFolderList();
 
         View cashBtn = view.findViewById(R.id.alarm_btn);
         cashBtn.setVisibility(View.GONE);
@@ -136,59 +130,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         final ItemViewHolder itemViewHolder = new ItemViewHolder(view);
 
         return itemViewHolder;
-    }
-
-    // SharedPreference의 bookmarkFolderList 데이터를 가져옴
-    private void get_bookmarkFolderList() {
-        if (userFile.getString("bookmarkFolderList", null) != null) {
-            String bookmarkFolder = userFile.getString("bookmarkFolderList", null);
-            Type listType = new TypeToken<ArrayList<String>>() {
-            }.getType();
-            bookmarkFolderList = new GsonBuilder().create().fromJson(bookmarkFolder, listType);
-            Log.d("Get bookmarkFolderList", "myBookmarks: Complete Getting bookmarkFolderList");
-        } else {
-            bookmarkFolderList = new ArrayList<>();
-            save_bookmarkFolderList();
-        }
-    }
-
-    // 수정된 bookmarkFolderList를 저장
-    private void save_bookmarkFolderList() {
-        // List<String> 클래스 객체를 String 객체로 변환
-        Type listType = new TypeToken<ArrayList<String>>() {
-        }.getType();
-        String json = new GsonBuilder().create().toJson(bookmarkFolderList, listType);
-
-        // 스트링 객체로 변환된 데이터를 bookmarkFolderList에 저장
-        SharedPreferences.Editor editor = userFile.edit();
-        editor.putString("bookmarkFolderList", json);
-        editor.apply();
-    }
-
-    // SharedPreference의 bookmarkAlarmList 데이터를 가져옴
-    private void get_bookmarkAlarmList() {
-        // userFile에 myBookmarks 요소 유효성 검사 - 유효하지 않을 경우 myBookmarks 데이터 생성(한 번만 실행)
-        if (userFile.getString("bookmarkAlarmList", null) == null) {
-            bookmarkAlarmList = new ArrayList<>(); // bookmarks 리스트 생성
-
-            // gson을 통해 타 클래스 객체를 스트링으로 변경
-            Gson gson = new GsonBuilder().create();
-            Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {
-            }.getType();
-            String json = gson.toJson(bookmarkAlarmList, listType);
-
-            // 스트링 객체로 변환된 데이터를 myBookmarks에 저장
-            SharedPreferences.Editor editor = userFile.edit();
-            editor.putString("bookmarkAlarmList", json);
-            editor.apply();
-            Log.d("New bookmarkAlarmList", "bookmarkAlarmList: Complete setting bookmarkAlarmList");
-        } else {
-            String bookmarkAlarm = userFile.getString("bookmarkAlarmList", null);
-            Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {
-            }.getType();
-            bookmarkAlarmList = new GsonBuilder().create().fromJson(bookmarkAlarm, listType);
-            Log.d("Get bookmarkAlarmList", "bookmarkAlarmList: Complete Getting bookmarkAlarmList");
-        }
     }
 
     @Override
@@ -208,17 +149,22 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                     bookmarkRecyclerviewAdapter = new bookmark_recyclerview_adapater(bookmarkFolderList, mActivity);
                     bookmarkDialog = new bookmark_dialog(mActivity, "북마크 폴더 리스트", bookmarkRecyclerviewAdapter, bookmarkFolderList, mClickAddListener);
 
+                    // 북마크 폴더 선택 시 서버로 북마크 등록 요청
                     bookmarkRecyclerviewAdapter.setOnItemClickListener(new bookmark_recyclerview_adapater.OnItemClickListener() {
                         @Override
                         public void onItemClick(View v, int position, List<String> list) {
 
-                            folder_name = list.get(position); // 북마크 폴더 이름
-                            item_title = String.valueOf(holder.item_title.getText());
-                            item_id = holder.item_id;
-                            item_type = holder.item_type;
+                            List<String> paramsData = new ArrayList<>();
+                            paramsData.add(list.get(position)); // 0 : folder_name
+                            paramsData.add(holder.item_id);// 1 : item_id
+                            paramsData.add(holder.item_title.getText().toString()); // 2 : item_title
+                            paramsData.add(holder.item_data[1]); // 3 : item_link
+                            paramsData.add(holder.item_image_url); // 4 : item_image
+                            paramsData.add(String.valueOf(holder.item_lprice));// 5 : item_lprice
+                            paramsData.add(holder.item_type);// 6 : item_type
 
                             // DB에 북마크 등록 요청
-                            request_bookmark(holder);
+                            set_alarm(paramsData);
                             bookmarkDialog.dismiss();
 
                         }
@@ -234,86 +180,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         fragmentManager.beginTransaction().replace(R.id.main_layout, user_login_fragment.newInstance()).commit();
     }
 
-    Button.OnClickListener mClickAddListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            bookmarkDialog.dismiss();
-            folder_add();
-        }
-    };
-
-    // 북마크 폴더 추가 기능
-    private void folder_add() {
-
-        // 북마크 폴더 리스트 다이얼로그
-        LayoutInflater inflater = mActivity.getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.custom_dialog_edittext, null);
-        bookmark_folder_name = dialogView.findViewById(R.id.dialog_editText);
-        bookmark_folder_name.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                    hideKeyboard();
-                }
-                return false;
-            }
-        });
-
-
-        // 새 폴더 이름 입력 다이얼로그
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setView(dialogView);
-        builder.setTitle("북마크 폴더 추가");
-        builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String folder_name = bookmark_folder_name.getText().toString();
-
-                if (folder_name.equals("")) {
-                    Toast.makeText(mContext, "폴더명을 입력해주세요", Toast.LENGTH_LONG).show();
-                } else if (!folder_name.equals("")) {
-                    char except_enter[] = folder_name.toCharArray();
-                    if (except_enter[except_enter.length - 1] == '\n') {
-
-                        char result_char[] = new char[except_enter.length - 1];
-                        System.arraycopy(except_enter, 0, result_char, 0, except_enter.length - 1);
-                        folder_name = String.valueOf(result_char);
-
-                    } // 한글 입력 후 엔터시 개행문자 발생하는 오류 처리
-                    bookmarkFolderList.add(folder_name); // 북마크 폴더 추가
-                    bookmarkRecyclerviewAdapter.notifyDataSetChanged(); // 어댑터 갱신
-                    save_bookmarkFolderList();
-                    //updateBookmarkFolderList(mContext, SETTINGS_BOOKMARK_JSON, bookmarkFolderList);
-                }
-
-                bookmarkDialog.show();
-            }
-        });
-
-        AlertDialog dialog = builder.create();
-        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE); // 다이얼로그 생성시 EditText 활성화 1
-        dialog.show();
-        if (bookmark_folder_name.requestFocus())
-            ((InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(bookmark_folder_name, 0); // 다이얼로그 생성시 EditText 활성화 2
-
-    }
-
     @Override
     public int getItemCount() {
         // RecyclerView의 총 개수 입니다.
         return itemList.size();
     }
-
-
-    void addItem(SearchedItem data) {
-        // 외부에서 item을 추가시킬 함수입니다.
-        itemList.add(data);
-    }
-
-    public void clear() {
-        itemList.clear();
-    }
-
 
     // RecyclerView의 핵심인 ViewHolder 입니다.
     // 여기서 subView를 setting 해줍니다.
@@ -400,43 +271,168 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         }
     }
 
-/*    // 북마크 폴더 리스트 업데이트
-    private void updateBookmarkFolderList(Context context, String key, List<String> values) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor editor = prefs.edit();
-        JSONArray a = new JSONArray();
-        for (int i = 0; i < values.size(); i++) {
-            a.put(values.get(i));
+    Button.OnClickListener mClickAddListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            bookmarkDialog.dismiss();
+            folder_add();
         }
-        if (!values.isEmpty()) {
-            editor.putString(key, a.toString());
-        } else {
-            editor.putString(key, null);
-        }
-        editor.apply();
-    }
+    };
 
-    // 폴더 리스트 데이터 가져오기
-    private ArrayList<String> getStringArrayPref(Context context, String key) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String json = prefs.getString(key, null);
-        ArrayList<String> urls = new ArrayList<String>();
-        if (json != null) {
-            try {
-                JSONArray a = new JSONArray(json);
-                for (int i = 0; i < a.length(); i++) {
-                    String url = a.optString(i);
-                    urls.add(url);
+    // Request - 서버로부터 북마크 폴더 리스트를 조회
+    private void request_bookmarkFolderList() {
+        String reques_url = mContext.getResources().getString(R.string.bookmarksEndpoint) + "/folder"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, reques_url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    boolean success = jsonObject.getBoolean("success");
+                    JSONArray data = jsonObject.getJSONArray("data");
+                    if (success) {
+                        // ** 북마크 폴더 조회 성공 시 ** //
+                        for (int i = 0; i < data.length(); i++) {
+                            // user_id가 일치하는 북마크 폴더만 가져온다
+                            if (user_id.equals(data.getJSONObject(i).getString("user_id"))) {
+                                bookmarkFolderList.add(data.getJSONObject(i).getString("folder_name"));
+                            }
+                        }
+
+                    } else if (!success)
+                        // ** 북마크 조회 실패 시 ** //
+                        Toast.makeText(mContext, jsonObject.toString(), Toast.LENGTH_LONG).show();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // ** 북마크 등록 실패시 ** //
+                // Error Handling - request 오류(토큰만료) 처리
+                String request_type = "request_bookmarkFolderLIst";
+                // error_handling(error, request_type, holder);
             }
         }
-        return urls;
-    }*/
+        ) {
 
-    // 북마크 등록 요청 기능
-    private void request_bookmark(final ItemViewHolder holder) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap();
+                params.put("x-access-token", access_token);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+        requestQueue.add(stringRequest);
+    }
+
+    // 북마크 폴더 추가 기능
+    private void folder_add() {
+
+        // 북마크 폴더 리스트 다이얼로그
+        LayoutInflater inflater = mActivity.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.custom_dialog_edittext, null);
+        bookmark_folder_name = dialogView.findViewById(R.id.dialog_editText);
+        bookmark_folder_name.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                    hideKeyboard();
+                }
+                return false;
+            }
+        });
+
+
+        // 새 폴더 이름 입력 다이얼로그
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setView(dialogView);
+        builder.setTitle("북마크 폴더 추가");
+        builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String folder_name = bookmark_folder_name.getText().toString();
+
+                if (folder_name.equals("")) {
+                    Toast.makeText(mContext, "폴더명을 입력해주세요", Toast.LENGTH_LONG).show();
+                }// 한글 입력 후 엔터시 개행문자 발생하는 오류 처리
+                else if (!folder_name.equals("")) {
+                    char except_enter[] = folder_name.toCharArray();
+                    if (except_enter[except_enter.length - 1] == '\n') {
+
+                        char result_char[] = new char[except_enter.length - 1];
+                        System.arraycopy(except_enter, 0, result_char, 0, except_enter.length - 1);
+                        folder_name = String.valueOf(result_char);
+
+                    }
+                    // Request - 서버에 bookmarkFolder 등록 요청
+                    request_add_bookmarkFolder(folder_name);
+
+                }
+
+                bookmarkDialog.show();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE); // 다이얼로그 생성시 EditText 활성화 1
+        dialog.show();
+        if (bookmark_folder_name.requestFocus())
+            ((InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(bookmark_folder_name, 0); // 다이얼로그 생성시 EditText 활성화 2
+
+    }
+
+    // Request - 서버에 bookmarkFolder 등록 요청
+    private void request_add_bookmarkFolder(final String folder_name) {
+        String request_url = mContext.getResources().getString(R.string.bookmarksEndpoint) + "/folders"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, request_url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    boolean success = jsonObject.getBoolean("success");
+                    if (success) {
+                        // ** 북마크 폴더 등록 성공 시 ** //
+                        bookmarkFolderList.add(folder_name); // 로컬 : bookmarkFolderList에 폴더 추가
+                        bookmarkRecyclerviewAdapter.notifyDataSetChanged(); // 어댑터 갱신
+                    } else if (!success)
+                        // ** 북마크 폴더 등록 실패 시 ** //
+                        Toast.makeText(mContext, jsonObject.toString(), Toast.LENGTH_LONG).show();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // ** 북마크 등록 실패시 ** //
+                // Error Handling - request 오류(토큰만료) 처리
+                String request_type = "request_bookmarkFolderLIst";
+                // error_handling(error, request_type, holder);
+            }
+        }
+        ) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap();
+                params.put("x-access-token", access_token);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+        requestQueue.add(stringRequest);
+    }
+
+    // Reques - 서버로 bookmark 등록 요청
+    private void request_add_bookmark(final List<String> paramsData) {
         String reques_url = mContext.getResources().getString(R.string.bookmarksEndpoint); // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.POST, reques_url, new Response.Listener<String>() {
             @Override
@@ -445,16 +441,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     boolean success = jsonObject.getBoolean("success");
-                    JSONObject data = jsonObject.getJSONObject("data");
-                    String id = data.getString("id");
                     if (success) {
                         // ** 북마크 등록 성공 시 ** //
-                        Toast.makeText(mContext, folder_name + " 폴더에 북마크 등록 되었습니다.", Toast.LENGTH_LONG).show();
-                        // 최저가 알림 설정
-                        String item_id = holder.item_id;
-                        //String item_price = String.valueOf(holder.item_lprice);
-                        String item_price = "1000";
-                        set_lpriceAlarm(id, item_price);
+                        Toast.makeText(mContext, paramsData.get(0) + " 폴더에 북마크가 등록 되었습니다.", Toast.LENGTH_LONG).show();
+
                     } else if (!success)
                         // ** 북마크 등록 실패 시 ** //
                         Toast.makeText(mContext, jsonObject.toString(), Toast.LENGTH_LONG).show();
@@ -469,8 +459,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             public void onErrorResponse(VolleyError error) {
                 // ** 북마크 등록 실패시 ** //
                 // Error Handling - request 오류(토큰만료) 처리
-                String request_type = "request_bookmark";
-                error_handling(error, request_type, holder);
+                String request_type = "request_add_bookmark";
+                error_handling(error, request_type, paramsData);
             }
         }
         ) {
@@ -478,7 +468,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap();
-                Log.d("TOKEN", "token: " + access_token);
                 params.put("x-access-token", access_token);
                 return params;
             }
@@ -486,10 +475,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("user_id", user_id);
-                params.put("folder_name", folder_name);
-                params.put("item_title", item_title);
-                params.put("item_id", item_id);
-                params.put("item_type", item_type);
+                params.put("folder_name", paramsData.get(0));
+                params.put("item_id", paramsData.get(1));
+                params.put("item_title", paramsData.get(2));
+                params.put("item_link", paramsData.get(3));
+                params.put("item_image", paramsData.get(4));
+                params.put("item_lprice", paramsData.get(5));
+                params.put("item_type", paramsData.get(6));
+                params.put("item_alarm", paramsData.get(7));
                 return params;
             }
         };
@@ -499,9 +492,33 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
     }
 
+    // 북마크 등록 시 alarm 설정
+    private void set_alarm(final List<String> paramsData) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
+                .setTitle("최저가 알람 등록")
+                .setMessage("최저가 알람을 등록하시겠습니까?")
+                .setPositiveButton("등록", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        paramsData.add("true");
+                        request_add_bookmark(paramsData);
+                    }
+                })
+                .setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        paramsData.add("false");
+                        request_add_bookmark(paramsData);
+                    }
+                })
+                .setCancelable(false);
+        builder.create();
+        builder.show();
+
+    }
+
     // Error Handling - request 오류(bookmark 등록 오류) 처리 - 실패 시 access-token 갱신 요청
-    private void error_handling(VolleyError error, String request_type,
-                                final ItemViewHolder holder) {
+    private void error_handling(VolleyError error, String request_type, List<String> paramsData) {
         NetworkResponse response = error.networkResponse;
         if (error instanceof AuthFailureError && response != null) {
             try {
@@ -516,7 +533,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
                 // access-token 만료 시 refresh-token을 통해 토큰 갱신
                 if (name.equals("TokenExpiredError") && msg.equals("jwt expired"))
-                    refresh_accessToken(request_type, holder);
+                    refresh_accessToken(request_type, paramsData);
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -525,7 +542,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     }
 
     // access-token 갱신 요청 후 폴더 목록 재요청 - 실패 시 logout
-    private void refresh_accessToken(final String request_type, final ItemViewHolder holder) {
+    private void refresh_accessToken(final String request_type, final List<String> paramsData) {
         Log.d(TAG, "refresh_accessToken: access-token을 갱신합니다.");
         String url = mContext.getString(R.string.authEndpoint) + "/refresh"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
@@ -544,7 +561,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                         switch (request_type) {
                             // 북마크 등록 재요청
                             case "request_bookmark":
-                                request_bookmark(holder);
+                                request_add_bookmark(paramsData);
                                 break;
                         }
 
@@ -628,49 +645,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         editor.apply();
     }
 
-    // 북마크 등록 시 클라이언트에 북마크 저장
-    private void set_lpriceAlarm(final String id, final String item_price) {
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
-                .setTitle("최저가 알람 등록")
-                .setMessage("최저가 알람을 등록하시겠습니까?")
-                .setPositiveButton("등록", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        alarm_check = true;
-                        save_bookmarkAlarmList(id, item_price);
-                    }
-                })
-                .setNegativeButton("아니오", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        alarm_check = false;
-                        save_bookmarkAlarmList(id, item_price);
-
-                    }
-                })
-                .setCancelable(false);
-        builder.create();
-        builder.show();
-
-    }
-
-    private void save_bookmarkAlarmList(String id, String item_price) {
-        BookmarkAlarm bookmarkAlarm = new BookmarkAlarm(user_id, folder_name, id, item_price, alarm_time, alarm_check);
-        bookmarkAlarmList.add(bookmarkAlarm);
-
-        // List<BookmarkAlarm> 클래스 객체를 String 객체로 변환
-        Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {
-        }.getType();
-        String json = new GsonBuilder().create().toJson(bookmarkAlarmList, listType);
-
-        // 스트링 객체로 변환된 데이터를 bookmarkAlarmList(SharedPreference) 저장
-        SharedPreferences.Editor editor = userFile.edit();
-        editor.putString("bookmarkAlarmList", json);
-        editor.commit();
-        Log.d("SAVE", "save_data: saved bookmarkAlarmList");
-    }
-
     // userFile에 저장된 user_id 와 access_token 값 가져오기
     private void get_userFile() {
         user_id = userFile.getString("user_id", null);
@@ -680,6 +654,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
     // 키보드 입력 후 엔터 입력시 키보드 창 내림
     private void hideKeyboard() {
+        imm = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(bookmark_folder_name.getWindowToken(), 0);
     }
 

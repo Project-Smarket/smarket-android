@@ -72,6 +72,8 @@ public class bookmark_item_list_fragment extends Fragment {
 
     private ViewGroup viewGroup;
 
+    private Context mContext = getContext();
+
     private Spinner bookmark_spinner; // 북마크 스피너
     private ArrayAdapter spinnerAdapter; // 스피너 어댑터
     private List<String> bookmarkFolderList = new ArrayList<>(); // SharedPreference에 저장된 bookmarkFolderList
@@ -219,18 +221,55 @@ public class bookmark_item_list_fragment extends Fragment {
         }
     }
 
-    // SharedPreference의 bookmarkFolderList 데이터를 가져온다
-    private void get_bookmarkFolderList() {
-        if (userFile.getString("bookmarkFolderList", null) != null) {
-            String bookmarkFolder = userFile.getString("bookmarkFolderList", null);
-            Type listType = new TypeToken<ArrayList<String>>() {
-            }.getType();
-            bookmarkFolderList = new GsonBuilder().create().fromJson(bookmarkFolder, listType);
-            Log.d("Get bookmarkFolderList", "myBookmarks: Complete Getting bookmarkFolderList");
-        } else {
-            bookmarkFolderList = new ArrayList<>();
-            save_bookmarkFolderList();
+    // Request - 서버로부터 북마크 폴더 리스트를 조회
+    private void request_bookmarkFolderList() {
+        String reques_url = mContext.getResources().getString(R.string.bookmarksEndpoint) + "/folder"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, reques_url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    boolean success = jsonObject.getBoolean("success");
+                    JSONArray data = jsonObject.getJSONArray("data");
+                    if (success) {
+                        // ** 북마크 폴더 조회 성공 시 ** //
+                        for (int i = 0; i < data.length(); i++) {
+                            // user_id가 일치하는 북마크 폴더만 가져온다
+                            if (user_id.equals(data.getJSONObject(i).getString("user_id"))) {
+                                bookmarkFolderList.add(data.getJSONObject(i).getString("folder_name"));
+                            }
+                        }
+
+                    } else if (!success)
+                        // ** 북마크 조회 실패 시 ** //
+                        Toast.makeText(mContext, jsonObject.toString(), Toast.LENGTH_LONG).show();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // ** 북마크 등록 실패시 ** //
+                // Error Handling - request 오류(토큰만료) 처리
+                String request_type = "request_bookmarkFolderLIst";
+                // error_handling(error, request_type, holder);
+            }
         }
+        ) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap();
+                params.put("x-access-token", access_token);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+        requestQueue.add(stringRequest);
     }
 
     // SharedPreference에 bookmarkFolderList 데이터 저장

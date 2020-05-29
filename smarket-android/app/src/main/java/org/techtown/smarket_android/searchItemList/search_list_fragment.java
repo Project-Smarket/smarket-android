@@ -202,7 +202,6 @@ public class search_list_fragment extends Fragment {
                 Bundle bundle = setBundle(query);
                 slf.setArguments(bundle);
                 assert getFragmentManager() != null;
-                listClear();
                 adapter.notifyDataSetChanged();
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.main_layout, slf).addToBackStack(null).commitAllowingStateLoss();
@@ -264,10 +263,6 @@ public class search_list_fragment extends Fragment {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    public void listClear() {
-        adapter.clear();
     }
 
 

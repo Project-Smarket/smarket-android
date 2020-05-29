@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.techtown.smarket_android">
-
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.techtown.smarket_android">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/> <!--재부팅 시 알람 재등록-->
     <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- 인스턴스 ID 자동 초기화 방지 -->
     <meta-data
@@ -54,7 +51,7 @@
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
-            </intent-filter>zz
+            </intent-filter>
         </receiver>
 
         <service
