@@ -147,7 +147,8 @@ public class user_login_fragment extends Fragment {
                         JSONObject data = jsonObject.getJSONObject("data");
                         String access_token = data.getString("accessToken"); // userFile에 저장할 access_token
                         String refresh_token = data.getString("refreshToken");
-                        set_userFile(user_id, access_token, refresh_token); // userFile에 user_id와 access_token을 저장
+                        String nickname = data.getString("nickname");
+                        set_userFile(user_id, access_token, refresh_token, nickname); // userFile에 user_id와 access_token을 저장
 
                         createToken(access_token, getContext());
 
@@ -294,12 +295,13 @@ public class user_login_fragment extends Fragment {
         userFile = getActivity().getSharedPreferences("userFile", MODE_PRIVATE);
     } // user의 로그인 정보를 젖아하는 userFile 생성
 
-    private void set_userFile(String user_id, String access_token, String refresh_token) {
+    private void set_userFile(String user_id, String access_token, String refresh_token, String nickname) {
         SharedPreferences.Editor editor = userFile.edit();
         editor.putString("user_id", user_id);
         editor.putString("access_token", access_token);
         editor.putString("refresh_token", refresh_token);
-        editor.commit(); //완료한다.
+        editor.putString("user_nickname", nickname);
+        editor.apply(); //완료한다.
     } // 로그인 시 user의 아이디와 토큰 정보를 저장
 
     private void validate_user() {
