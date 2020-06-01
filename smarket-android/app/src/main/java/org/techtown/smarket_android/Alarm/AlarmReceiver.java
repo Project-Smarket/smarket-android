@@ -152,54 +152,58 @@ public class AlarmReceiver extends BroadcastReceiver {
                         // ** 북마크 리스트 조회 성공시 ** //
                         // 토큰에 user_id에 대한 정보가 들어 있기 때문에 별도 아이디검사를 하지 않아도됨
                         // bookmark_id로 조회된 상품의 데이터 정보를 가져온다
-                        JSONArray data_array = jsonObject.getJSONArray("data");
-                        int count = 0;
-                        String noti_title = "";
-                        for (int i = 0; i < data_array.length(); i++) {
-                            JSONObject data = (JSONObject) data_array.get(i);
+                        // data의 null 값 검
+                        if (!jsonObject.isNull("data")) {
+                            JSONArray data_array = jsonObject.getJSONArray("data");
+                            int count = 0;
+                            String noti_title = "";
+                            for (int i = 0; i < data_array.length(); i++) {
+                                JSONObject data = (JSONObject) data_array.get(i);
 
-                            int lprice_diff = data.getInt("lprice_diff");
+                                int lprice_diff = data.getInt("lprice_diff");
 
 
-                            // 갱신된 가격이 다른 경우만 alarm을 저장
-                            if (lprice_diff != 0) {
-                                String id = data.getString("id");
-                                String user_id = data.getString("user_id");
-                                String folder_name = data.getString("folder_name");
-                                Boolean item_selling = data.getBoolean("item_selling");
-                                String item_alarm = String.valueOf(data.getBoolean("item_alarm"));
-                                String item_title = data.getString("item_title");
-                                String item_link = data.getString("item_link");
-                                String item_image = data.getString("item_image");
-                                String item_lprice = data.getString("item_lprice");
-                                String item_mallName = data.getString("item_mallname");
-                                String item_id = data.getString("item_id");
-                                String item_type = data.getString("item_type");
-                                String item_brand = data.getString("item_brand");
-                                String item_maker = data.getString("item_maker");
-                                String item_category1 = data.getString("item_category1");
-                                String item_category2 = data.getString("item_category2");
-                                String item_category3 = data.getString("item_category3");
-                                String item_category4 = data.getString("item_category4");
-                                Alarm alarm = new Alarm(id,user_id,folder_name,item_selling,item_alarm,item_title,item_link,item_image,item_lprice,item_mallName
-                                        , item_id,item_type, item_brand, item_maker, item_category1, item_category2, item_category3, item_category4, lprice_diff, alarm_date);
+                                // 갱신된 가격이 다른 경우만 alarm을 저장
+                                if (lprice_diff != 0) {
+                                    String id = data.getString("id");
+                                    String user_id = data.getString("user_id");
+                                    String folder_name = data.getString("folder_name");
+                                    Boolean item_selling = data.getBoolean("item_selling");
+                                    String item_alarm = String.valueOf(data.getBoolean("item_alarm"));
+                                    String item_title = data.getString("item_title");
+                                    String item_link = data.getString("item_link");
+                                    String item_image = data.getString("item_image");
+                                    String item_lprice = data.getString("item_lprice");
+                                    String item_mallName = data.getString("item_mallname");
+                                    String item_id = data.getString("item_id");
+                                    String item_type = data.getString("item_type");
+                                    String item_brand = data.getString("item_brand");
+                                    String item_maker = data.getString("item_maker");
+                                    String item_category1 = data.getString("item_category1");
+                                    String item_category2 = data.getString("item_category2");
+                                    String item_category3 = data.getString("item_category3");
+                                    String item_category4 = data.getString("item_category4");
+                                    Alarm alarm = new Alarm(id, user_id, folder_name, item_selling, item_alarm, item_title, item_link, item_image, item_lprice, item_mallName
+                                            , item_id, item_type, item_brand, item_maker, item_category1, item_category2, item_category3, item_category4, lprice_diff, alarm_date);
 
-                                // alarmList에 새로운 alarm을 저장 - stack 형식으로 저장
-                                add_alarmList(alarm);
-                                // 가격 변동된 알람의 개수를 증가
-                                count += 1;
+                                    // alarmList에 새로운 alarm을 저장 - stack 형식으로 저장
+                                    alarmList.add(0, alarm);
 
-                                // 변동된 상품 중 가장 마지막 상품의 title 저장
-                                noti_title = item_title;
+                                    // 가격 변동된 알람의 개수를 증가
+                                    count += 1;
+
+                                    // 변동된 상품 중 가장 마지막 상품의 title 저장
+                                    noti_title = item_title;
+                                }
+                                // SharedPreference의 alarmList를 갱신
+                                save_alarmList();
                             }
-                            // SharedPreference의 alarmList를 갱신
-                            save_alarmList();
-                        }
 
-                        // 가격 변동된 알람의 개수와 title로 notification 요청
-                        if (count >= 1 && !noti_title.equals(""))
-                            request_notification(noti_title, count, context);
-
+                            // 가격 변동된 알람의 개수와 title로 notification 요청
+                            if (count >= 1 && !noti_title.equals(""))
+                                request_notification(noti_title, count, context);
+                        } else
+                            Log.d(TAG, "onResponse: 데이터 없음");
                     } else if (!success) {
                         // ** 북마크 조회 실패시 ** //
                         Toast.makeText(context, jsonObject.toString(), Toast.LENGTH_LONG).show();
@@ -233,18 +237,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         requestQueue.add(stringRequest);
-    }
-
-
-    // alarmList에 동일한 id의 alarm이 있으면 삭제
-    private void add_alarmList(Alarm alarm) {
-        for (int i = 0; i < alarmList.size(); i++) {
-            if (alarmList.get(i).getId().equals(alarm.getId())) {
-                alarmList.remove(i);
-                break;
-            }
-        }
-        alarmList.add(0, alarm);
     }
 
 
@@ -352,7 +344,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     // access-token 갱신 요청 후 폴더 목록 재요청 - 실패 시 logout
-    private void refresh_accessToken(final String request_type,  final Context context, @Nullable final String noti_title, @Nullable final int count) {
+    private void refresh_accessToken(final String request_type, final Context context, @Nullable final String noti_title, @Nullable final int count) {
         Log.d(TAG, "refresh_accessToken: access-token을 갱신합니다.");
         String url = context.getString(R.string.authEndpoint) + "/refresh"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
@@ -461,8 +453,9 @@ public class AlarmReceiver extends BroadcastReceiver {
     // SharedPreference의 alarmList 데이터를 가져온다
     private void get_alarmList() {
         // 저장된 alarmList 있을 경우
-        if (userFile.getString("alarmList", null) != null) {
-            String key_alarmList = userFile.getString("alarmList", null);
+        String key = user_id + "/alarmList";
+        if (userFile.getString(key, null) != null) {
+            String key_alarmList = userFile.getString(key, null);
             Type listType = new TypeToken<ArrayList<Alarm>>() {
             }.getType();
             alarmList = new GsonBuilder().create().fromJson(key_alarmList, listType);
@@ -476,6 +469,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     // SharedPreference에 alarmList 데이터 저장
     private void save_alarmList() {
+        String key = user_id + "/alarmList";
         // List<Alarm> 클래스 객체를 String 객체로 변환
         Type listType = new TypeToken<ArrayList<Alarm>>() {
         }.getType();
@@ -483,7 +477,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         // 스트링 객체로 변환된 데이터를 alarmList에 저장
         SharedPreferences.Editor editor = userFile.edit();
-        editor.putString("alarmList", json);
+        editor.putString(key, json);
         editor.apply();
     }
 
