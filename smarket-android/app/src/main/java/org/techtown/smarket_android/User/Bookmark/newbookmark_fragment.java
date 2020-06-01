@@ -16,15 +16,12 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.appbar.AppBarLayout;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -49,14 +46,13 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.techtown.smarket_android.DTO_Class.DTO;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
-import org.techtown.smarket_android.searchItemList.RecyclerDecoration;
-import org.techtown.smarket_android.smarketClass.Bookmark;
-import org.techtown.smarket_android.smarketClass.BookmarkAlarm;
+import org.techtown.smarket_android.Search.RecyclerDecoration;
+import org.techtown.smarket_android.DTO_Class.Bookmark;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Type;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,7 +81,7 @@ public class newbookmark_fragment extends Fragment {
 
     private RecyclerView recyclerView;// 북마크 아이템 리스트 리사이클러뷰
     private bookmark_item_list_adapter adapter;// 북마크 아이템 리스트 어댑터
-    private List<Bookmark> bookmarkList;
+    private List<DTO> bookmarkList;
 
     // ** 로그인 및 토큰 정보 ** //
     private SharedPreferences userFile;
@@ -114,9 +110,6 @@ public class newbookmark_fragment extends Fragment {
         request_bookmarkFolderList();
 
 
-
-
-
         set_plus_btn(); // 북마크 추가 버튼 설정
         set_trashcan_btn(); // 북마크 삭제 버튼 설정
 
@@ -131,63 +124,6 @@ public class newbookmark_fragment extends Fragment {
         });
         return viewGroup;
     }
-
-    /*// SharedPreference의 bookmarkAlarmList 데이터를 가져온다
-    private void get_bookmarkAlarmList() {
-        // 저장된 bookmarkAlarmList가 있을 경우
-        if (userFile.getString("bookmarkAlarmList", null) != null) {
-            String bookmarkAlarm = userFile.getString("bookmarkAlarmList", null);
-            Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {
-            }.getType();
-            bookmarkAlarmList = new GsonBuilder().create().fromJson(bookmarkAlarm, listType);
-
-            Log.d("Get bookmarkAlarmList", "bookmarkAlarmList: Complete Getting bookmarkAlarmList");
-        }// 저장된 bookmarkAlarmList가 없을 경우
-        else {
-            bookmarkAlarmList = new ArrayList<>();
-            save_bookmarkAlarmList();
-        }
-    }
-
-    // SharedPreference의 bookmarkFolderList 데이터를 가져온다
-    private void get_bookmarkFolderList() {
-        if (userFile.getString("bookmarkFolderList", null) != null) {
-            String bookmarkFolder = userFile.getString("bookmarkFolderList", null);
-            Type listType = new TypeToken<ArrayList<String>>() {
-            }.getType();
-            bookmarkFolderList = new GsonBuilder().create().fromJson(bookmarkFolder, listType);
-            Log.d("Get bookmarkFolderList", "myBookmarks: Complete Getting bookmarkFolderList");
-        } else {
-            bookmarkFolderList = new ArrayList<>();
-            save_bookmarkFolderList();
-        }
-    }
-
-    // SharedPreference에 bookmarkAlarmList 데이터 저장
-    private void save_bookmarkAlarmList() {
-        // List<BookmarkAlarm> 클래스 객체를 String 객체로 변환
-        Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {
-        }.getType();
-        String json = new GsonBuilder().create().toJson(bookmarkAlarmList, listType);
-
-        // 스트링 객체로 변환된 데이터를 bookmarkFolderList에 저장
-        SharedPreferences.Editor editor = userFile.edit();
-        editor.putString("bookmarkAlarmList", json);
-        editor.apply();
-    }
-
-    // SharedPreference에 bookmarkFolderList 데이터 저장
-    private void save_bookmarkFolderList() {
-        // List<String> 클래스 객체를 String 객체로 변환
-        Type listType = new TypeToken<ArrayList<String>>() {
-        }.getType();
-        String json = new GsonBuilder().create().toJson(bookmarkFolderList, listType);
-
-        // 스트링 객체로 변환된 데이터를 bookmarkFolderList에 저장
-        SharedPreferences.Editor editor = userFile.edit();
-        editor.putString("bookmarkFolderList", json);
-        editor.apply();
-    }*/
 
     // Request - 서버로부터 북마크 폴더 리스트를 조회
     private void request_bookmarkFolderList() {
@@ -486,8 +422,6 @@ public class newbookmark_fragment extends Fragment {
 
                     if (success) {
                         // ** 북마크 삭제 성공시 ** //
-                        //bookmarkAlarmList에서 bookmark_id와 일치하는 북마크 삭제
-                        remove_bookmark_in_bookmarkAlarmList(bookmark_id);
 
                         // bookmarkList에서 bookmark_id와 일치하는 bookmark 삭제
                         remove_bookmark_in_bookmarkList(bookmark_id);
@@ -522,36 +456,6 @@ public class newbookmark_fragment extends Fragment {
         requestQueue.add(stringRequest);
     }
 
-    // bookmarkAlarmList에서 bookmark_id와 일치하는 북마크 삭제
-    private void remove_bookmark_in_bookmarkAlarmList(String bookmark_id) {
-        List<BookmarkAlarm> bookmarkAlarmList;
-        if (userFile.getString("bookmarkAlarmList", null) != null) {
-            String bookmarkAlarm = userFile.getString("bookmarkAlarmList", null);
-            Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {
-            }.getType();
-            bookmarkAlarmList = new GsonBuilder().create().fromJson(bookmarkAlarm, listType);
-            Log.d("Get bookmarkAlarmList", "bookmarkAlarmList: Complete Getting bookmarkAlarmList");
-        } else {
-            bookmarkAlarmList = null;
-        }
-
-        for (int i = 0; i < bookmarkAlarmList.size(); i++) {
-            if (bookmarkAlarmList.get(i).getBookmark_id().equals(bookmark_id)) {
-                bookmarkAlarmList.remove(i);
-                break;
-            }
-        }
-
-        // List<Bookmark> 클래스 객체를 String 객체로 변환
-        Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {
-        }.getType();
-        String json = new GsonBuilder().create().toJson(bookmarkAlarmList, listType);
-
-        // 스트링 객체로 변환된 데이터를 myBookmarks에 저장
-        SharedPreferences.Editor editor = userFile.edit();
-        editor.putString("bookmarkAlarmList", json);
-        editor.commit();
-    }
 
     // bookmarkList에서 bookmark_id와 일치하는 bookmark 삭제
     private void remove_bookmark_in_bookmarkList(String bookmark_id) {
@@ -666,15 +570,22 @@ public class newbookmark_fragment extends Fragment {
                             String id = data.getJSONObject(i).getString("id");
                             String folder_name = data.getJSONObject(i).getString("folder_name");
                             Boolean item_selling = data.getJSONObject(i).getBoolean("item_selling");
-                            Boolean item_alarm = data.getJSONObject(i).getBoolean("item_alarm");
+                            String item_alarm = String.valueOf(data.getJSONObject(i).getBoolean("item_alarm"));
                             String item_title = data.getJSONObject(i).getString("item_title");
                             String item_link = data.getJSONObject(i).getString("item_link");
                             String item_image = data.getJSONObject(i).getString("item_image");
                             String item_lprice = data.getJSONObject(i).getString("item_lprice");
+                            String item_mallName = data.getJSONObject(i).getString("item_mallname");
                             String item_id = data.getJSONObject(i).getString("item_id");
                             String item_type = data.getJSONObject(i).getString("item_type");
-                            Bookmark bookmark = new Bookmark(id, user_id, folder_name, item_selling, item_alarm, item_title, item_link, item_image, item_lprice,
-                                    item_id, item_type);
+                            String item_brand = data.getJSONObject(i).getString("item_brand");
+                            String item_maker = data.getJSONObject(i).getString("item_maker");
+                            String item_category1 = data.getJSONObject(i).getString("item_category1");
+                            String item_category2 = data.getJSONObject(i).getString("item_category2");
+                            String item_category3 = data.getJSONObject(i).getString("item_category3");
+                            String item_category4 = data.getJSONObject(i).getString("item_category4");
+                            DTO bookmark = new DTO(id,user_id,folder_name,item_selling,item_alarm,item_title,item_link,item_image,item_lprice,item_mallName
+                            , item_id,item_type, item_brand, item_maker, item_category1, item_category2, item_category3, item_category4);
                             bookmarkList.add(bookmark);
                         }
                         adapter.notifyDataSetChanged();

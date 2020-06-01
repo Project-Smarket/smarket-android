@@ -20,10 +20,9 @@ import androidx.fragment.app.Fragment;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import org.techtown.smarket_android.smarketClass.SearchedItem;
+import org.techtown.smarket_android.DTO_Class.DTO;
 import org.techtown.smarket_android.Alarm.AlarmReceiver;
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.smarketClass.BookmarkAlarm;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -91,17 +90,8 @@ public class recent_fragment extends Fragment {
         check_alarmList_user_id = viewGroup.findViewById(R.id.check_alarmlist_user_id);
         check_alarmList_item_title = viewGroup.findViewById(R.id.check_alarmlist_item_title);
 
-        set_bookmarkAlarmList();
         set_bookmarkFolderList();
         set_alamrList();
-
-        remove_bookmarkAlarmList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                remove();
-                set_bookmarkAlarmList();
-            }
-        });
 
         remove_bookmarkList.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -177,11 +167,11 @@ public class recent_fragment extends Fragment {
     }
 
     private void set_alamrList() {
-        List<SearchedItem> alarmList;
+        List<DTO> alarmList;
         userFile = getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE);
         if (userFile.getString("alarmList", null) != null) {
             String myBookmarks = userFile.getString("alarmList", null);
-            Type listType = new TypeToken<ArrayList<SearchedItem>>() {
+            Type listType = new TypeToken<ArrayList<DTO>>() {
             }.getType();
             alarmList = new GsonBuilder().create().fromJson(myBookmarks, listType);
         } else {
@@ -191,24 +181,6 @@ public class recent_fragment extends Fragment {
         String set1 = "";
         String set2 = "";
         String set3 = "";
-        if (alarmList == null) {
-            check_alarmList.setText("알림이 없습니다");
-            check_alarmList_user_id.setText("알림이 없습니다");
-            check_alarmList_item_title.setText("알림이 없습니다");
-        } else {
-            for (int i = 0; i < alarmList.size(); i++) {
-                set1 += alarmList.get(i).getId() + "\n";
-            }
-            check_alarmList.setText(set1);
-            for (int i = 0; i < alarmList.size(); i++) {
-                set2 += alarmList.get(i).getUser_id() + "\n";
-            }
-            check_alarmList_user_id.setText(set2);
-            for (int i = 0; i < alarmList.size(); i++) {
-                set3 += alarmList.get(i).getItem_title() + "\n";
-            }
-            check_alarmList_item_title.setText(set3);
-        }
     }
 
     private void remove() {
@@ -225,59 +197,6 @@ public class recent_fragment extends Fragment {
         editor.apply();
     }
 
-    private void set_bookmarkAlarmList() {
-
-        List<BookmarkAlarm> bookmarks;
-        userFile = getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE);
-        if (userFile.getString("bookmarkAlarmList", null) != null) {
-            String myBookmarks = userFile.getString("bookmarkAlarmList", null);
-            Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {
-            }.getType();
-            bookmarks = new GsonBuilder().create().fromJson(myBookmarks, listType);
-            Log.d("Get myBookmarks", "bookmarkAlarmList: Complete Getting bookmarkAlarmList");
-        } else {
-            bookmarks = null;
-        }
-
-        String set1 = "";
-        String set2 = "";
-        String set3 = "";
-        String set4 = "";
-        String set5 = "";
-        if (bookmarks == null) {
-            bookmarkAlarmList_id.setText("북마크가 없습니다");
-            bookmarkAlarmList_foldername.setText("북마크가 없습니다");
-            bookmarkAlarmList_userId.setText("북마크가 없습니다");
-            bookmarkAlarmList_price.setText("북마크가 없습니다");
-            bookmarkAlarmList_time.setText("북마크가 없습니다");
-        } else {
-            for (int i = 0; i < bookmarks.size(); i++) {
-                set1 += bookmarks.get(i).getBookmark_id() + "\n";
-            }
-            bookmarkAlarmList_id.setText(set1);
-
-            for (int i = 0; i < bookmarks.size(); i++) {
-                set2 += bookmarks.get(i).getFolder_name() + "\n";
-            }
-            bookmarkAlarmList_foldername.setText(set2);
-
-            for (int i = 0; i < bookmarks.size(); i++) {
-                set3 += bookmarks.get(i).getUser_id() + "\n";
-            }
-            bookmarkAlarmList_userId.setText(set3);
-
-            for (int i = 0; i < bookmarks.size(); i++) {
-                set4 += bookmarks.get(i).getBookmark_price() + "\n";
-            }
-            bookmarkAlarmList_price.setText(set4);
-
-            for (int i = 0; i < bookmarks.size(); i++) {
-                set5 += bookmarks.get(i).getAlarm_time() + "\n";
-            }
-            bookmarkAlarmList_time.setText(set5);
-
-        }
-    }
 
     private void set_bookmarkFolderList() {
         List<String> bookmarkFolderList;

@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -41,8 +40,6 @@ import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONObject;
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.smarketClass.BookmarkAlarm;
-import org.techtown.smarket_android.smarketClass.userInfo;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
@@ -81,7 +78,6 @@ public class user_register_fragment extends Fragment {
     private boolean validate_nickname = false;
 
     private SharedPreferences userFile;
-    private List<userInfo> userInfoList;
 
     @Nullable
     @Override
@@ -382,34 +378,6 @@ public class user_register_fragment extends Fragment {
         queue.add(registerRequest);
     }
 
-    // SharedPreference의 userInfoList 데이터를 가져온다
-    private void get_userInfoList() {
-        userFile = getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE);
-        // 저장된 userInfoList가 있을 경우
-        if (userFile.getString("userInfoList", null) != null) {
-            String info = userFile.getString("userInfoList", null);
-            Type listType = new TypeToken<ArrayList<userInfo>>() {
-            }.getType();
-            userInfoList = new GsonBuilder().create().fromJson(info, listType);
-
-        }// 저장된 userInfoList가 없을 경우
-        else {
-            userInfoList = new ArrayList<>();
-            save_userInfoList();
-        }
-    }
-
-    private void save_userInfoList() {
-        // List<userInfo> 클래스 객체를 String 객체로 변환
-        Type listType = new TypeToken<ArrayList<userInfo>>() {}.getType();
-        String json = new GsonBuilder().create().toJson(userInfoList, listType);
-
-        // 스트링 객체로 변환된 데이터를 userInfoList에 저장
-        SharedPreferences.Editor editor = userFile.edit();
-        editor.putString("userInfoList", json);
-        editor.apply();
-
-    }
 
     @Override
     public void onStop() {

@@ -44,7 +44,7 @@
             android:adjustViewBounds="true"
             android:src="@drawable/smarket_cat" />
 
-        <org.techtown.smarket_android.searchItemList.ClearEditText
+        <org.techtown.smarket_android.Search.ClearEditText
             android:id="@+id/search_value"
             android:layout_width="match_parent"
             android:layout_height="40dp"

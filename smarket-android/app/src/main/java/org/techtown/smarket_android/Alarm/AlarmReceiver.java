@@ -35,8 +35,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
-import org.techtown.smarket_android.smarketClass.BookmarkAlarm;
-import org.techtown.smarket_android.smarketClass.SearchedItem;
+import org.techtown.smarket_android.DTO_Class.Alarm;
 import org.techtown.smarket_android.R;
 
 import java.io.UnsupportedEncodingException;
@@ -64,26 +63,20 @@ public class AlarmReceiver extends BroadcastReceiver {
     private String refresh_token;
     private String device_token;
 
-    private List<BookmarkAlarm> bookmarkAlarmList;
-    private List<BookmarkAlarm> myBookmarkAlarmList;
-    private List<SearchedItem> alarmList;
+    private List<Alarm> alarmList;
 
     private String alarm_date;
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        alarmList = new ArrayList<>();
+
+        // SharedPreference의 user 정보 가져옴
         get_userFile(context);
 
-        // 저장된 bookmarkAlarmList 데이터를 가져옴
-        get_bookmarkAlarmList();
-
-        // user_id가 일치하고 alarm_check:true인 bookmarkAlarm을 가져옴
-        get_myBookmarkAlarmList();
-
-        // 저장된 alarmList 데이터를 가져옴
+        // SharedPreference의 alarmList 정보 가져옴
         get_alarmList();
+
 
         Calendar calendar = Calendar.getInstance();
 
@@ -94,48 +87,34 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 
         Toast.makeText(context, String.valueOf(hour), Toast.LENGTH_SHORT).show();
-        int selection;
-        switch (hour) {
-            case 10:
-                selection = 0;
-                break;
-            case 20:
-                selection = 1;
-                break;
-            case 30:
-                selection = 2;
-                break;
-            case 40:
-                selection = 3;
-                break;
-            default:
-                selection = 4;
-                break;
-        }
-        Log.d(TAG, "selection: " + selection);
 
-        // 설정된 selection으로 가격 시간별 상품 분류 및 가격 조회 요청
-        request_classified_bookmarkAlarmList(selection, context);
+        // 가격 조회 요청
+        request_get_item_lprice(context);
 
+
+        // 알람 시간과 alarmmanager를 재설정합니다.
+        set_time(context, intent);
+
+    }
+
+    private void set_time(Context context, Intent intent) {
+        Calendar calendar = Calendar.getInstance();
         // 알람 10분 - 오후 12시
-        if (calendar.get(Calendar.SECOND) >= 0 && calendar.get(Calendar.SECOND) < 10) {
-            calendar.set(Calendar.SECOND, 10);
+        if (calendar.get(Calendar.SECOND) >= 0 && calendar.get(Calendar.SECOND) < 15) {
+            calendar.set(Calendar.SECOND, 15);
         }
         // 알람 20분 - 오후 3시
-        else if (calendar.get(Calendar.SECOND) >= 10 && calendar.get(Calendar.SECOND) < 20) {
-            calendar.set(Calendar.SECOND, 20);
+        else if (calendar.get(Calendar.SECOND) >= 15 && calendar.get(Calendar.SECOND) < 30) {
+            calendar.set(Calendar.SECOND, 30);
         }
         // 알람 30분 - 오후 6시
-        else if (calendar.get(Calendar.SECOND) >= 20 && calendar.get(Calendar.SECOND) < 30) {
-            calendar.set(Calendar.SECOND, 30);
+        else if (calendar.get(Calendar.SECOND) >= 30 && calendar.get(Calendar.SECOND) < 45) {
+            calendar.set(Calendar.SECOND, 45);
         } // 알람 40분 - 오후 9시
-        else if (calendar.get(Calendar.SECOND) >= 30 && calendar.get(Calendar.SECOND) < 40) {
-            calendar.set(Calendar.SECOND, 40);
-        } else {
+        else if (calendar.get(Calendar.SECOND) >= 45 && calendar.get(Calendar.SECOND) < 60) {
             calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) + 1);
-            calendar.set(Calendar.SECOND, 10);
+            calendar.set(Calendar.SECOND, 0);
         }
-
 
         // 설정된 시간으로 alarmManager 재설정
         set_alarmManager(calendar, context, intent);
@@ -158,39 +137,10 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
     }
 
-
-    // bookmarkAlarm의 시간에 따라 list 분류
-    // selection : 0 - 오후 12시
-    // selection : 1 - 오후 3시
-    // selection : 2 - 오후 6시
-    // selection : 3 - 오후 9시
-    // selection : 4 - 분류 안함
-    private void request_classified_bookmarkAlarmList(int selection, Context context) {
-
-        // 설정된 selection으로 가격 시간별 상품 분류
-        if (selection != 4 && myBookmarkAlarmList != null) {
-            List<BookmarkAlarm> classifiedList = new ArrayList<>();
-            for (int i = 0; i < myBookmarkAlarmList.size(); i++) {
-                if (myBookmarkAlarmList.get(i).getAlarm_time() == selection) {
-                    classifiedList.add(myBookmarkAlarmList.get(i));
-                }
-            }
-
-            // 임의 시간으로 분류된 bookmarkAlarmList로 상품 조회
-            // 분류된 리스트가 적어도 1개는 있어야 실행
-            if (classifiedList.size() > 0){
-                for (int i = 0; i < classifiedList.size(); i++) {
-                    Log.d(TAG, "request_classified_bookmarkAlarmList: " + classifiedList.get(i).toString());
-                }
-                request_get_item_price(classifiedList, context);
-            }
-        }
-    }
-
     // Request - 최저가 알림 설정된 상품의 가격 재조회 요청
-    private void request_get_item_price(final List<BookmarkAlarm> list, final Context context) {
+    private void request_get_item_lprice(final Context context) {
         String url = context.getString(R.string.bookmarksEndpoint) + "/lprice"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 JSONObject jsonObject = null;
@@ -203,57 +153,52 @@ public class AlarmReceiver extends BroadcastReceiver {
                         // 토큰에 user_id에 대한 정보가 들어 있기 때문에 별도 아이디검사를 하지 않아도됨
                         // bookmark_id로 조회된 상품의 데이터 정보를 가져온다
                         JSONArray data_array = jsonObject.getJSONArray("data");
-                        String item_title = "";
                         int count = 0;
+                        String noti_title = "";
                         for (int i = 0; i < data_array.length(); i++) {
                             JSONObject data = (JSONObject) data_array.get(i);
-                            Log.d(TAG, "onResponse: " + data.toString());
-                            String id = data.getString("id");
-                            String item_lprice = data.getString("item_lprice");
 
-                            // 북마크 등록된 가격
-                            int past_price = Integer.parseInt(list.get(i).getBookmark_price());
-                            // 새로 갱신된 가격
-                            int updated_price = Integer.parseInt(item_lprice);
+                            int lprice_diff = data.getInt("lprice_diff");
 
-                            // 갱신된 가격이 다른 경우
-                            if (past_price != updated_price) {
-                                count++;
-                                // 갱신된 가격이 더 낮은 경우
-                                String alarm_type = "";
-                                if (past_price > updated_price) {
-                                    updated_price = past_price - updated_price;
-                                    alarm_type = "하락";
-                                }
-                                // 갱신된 가격이 더 높은 경우
-                                else if (past_price < updated_price) {
-                                    updated_price = updated_price - past_price;
-                                    alarm_type = "상승";
-                                }
-                                String title = data.getString("item_title");
-                                item_title = removeTag(title);
+
+                            // 갱신된 가격이 다른 경우만 alarm을 저장
+                            if (lprice_diff != 0) {
+                                String id = data.getString("id");
+                                String user_id = data.getString("user_id");
+                                String folder_name = data.getString("folder_name");
+                                Boolean item_selling = data.getBoolean("item_selling");
+                                String item_alarm = String.valueOf(data.getBoolean("item_alarm"));
+                                String item_title = data.getString("item_title");
+                                String item_link = data.getString("item_link");
+                                String item_image = data.getString("item_image");
+                                String item_lprice = data.getString("item_lprice");
+                                String item_mallName = data.getString("item_mallname");
                                 String item_id = data.getString("item_id");
                                 String item_type = data.getString("item_type");
-                                String item_image = data.getString("item_image");
-                                String item_mallName = data.getString("item_link");
-                                String updated_price_string = String.valueOf(updated_price);
+                                String item_brand = data.getString("item_brand");
+                                String item_maker = data.getString("item_maker");
+                                String item_category1 = data.getString("item_category1");
+                                String item_category2 = data.getString("item_category2");
+                                String item_category3 = data.getString("item_category3");
+                                String item_category4 = data.getString("item_category4");
+                                Alarm alarm = new Alarm(id,user_id,folder_name,item_selling,item_alarm,item_title,item_link,item_image,item_lprice,item_mallName
+                                        , item_id,item_type, item_brand, item_maker, item_category1, item_category2, item_category3, item_category4, lprice_diff, alarm_date);
 
-                                SearchedItem alarm = new SearchedItem(user_id, id, item_title, item_id, item_type, item_lprice, item_image, item_mallName,
-                                        alarm_type, updated_price_string, alarm_date);
-                                // 갱신된 가격으로 북마크알람의 가격 수정
-                                edit_bookmarkAlarmList(id, item_lprice);
-                                Log.d(TAG, "alarm: " + alarm.toString());
                                 // alarmList에 새로운 alarm을 저장 - stack 형식으로 저장
                                 add_alarmList(alarm);
+                                // 가격 변동된 알람의 개수를 증가
+                                count += 1;
 
+                                // 변동된 상품 중 가장 마지막 상품의 title 저장
+                                noti_title = item_title;
                             }
-                            // 수정된 bookmarkAlarmList 저장
-                            save_bookmarkAlarmList();
-                            // 수정된 alarmList 저장
+                            // SharedPreference의 alarmList를 갱신
                             save_alarmList();
                         }
-                        if(count>=1)
-                        request_notification(item_title, count, context);
+
+                        // 가격 변동된 알람의 개수와 title로 notification 요청
+                        if (count >= 1 && !noti_title.equals(""))
+                            request_notification(noti_title, count, context);
 
                     } else if (!success) {
                         // ** 북마크 조회 실패시 ** //
@@ -264,10 +209,10 @@ public class AlarmReceiver extends BroadcastReceiver {
 
                     e.printStackTrace();
                     Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
-                    Log.d(TAG, "JSONexception: " +e);
+                    Log.d(TAG, "JSONexception: " + e);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Log.d(TAG, "exception: " +e);
+                    Log.d(TAG, "exception: " + e);
                 }
             }
         }, new Response.ErrorListener() {
@@ -275,7 +220,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show();
                 String request_type = "request_get_item_price";
-                error_handling(error, request_type, list, null, 0, context);
+                error_handling(error, request_type, context, null, 0);
             }
         }
         ) {
@@ -284,38 +229,15 @@ public class AlarmReceiver extends BroadcastReceiver {
                 params.put("x-access-token", access_token);
                 return params;
             }
-
-            public Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<>();
-                JSONArray jsonArray = new JSONArray();
-
-                Log.d(TAG, "getParams: "+ list.size());
-                for (int i = 0; i < list.size(); i++) {
-                    jsonArray.put(Integer.parseInt(list.get(i).getBookmark_id()));
-                    Log.d(TAG, "getParams: " + list.get(i).getBookmark_id());
-                }
-                params.put("id", jsonArray.toString());
-
-                return params;
-            }
         };
 
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         requestQueue.add(stringRequest);
     }
 
-    // 갱신된 가격으로 북마크알람의 가격 수정
-    private void edit_bookmarkAlarmList(String id, String item_price) {
-        for (int i = 0; i < bookmarkAlarmList.size(); i++) {
-            if (bookmarkAlarmList.get(i).getBookmark_id().equals(id)) {
-                bookmarkAlarmList.get(i).setBookmark_price(item_price);
-                break;
-            }
-        }
-    }
 
     // alarmList에 동일한 id의 alarm이 있으면 삭제
-    private void add_alarmList(SearchedItem alarm) {
+    private void add_alarmList(Alarm alarm) {
         for (int i = 0; i < alarmList.size(); i++) {
             if (alarmList.get(i).getId().equals(alarm.getId())) {
                 alarmList.remove(i);
@@ -327,7 +249,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 
     // Request - 가격 변동된 제품의 푸쉬 알림 요청
-    private void request_notification(final String item_title, final int count, final Context context) {
+    private void request_notification(final String noti_title, final int count, final Context context) {
         String url = context.getString(R.string.fcmEndpoint) + "/send"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
@@ -355,7 +277,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show();
                 String request_type = "request_notification";
-                error_handling(error, request_type, null, item_title, count, context);
+                error_handling(error, request_type, context, noti_title, count);
             }
         }
         ) {
@@ -371,21 +293,22 @@ public class AlarmReceiver extends BroadcastReceiver {
 
                 int mCount = count;
 
-                String item_title_s = "";
+                String noti_title_s = "";
                 // item_title이 16자 이상일 경우 글자를 자르고 "..."로 생략
-                if(item_title.length()>=16){
-                    item_title_s = item_title.substring(0,16) + "...";
-                }
+                if (noti_title.length() >= 16) {
+                    noti_title_s = noti_title.substring(0, 16) + "...";
+                } else
+                    noti_title_s = noti_title;
 
                 String pushtitle = "";
                 // 푸쉬 count가 1개일 경우
-                if(mCount == 1){
-                    pushtitle = item_title_s + "의 가격 정보가 변동되었습니다.";
+                if (mCount == 1) {
+                    pushtitle = noti_title_s + "의 가격 정보가 변동되었습니다.";
                 }
                 // 푸쉬 count가 2개 이상일 경우
-                else if(mCount > 1){
+                else if (mCount > 1) {
                     mCount -= 1;
-                    pushtitle = item_title_s + "외 " + mCount + "개의 가격정보가 변동되었습니다.";
+                    pushtitle = noti_title_s + "외 " + mCount + "개의 가격정보가 변동되었습니다.";
                 }
 
                 params.put("pushtitle", pushtitle);
@@ -404,8 +327,8 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     // Error Handling - request 오류(제품 가격 정보 조회) 처리 - 실패 시 access-token 갱신 요청
-    private void error_handling(VolleyError error, String request_type, @Nullable List<BookmarkAlarm> list,
-                                @Nullable String item_title, @Nullable int count, Context context) {
+    private void error_handling(VolleyError error, String request_type, Context context,
+                                @Nullable String noti_title, @Nullable int count) {
         NetworkResponse response = error.networkResponse;
         if (error instanceof AuthFailureError && response != null) {
             try {
@@ -420,7 +343,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
                 // access-token 만료 시 refresh-token을 통해 토큰 갱신
                 if (name.equals("TokenExpiredError") && msg.equals("jwt expired"))
-                    refresh_accessToken(request_type, list, item_title, count, context);
+                    refresh_accessToken(request_type, context, noti_title, count);
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -429,8 +352,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     // access-token 갱신 요청 후 폴더 목록 재요청 - 실패 시 logout
-    private void refresh_accessToken(final String request_type, @Nullable final List<BookmarkAlarm> list,
-                                     @Nullable final String item_title, @Nullable final int count, final Context context) {
+    private void refresh_accessToken(final String request_type,  final Context context, @Nullable final String noti_title, @Nullable final int count) {
         Log.d(TAG, "refresh_accessToken: access-token을 갱신합니다.");
         String url = context.getString(R.string.authEndpoint) + "/refresh"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
@@ -449,10 +371,10 @@ public class AlarmReceiver extends BroadcastReceiver {
                         switch (request_type) {
                             // 북마크 삭제 재요청
                             case "request_get_item_price":
-                                request_get_item_price(list, context);
+                                request_get_item_lprice(context);
                                 break;
                             case "request_notification":
-                                request_notification(item_title, count, context);
+                                request_notification(noti_title, count, context);
                                 break;
                         }
 
@@ -482,7 +404,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                         // refresh-token 만료되어 logout
                         if (name.equals("TokenExpiredError") && msg.equals("jwt expired"))
                             null_userFile();
-                            //logout(context);
+                        //logout(context);
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
@@ -540,10 +462,10 @@ public class AlarmReceiver extends BroadcastReceiver {
     private void get_alarmList() {
         // 저장된 alarmList 있을 경우
         if (userFile.getString("alarmList", null) != null) {
-            String bookmarkAlarm = userFile.getString("alarmList", null);
-            Type listType = new TypeToken<ArrayList<SearchedItem>>() {
+            String key_alarmList = userFile.getString("alarmList", null);
+            Type listType = new TypeToken<ArrayList<Alarm>>() {
             }.getType();
-            alarmList = new GsonBuilder().create().fromJson(bookmarkAlarm, listType);
+            alarmList = new GsonBuilder().create().fromJson(key_alarmList, listType);
 
         }// 저장된 alarmList 없을 경우
         else {
@@ -554,8 +476,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     // SharedPreference에 alarmList 데이터 저장
     private void save_alarmList() {
-        // List<SearchedItem> 클래스 객체를 String 객체로 변환
-        Type listType = new TypeToken<ArrayList<SearchedItem>>() {
+        // List<Alarm> 클래스 객체를 String 객체로 변환
+        Type listType = new TypeToken<ArrayList<Alarm>>() {
         }.getType();
         String json = new GsonBuilder().create().toJson(alarmList, listType);
 
@@ -563,46 +485,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         SharedPreferences.Editor editor = userFile.edit();
         editor.putString("alarmList", json);
         editor.apply();
-    }
-
-    // SharedPreference의 bookmarkAlarmList 데이터를 가져온다
-    private void get_bookmarkAlarmList() {
-        // 저장된 bookmarkAlarmList가 있을 경우
-        if (userFile.getString("bookmarkAlarmList", null) != null) {
-            String bookmarkAlarm = userFile.getString("bookmarkAlarmList", null);
-            Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {
-            }.getType();
-            bookmarkAlarmList = new GsonBuilder().create().fromJson(bookmarkAlarm, listType);
-
-            Log.d("Get bookmarkAlarmList", "bookmarkAlarmList: Complete Getting bookmarkAlarmList");
-        }// 저장된 bookmarkAlarmList가 없을 경우
-        else {
-            bookmarkAlarmList = new ArrayList<>();
-            save_bookmarkAlarmList();
-        }
-    }
-
-    // SharedPreference에 bookmarkAlarmList 데이터 저장
-    private void save_bookmarkAlarmList() {
-        // List<BookmarkAlarm> 클래스 객체를 String 객체로 변환
-        Type listType = new TypeToken<ArrayList<BookmarkAlarm>>() {
-        }.getType();
-        String json = new GsonBuilder().create().toJson(bookmarkAlarmList, listType);
-
-        // 스트링 객체로 변환된 데이터를 bookmarkFolderList에 저장
-        SharedPreferences.Editor editor = userFile.edit();
-        editor.putString("bookmarkAlarmList", json);
-        editor.apply();
-    }
-
-    // 현재 로그인한 user_id와 일치하고 alarm_check이 True인 bookmarkAlarm만 조회
-    private void get_myBookmarkAlarmList() {
-        myBookmarkAlarmList = new ArrayList<>();
-        for (int i = 0; i < bookmarkAlarmList.size(); i++) {
-            if (bookmarkAlarmList.get(i).getUser_id().equals(user_id) && bookmarkAlarmList.get(i).getAlarm_check()) {
-                myBookmarkAlarmList.add(bookmarkAlarmList.get(i));
-            }
-        }
     }
 
     // userFile에 저장된 user_id 와 access_token 값 가져오기

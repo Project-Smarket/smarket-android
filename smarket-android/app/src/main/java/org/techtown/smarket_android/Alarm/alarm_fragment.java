@@ -9,18 +9,16 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import org.techtown.smarket_android.NewSearch.newsearch_fragment;
-import org.techtown.smarket_android.smarketClass.SearchedItem;
+import org.techtown.smarket_android.DTO_Class.Alarm;
 import org.techtown.smarket_android.R;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,20 +28,18 @@ import static android.content.Context.MODE_PRIVATE;
 public class alarm_fragment extends Fragment {
 
 
-    private static final String TAG = "알람리스트" ;
+    private static final String TAG = "알람리스트";
     private ViewGroup viewGroup;
 
     private RecyclerView alarmRecyclerView;
     private alarmListAdapter alarmListAdapter;
-    private List<SearchedItem> alarmList;
+    private List<Alarm> alarmList;
 
 
     // ** 로그인 및 토큰 정보 ** //
     private SharedPreferences userFile;
     private String user_id;
-    private String access_token;
-    private String refresh_token;
-    private String push_token;
+
 
     @Nullable
     @Override
@@ -57,9 +53,11 @@ public class alarm_fragment extends Fragment {
         get_alarmList();
 
         // 현재 로그인된 아이디와 일치하는 알람만 가져오기 - user_id가 일치하지 않는 alarm은 삭제
-        for (int i = alarmList.size()-1; i >=0; i--) {
-            if(!alarmList.get(i).getUser_id().equals(user_id)){
-                alarmList.remove(i);
+        if (alarmList.size() != 0) {
+            for (int i = alarmList.size() - 1; i >= 0; i--) {
+                if (!alarmList.get(i).getUser_id().equals(user_id)) {
+                    alarmList.remove(i);
+                }
             }
         }
         // alarmList recyclerView 설정
@@ -82,10 +80,10 @@ public class alarm_fragment extends Fragment {
     private void get_alarmList() {
         // 저장된 alarmList 있을 경우
         if (userFile.getString("alarmList", null) != null) {
-            String bookmarkAlarm = userFile.getString("alarmList", null);
-            Type listType = new TypeToken<ArrayList<SearchedItem>>() {
+            String key_alarmList = userFile.getString("alarmList", null);
+            Type listType = new TypeToken<ArrayList<Alarm>>() {
             }.getType();
-            alarmList = new GsonBuilder().create().fromJson(bookmarkAlarm, listType);
+            alarmList = new GsonBuilder().create().fromJson(key_alarmList, listType);
 
         }// 저장된 alarmList 없을 경우
         else {
@@ -96,8 +94,8 @@ public class alarm_fragment extends Fragment {
 
     // SharedPreference에 alarmList 데이터 저장
     private void save_alarmList() {
-        // List<SearchedItem> 클래스 객체를 String 객체로 변환
-        Type listType = new TypeToken<ArrayList<SearchedItem>>() {
+        // List<Alarm> 클래스 객체를 String 객체로 변환
+        Type listType = new TypeToken<ArrayList<Alarm>>() {
         }.getType();
         String json = new GsonBuilder().create().toJson(alarmList, listType);
 
