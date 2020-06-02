@@ -1,8 +1,11 @@
 package org.techtown.smarket_android.User.Bookmark;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -46,6 +49,7 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.techtown.smarket_android.Alarm.AlarmReceiver;
 import org.techtown.smarket_android.DTO_Class.DTO;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
@@ -69,6 +73,7 @@ public class newbookmark_fragment extends Fragment {
         return new newbookmark_fragment();
     } // 프래그먼트 생성
 
+    private int alarm_unique_id = 1212;
 
     private ViewGroup viewGroup;
 
@@ -181,7 +186,7 @@ public class newbookmark_fragment extends Fragment {
     // 북마크리스트 리사이클러 뷰 설정
     private void set_bookmarkList_recyclerView() {
         // 아이템 줄간격 설정
-        RecyclerDecoration spaceDecoration = new RecyclerDecoration(20);
+        RecyclerDecoration spaceDecoration = new RecyclerDecoration(8);
 
         recyclerView = viewGroup.findViewById(R.id.bookmark_itemList);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
@@ -737,6 +742,8 @@ public class newbookmark_fragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         null_userFile();
+                        // 알람끔
+                        off_alarm();
                         FragmentManager fragmentManager = getFragmentManager();
                         fragmentManager.beginTransaction().replace(R.id.main_layout, user_login_fragment.newInstance()).commit();
                     }
@@ -752,6 +759,26 @@ public class newbookmark_fragment extends Fragment {
         editor.putString("access_token", null);
         editor.putString("refresh_token", null);
         editor.apply();
+    }
+
+    // 설정된 알람 삭제
+    private void off_alarm() {
+
+        AlarmManager am = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(getContext(), AlarmReceiver.class);
+        PendingIntent sender = PendingIntent.getBroadcast(getContext(), alarm_unique_id, intent, PendingIntent.FLAG_NO_CREATE);
+
+        if (sender == null) {
+            // TODO: 이미 설정된 알람이 없는 경우
+        } else {
+            // TODO: 이미 설정된 알람이 있는 경우
+            sender = PendingIntent.getBroadcast(getContext(), alarm_unique_id, intent, 0);
+
+            am.cancel(sender);
+            sender.cancel();
+
+        }
+
     }
 
     // userFile에 저장된 user_id 와 access_token 값 가져오기

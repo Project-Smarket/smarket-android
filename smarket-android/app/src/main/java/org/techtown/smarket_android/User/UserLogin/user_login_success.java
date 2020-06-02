@@ -46,6 +46,7 @@ import org.json.JSONObject;
 import org.techtown.smarket_android.Alarm.AlarmReceiver;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.User.Bookmark.newbookmark_fragment;
+import org.techtown.smarket_android.User.Latest.latest_fragment;
 import org.techtown.smarket_android.User.UserInfrom.userinform_fragment;
 
 import java.io.UnsupportedEncodingException;
@@ -65,7 +66,7 @@ public class user_login_success extends Fragment {
 
 
     private ConstraintLayout bookmark;
-    private ConstraintLayout recent;
+    private ConstraintLayout latest;
     private ConstraintLayout userinform;
     private ConstraintLayout logout;
 
@@ -114,16 +115,16 @@ public class user_login_success extends Fragment {
             }
         });
 
-        recent = viewGroup.findViewById(R.id.recent);
+        latest = viewGroup.findViewById(R.id.latest);
 
-        recent.setOnClickListener(new View.OnClickListener() {
+        latest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*FragmentManager fragmentManager = getFragmentManager();
+                FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_layout, retrofit_fragment.newInstance(),"login");
+                fragmentTransaction.replace(R.id.main_layout, latest_fragment.newInstance(),"login");
                 fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();*/
+                fragmentTransaction.commit();
             }
         });
 
@@ -171,18 +172,14 @@ public class user_login_success extends Fragment {
             public void onClick(View v) {
                 // 현재 로그인된 id와 access_token 제거
                 null_userFile();
+                // 알람끔
+                off_alarm();
                 FragmentManager fragmentManager = getFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.main_layout, user_login_fragment.newInstance(), "logout").addToBackStack(null).commit();
             }
         });
 
         return viewGroup;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
     }
 
 

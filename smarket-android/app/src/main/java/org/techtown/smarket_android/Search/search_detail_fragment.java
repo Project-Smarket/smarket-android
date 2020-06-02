@@ -38,10 +38,12 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.common.internal.Objects;
 import com.google.android.material.tabs.TabLayout;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -78,19 +80,17 @@ public class search_detail_fragment extends Fragment {
     private static ProgressDialog progressDialog;
 
     private ViewGroup viewGroup;
-    private Bundle bundle;
     private Toolbar toolbar;
     private search_detail_news_fragment detail_news_fragment;
     private search_detail_spec_fragment detail_of_detail_fragment;
     private search_detail_review_fragment detail_review_fragment;
     private FragmentManager fragmentManager;
+
     private ArrayList<Deatail_spec> specList;
-    private ArrayList<String> keyList;
-    private ArrayList<String> keyValueList;
     private ArrayList<Detail_review> reviewList;
     private ArrayList<Detail_news> newsList;
-    private String item_link = "";
 
+    private String item_link = "";
     private String item_productType;
 
     // 북마크
@@ -119,22 +119,21 @@ public class search_detail_fragment extends Fragment {
         progressDialog = createProgressDialog(getContext());
         progressDialog.show();
 
+        // 사용자 정보 가져옴
         get_userFile();
 
-        // getbundle
-        ReceiveData();
+        // Bundle로 부터 item_data를 전달받음
+        receive_itemData();
 
-
+        // 상세정보 요청
         try {
-            specList = new ArrayList<>();
-            keyList = new ArrayList<>();
-            keyValueList = new ArrayList<>();
-            reviewList = new ArrayList<>();
-            newsList = new ArrayList<>();
             getJSon();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+
+        // tabLayout 설정
+        set_tabLayout();
 
         Button gotoMall = viewGroup.findViewById(R.id.detail_gotoMall);
         gotoMall.setOnClickListener(new View.OnClickListener() {
@@ -149,11 +148,8 @@ public class search_detail_fragment extends Fragment {
         });
 
         settingToolbar();
+
         setHasOptionsMenu(true);
-
-
-        Tab();
-
 
         return viewGroup;
     }
@@ -455,7 +451,7 @@ public class search_detail_fragment extends Fragment {
     }
 
     // Error Handling - request 오류(bookmark 등록 오류) 처리 - 실패 시 access-token 갱신 요청
-    private void error_handling(VolleyError error, String request_type, String folder_name, DTO item_data, String item_alarm) {
+    private void error_handling(VolleyError error, @Nullable String request_type, @Nullable String folder_name, @Nullable DTO item_data, @Nullable String item_alarm) {
         NetworkResponse response = error.networkResponse;
         if (error instanceof AuthFailureError && response != null) {
             try {
@@ -475,6 +471,9 @@ public class search_detail_fragment extends Fragment {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
+        } else if(error instanceof TimeoutError){
+            progressDialog.dismiss();
+            Toast.makeText(getContext(), "통신이 원활하지 않습니다", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -583,7 +582,7 @@ public class search_detail_fragment extends Fragment {
     }
 
 
-    private void Tab() {
+    private void set_tabLayout() {
         TabLayout tabLayout = viewGroup.findViewById(R.id.detail_TabLayout);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -602,8 +601,8 @@ public class search_detail_fragment extends Fragment {
         });
     }
 
-    private void ReceiveData() {
-        bundle = getArguments();
+    private void receive_itemData() {
+        Bundle bundle = getArguments();
 
         if (bundle != null) {
             item_data = bundle.getParcelable("item_data");
@@ -754,21 +753,36 @@ public class search_detail_fragment extends Fragment {
                 try {
                     JSONObject jsonObject = new JSONObject(response);
 
+                    // 검색 성공시
+                    if(!jsonObject.isNull("spec") || !jsonObject.isNull("news") || !jsonObject.isNull("review")){
 
-                    reviewJson(jsonObject); //리뷰 json파싱
+                        //리뷰 json파싱
+                        reviewJson(jsonObject);
+
+                        //상세정보 json파싱
+                        // item_type이 2가 아닐 경우 상세정보 제공함
+                        if (!item_productType.equals("2")) {
+                            specJson(jsonObject);
+                        }else{
+                            specList = new ArrayList<>();
+                        }
+
+                        //뉴스 json파싱
+                        newsJson(jsonObject);
+                    }
+                    // 검색 실패 시
+                    else{
+                        specList = new ArrayList<>();
+                        reviewList = new ArrayList<>();
+                        newsList = new ArrayList<>();
+                    }
+
                     fragmentManager = getChildFragmentManager();
                     detail_review_fragment = new search_detail_review_fragment();
                     Bundle reviewbundle = new Bundle();
                     reviewbundle.putParcelableArrayList("review", reviewList);
                     detail_review_fragment.setArguments(reviewbundle);
                     fragmentManager.beginTransaction().replace(R.id.detail_frame, detail_review_fragment, "search").addToBackStack(null).commitAllowingStateLoss();
-
-                    if (item_productType.equals("2")) {
-                        specList = null;
-                    } else {
-                        specJson(jsonObject); //상세정보 json파싱
-                    }
-                    newsJson(jsonObject); //뉴스 json파싱
 
                     progressDialog.dismiss();
                 } catch (JSONException e) {
@@ -778,7 +792,7 @@ public class search_detail_fragment extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), error + "", Toast.LENGTH_LONG).show();
+                error_handling(error, null, null, null, null);
             }
         });
         RequestQueue queue = Volley.newRequestQueue(getContext());
@@ -786,6 +800,8 @@ public class search_detail_fragment extends Fragment {
     }
 
     private void specJson(JSONObject jsonObject) throws JSONException {
+        ArrayList<String> keyList = new ArrayList<>();
+        ArrayList<String> keyValueList = new ArrayList<>();
         JSONArray data = jsonObject.getJSONArray("spec");
 
         Iterator key = data.getJSONObject(0).keys();

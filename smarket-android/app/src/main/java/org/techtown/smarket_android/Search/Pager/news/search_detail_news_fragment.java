@@ -32,7 +32,7 @@ public class search_detail_news_fragment extends Fragment {
         newsList = savedInstanceState.getParcelableArrayList("news");
         savedInstanceState.clear();
 
-        if(newsList.size() == 0){
+        if(newsList == null || newsList.size() == 0){
             viewGroup = (ViewGroup) inflater.inflate(R.layout.search_detail_news_none_fragment_layout, container, false);
         }
         else{

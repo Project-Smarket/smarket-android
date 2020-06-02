@@ -206,7 +206,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                             Log.d(TAG, "onResponse: 데이터 없음");
                     } else if (!success) {
                         // ** 북마크 조회 실패시 ** //
-                        Toast.makeText(context, jsonObject.toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, "북마크 조회 실패 : " + jsonObject.toString(), Toast.LENGTH_LONG).show();
                     }
 
                 } catch (JSONException e) {
@@ -222,7 +222,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "lprice 에러 : " + error.toString(), Toast.LENGTH_SHORT).show();
                 String request_type = "request_get_item_price";
                 error_handling(error, request_type, context, null, 0);
             }
@@ -394,8 +394,10 @@ public class AlarmReceiver extends BroadcastReceiver {
                         String msg = data.get("msg").getAsString();
 
                         // refresh-token 만료되어 logout
-                        if (name.equals("TokenExpiredError") && msg.equals("jwt expired"))
+                        if (name.equals("TokenExpiredError") && msg.equals("jwt expired")){
                             null_userFile();
+                            off_alarm(context);
+                        }
                         //logout(context);
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
@@ -423,24 +425,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         editor.commit();
     }
 
-    // 사용자 정보를 지우고 로그인 화면으로 이동
-    private void logout(final Context context) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context)
-                .setTitle("로그아웃")
-                .setMessage("재로그인이 필요합니다.")
-                .setCancelable(false)
-                .setPositiveButton("로그아웃", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        null_userFile();
-                        FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
-                        fragmentManager.beginTransaction().replace(R.id.main_layout, user_login_fragment.newInstance(), "login").commit();
-                    }
-                });
-        builder.create();
-        builder.show();
-    }
-
     // 현재 로그인된 id와 access_token 제거
     private void null_userFile() {
         SharedPreferences.Editor editor = userFile.edit();
@@ -448,6 +432,26 @@ public class AlarmReceiver extends BroadcastReceiver {
         editor.putString("access_token", null);
         editor.putString("refresh_token", null);
         editor.apply();
+    }
+
+    // 설정된 알람 삭제
+    private void off_alarm(Context context) {
+
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        PendingIntent sender = PendingIntent.getBroadcast(context, alarm_unique_id, intent, PendingIntent.FLAG_NO_CREATE);
+
+        if (sender == null) {
+            // TODO: 이미 설정된 알람이 없는 경우
+        } else {
+            // TODO: 이미 설정된 알람이 있는 경우
+            sender = PendingIntent.getBroadcast(context, alarm_unique_id, intent, 0);
+
+            am.cancel(sender);
+            sender.cancel();
+
+        }
+
     }
 
     // SharedPreference의 alarmList 데이터를 가져온다

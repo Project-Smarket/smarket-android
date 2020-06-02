@@ -3,6 +3,7 @@ package org.techtown.smarket_android.Search;
 import android.animation.ObjectAnimator;
 import android.animation.StateListAnimator;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -14,6 +15,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,14 +44,17 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.techtown.smarket_android.DTO_Class.Alarm;
 import org.techtown.smarket_android.DTO_Class.DTO;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.Search.Request.searchRequest;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.android.volley.VolleyLog.TAG;
 
 public class search_fragment extends Fragment implements OnBackpressedListener {
@@ -84,10 +90,20 @@ public class search_fragment extends Fragment implements OnBackpressedListener {
 
     private Boolean back_check = false;
 
+    // 최근 본 상품 리스트
+    private List<DTO> latestList;
+
+    // 사용자 정보
+    private SharedPreferences userFile;
+    private String user_id;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.activity_newsearch_fragment, container, false);
+
+        get_userFile();
+        get_latestList();
 
         mAppBarLayout = viewGroup.findViewById(R.id.app_bar);
         collapsingToolbarLayout = viewGroup.findViewById(R.id.newsearch_collaps);
@@ -171,7 +187,7 @@ public class search_fragment extends Fragment implements OnBackpressedListener {
     private void set_recyclerView() {
 
         // 아이템 줄간격 설정
-        RecyclerDecoration spaceDecoration = new RecyclerDecoration(20);
+        RecyclerDecoration spaceDecoration = new RecyclerDecoration(8);
 
         recyclerView = viewGroup.findViewById(R.id.newsearch_recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
@@ -207,6 +223,10 @@ public class search_fragment extends Fragment implements OnBackpressedListener {
             @Override
             public void OnRecyclerClickListener(View v, int position, DTO item_data) {
                 search_detail_fragment searchdetailFragment = new search_detail_fragment();
+
+                // 최근 본 상품 목록 추가
+                latestList.add(0,item_data);
+                save_latestList();
 
                 // 상품 상세로 데이터 전송
                 Bundle bundle = settingBundle(v, item_data);
@@ -310,6 +330,43 @@ public class search_fragment extends Fragment implements OnBackpressedListener {
 
 
         return bundle;
+    }
+
+    // SharedPreference의 latestList 데이터를 가져온다
+    private void get_latestList() {
+        // 저장된 latestList 있을 경우
+        String key = user_id + "/latestList";
+        if (userFile.getString(key, null) != null) {
+            String key_latestList = userFile.getString(key, null);
+            Type listType = new TypeToken<ArrayList<DTO>>() {
+            }.getType();
+            latestList = new GsonBuilder().create().fromJson(key_latestList, listType);
+
+        }// 저장된 alarmList 없을 경우
+        else {
+            latestList = new ArrayList<>();
+            save_latestList();
+        }
+    }
+
+    // SharedPreference에 latestList 데이터 저장
+    private void save_latestList() {
+        String key = user_id + "/latestList";
+        // List<DTO> 클래스 객체를 String 객체로 변환
+        Type listType = new TypeToken<ArrayList<DTO>>() {
+        }.getType();
+        String json = new GsonBuilder().create().toJson(latestList, listType);
+
+        // 스트링 객체로 변환된 데이터를 latestList에 저장
+        SharedPreferences.Editor editor = userFile.edit();
+        editor.putString(key, json);
+        editor.apply();
+    }
+
+    // userFile에 저장된 user_id 와 access_token 값 가져오기
+    private void get_userFile() {
+        userFile = getActivity().getSharedPreferences("userFile", MODE_PRIVATE);
+        user_id = userFile.getString("user_id", null);
     }
 
     // 키보드 창 내림

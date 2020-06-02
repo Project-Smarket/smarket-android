@@ -27,6 +27,7 @@ import com.google.gson.reflect.TypeToken;
 
 import org.techtown.smarket_android.DTO_Class.Alarm;
 import org.techtown.smarket_android.R;
+import org.techtown.smarket_android.Search.RecyclerDecoration;
 import org.techtown.smarket_android.Search.search_detail_fragment;
 
 import java.lang.reflect.Array;
@@ -78,9 +79,12 @@ public class alarm_fragment extends Fragment {
 
     // alarmList 데이터 가져옴
     private void set_recyclerView() {
+        RecyclerDecoration spaceDecoration = new RecyclerDecoration(8);
+
         alarmRecyclerView = viewGroup.findViewById(R.id.alarm_list_recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(viewGroup.getContext());
         alarmRecyclerView.setLayoutManager(linearLayoutManager);
+        alarmRecyclerView.addItemDecoration(spaceDecoration);
         alarmListAdapter = new alarmListAdapter(getActivity(), getContext(), alarmList);
         alarmRecyclerView.setAdapter(alarmListAdapter);
     }
@@ -118,7 +122,7 @@ public class alarm_fragment extends Fragment {
 
     private void set_toolbar() {
         Toolbar toolbar = viewGroup.findViewById(R.id.alarm_toolbar);
-        toolbar.setTitle("제품 상세");
+        toolbar.setTitle("가격 변동 내역");
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
     }
 
@@ -133,6 +137,11 @@ public class alarm_fragment extends Fragment {
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.alarm_menu, menu);
     }
 
     private void delete_alarmList(){
@@ -153,10 +162,7 @@ public class alarm_fragment extends Fragment {
         builder.show();
     }
 
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.alarm_menu, menu);
-    }
+
 
     // userFile에 저장된 user_id 가져오기
     private void get_userFile() {

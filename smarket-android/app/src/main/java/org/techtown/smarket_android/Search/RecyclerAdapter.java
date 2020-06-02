@@ -1,10 +1,13 @@
 package org.techtown.smarket_android.Search;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -43,6 +46,7 @@ import com.google.gson.JsonParser;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.techtown.smarket_android.Alarm.AlarmReceiver;
 import org.techtown.smarket_android.DTO_Class.DTO;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.User.Bookmark.bookmark_dialog;
@@ -68,6 +72,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     public void setOnRecyclerClickListener(OnRecyclerClickListener listener) {
         this.onRecyclerClickListener = listener;
     }
+
+    private int alarm_unique_id = 1212;
 
     // adapter에 들어갈 list 입니다.
     private List<DTO> itemList;
@@ -618,6 +624,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         null_userFile();
+                        // 알람끔
+                        off_alarm(mContext);
                         FragmentManager fragmentManager = ((AppCompatActivity) mContext).getSupportFragmentManager();
                         fragmentManager.beginTransaction().replace(R.id.main_layout, user_login_fragment.newInstance()).commit();
                     }
@@ -633,6 +641,26 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         editor.putString("access_token", null);
         editor.putString("refresh_token", null);
         editor.apply();
+    }
+
+    // 설정된 알람 삭제
+    private void off_alarm(Context context) {
+
+        AlarmManager am = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        PendingIntent sender = PendingIntent.getBroadcast(context, alarm_unique_id, intent, PendingIntent.FLAG_NO_CREATE);
+
+        if (sender == null) {
+            // TODO: 이미 설정된 알람이 없는 경우
+        } else {
+            // TODO: 이미 설정된 알람이 있는 경우
+            sender = PendingIntent.getBroadcast(context, alarm_unique_id, intent, 0);
+
+            am.cancel(sender);
+            sender.cancel();
+
+        }
+
     }
 
     // userFile에 저장된 user_id 와 access_token 값 가져오기

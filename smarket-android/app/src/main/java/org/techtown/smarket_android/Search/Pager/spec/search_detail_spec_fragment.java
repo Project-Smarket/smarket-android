@@ -39,7 +39,7 @@ public class search_detail_spec_fragment extends Fragment {
         savedInstanceState.clear();
 
         // specList가 null인 경우 "상세보기를 지원하지 않습니다"
-        if (specList == null) {
+        if (specList == null || specList.size() == 0) {
             viewGroup = (ViewGroup) inflater.inflate(R.layout.search_detail_spec_none_fragment_layout, container, false);
         }
         // specList가 null이 아닌 경우 상세정보 제공

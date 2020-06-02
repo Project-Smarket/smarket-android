@@ -48,14 +48,14 @@ public class hotdeal_page1_ppomppu1 extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        hotdealList = new ArrayList<>();
-        request_ppomppu();
+
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.hotdeal_list, container, false);
-
+        hotdealList = new ArrayList<>();
 
         String site_name = "뽐뿌게시판";
         // 아이템 줄간격 설정
@@ -67,7 +67,7 @@ public class hotdeal_page1_ppomppu1 extends Fragment {
         recyclerView.addItemDecoration(spaceDecoration);
         hotdealListAdapter = new hotdealListAdapter(getActivity(), getContext(), hotdealList, site_name);
         recyclerView.setAdapter(hotdealListAdapter);
-        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        /*recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 // 스크롤이 가장 위에 있을 때
@@ -82,8 +82,8 @@ public class hotdeal_page1_ppomppu1 extends Fragment {
                     }
                 }
             }
-        });
-
+        });*/
+        request_ppomppu();
 
         return viewGroup;
     }

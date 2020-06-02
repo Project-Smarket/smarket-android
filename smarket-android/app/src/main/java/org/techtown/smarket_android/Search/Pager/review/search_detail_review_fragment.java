@@ -32,7 +32,9 @@ public class search_detail_review_fragment extends Fragment {
         reviewList = savedInstanceState.getParcelableArrayList("review");
         savedInstanceState.clear();
 
-        if(reviewList.size() == 0){
+
+
+     if( recyclerView == null || reviewList.size() == 0){
             viewGroup = (ViewGroup) inflater.inflate(R.layout.search_detail_review_none_fragment, container, false);
         }else{
             viewGroup = (ViewGroup) inflater.inflate(R.layout.search_detail_review_fragment, container, false);
