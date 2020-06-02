@@ -112,8 +112,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
         Intent intent = new Intent(this, MainNavigationActivity.class);//Intent는 아직 모름ㅠ
         intent.putExtra("notification", "Notification");
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), (int)(System.currentTimeMillis()/1000), intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -142,5 +142,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         notificationManager.notify((int)(System.currentTimeMillis()/1000), notificationBuilder.build());;
     }
+
 }
 
