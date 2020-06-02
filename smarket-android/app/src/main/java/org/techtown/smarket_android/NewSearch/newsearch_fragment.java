@@ -216,7 +216,7 @@ public class newsearch_fragment extends Fragment implements OnBackpressedListene
                 Log.d(TAG, "OnRecyclerClickListener: 클릭했다 이눔아");
 
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.main_layout, searchdetailFragment, "search").addToBackStack(null);
+                fragmentTransaction.add(R.id.main_layout, searchdetailFragment, "search").addToBackStack(null);
                 fragmentTransaction.commit();
             }
         });
@@ -256,6 +256,7 @@ public class newsearch_fragment extends Fragment implements OnBackpressedListene
                         itemList.add(item);
                     }
                     adapter.notifyDataSetChanged();
+
 
                     // 스마켓 고양이 축소
                     ViewGroup.LayoutParams cat_params = smarket_cat.getLayoutParams();

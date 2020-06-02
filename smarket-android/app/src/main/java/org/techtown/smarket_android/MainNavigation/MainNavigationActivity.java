@@ -64,7 +64,8 @@ public class MainNavigationActivity extends AppCompatActivity {
     // https://hwanine.github.io/android/backStack/
 
     private void set_navigation() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, search_fragment1, "search").addToBackStack(null).commitAllowingStateLoss(); //bottomnavigationview의 아이콘을 선택 했을때 원하는 프래그먼트가 띄워질 수 있도록 리스너를 추가합니다.
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, search_fragment1, "search").addToBackStack(null).commit(); //bottomnavigationview의 아이콘을 선택 했을때 원하는 프래그먼트가 띄워질 수 있도록 리스너를 추가합니다.
+
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {

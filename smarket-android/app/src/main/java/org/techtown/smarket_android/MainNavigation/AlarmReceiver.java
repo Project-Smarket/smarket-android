@@ -352,7 +352,6 @@ public class AlarmReceiver extends BroadcastReceiver {
             public Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
 
-
                 String item_title_s = "";
                 // item_title이 16자 이상일 경우 글자를 자르고 "..."로 생략
                 if(item_title.length()>=16){
