@@ -21,9 +21,9 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.techtown.smarket_android.smarketClass.Hotdeal;
+import org.techtown.smarket_android.DTO_Class.Hotdeal;
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.searchItemList.RecyclerDecoration;
+import org.techtown.smarket_android.Search.RecyclerDecoration;
 
 import java.util.ArrayList;
 

@@ -2,22 +2,19 @@ package org.techtown.smarket_android.MainNavigation;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.techtown.smarket_android.Alarm.alarm_fragment;
 import org.techtown.smarket_android.Hotdeal.hotdeal_fragment;
-import org.techtown.smarket_android.NewSearch.OnBackpressedListener;
-import org.techtown.smarket_android.NewSearch.newsearch_fragment;
+import org.techtown.smarket_android.Search.OnBackpressedListener;
+import org.techtown.smarket_android.Search.search_fragment;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
 
@@ -28,7 +25,7 @@ public class MainNavigationActivity extends AppCompatActivity {
     private static final String TAG = "alarmmanager_main";
     private BottomNavigationView bottomNavigationView;
     private long backKeyPressedTime = 0;
-    private newsearch_fragment search_fragment1;
+    private search_fragment search_fragment1;
     private hotdeal_fragment hotdeal_fragment2;
     //user_login_success user_fragment2; // 로그인 완료 창
     private user_login_fragment user_fragment3; // 로그인 창
@@ -44,7 +41,7 @@ public class MainNavigationActivity extends AppCompatActivity {
 
         checkNotification();     //알림으로 들어올시 실행되는 메소드
 
-        search_fragment1 = new newsearch_fragment();//제일 처음 띄워줄 뷰를 세팅해줍니다. commit();까지 해줘야 합니다.
+        search_fragment1 = new search_fragment();//제일 처음 띄워줄 뷰를 세팅해줍니다. commit();까지 해줘야 합니다.
 
 //        hotdeal_fragment2 = new hotdeal_fragment(); // 스마켓 홈 창
         //user_fragment2 = new user_login_success(); // 로그인 완료 창
@@ -74,7 +71,7 @@ public class MainNavigationActivity extends AppCompatActivity {
 
                 switch (menuItem.getItemId()) { //menu_bottom.xml에서 지정해줬던 아이디 값을 받아와서 각 아이디값마다 다른 이벤트를 발생시킵니다.
                     case R.id.tab1: {
-                        search_fragment1 = new newsearch_fragment();
+                        search_fragment1 = new search_fragment();
                         fragmentTransaction.replace(R.id.main_layout, search_fragment1, "search");
                         break;
                     }

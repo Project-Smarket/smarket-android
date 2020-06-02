@@ -11,7 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.techtown.smarket_android.smarketClass.Hotdeal;
+import org.techtown.smarket_android.DTO_Class.Hotdeal;
 import org.techtown.smarket_android.R;
 
 import java.util.ArrayList;

@@ -13,9 +13,6 @@ import android.widget.Toast;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import org.techtown.smarket_android.MainNavigation.AlarmReceiver;
-import org.techtown.smarket_android.smarketClass.userInfo;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,15 +24,11 @@ public class DeviceBootReceiver extends BroadcastReceiver {
     private SharedPreferences userFile;
     private String user_id;
     private Boolean user_alarm = false;
-    private List<userInfo> userInfoList;
     private int alarm_unique_id = 1212;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         // 재부팅시 자동실행 설정 값을 가져옴
-        get_userFile(context);
-        get_userInfoList(context);
-        get_userAlarm(context);
 
         String action = intent.getAction();                          // intent로 전달받은 Action을 얻는다.
 
@@ -70,39 +63,6 @@ public class DeviceBootReceiver extends BroadcastReceiver {
         }
     }
 
-    // 재부팅시 가장 마지막 로그인 되었던 아이디를 가져옴
-    private void get_userFile(Context context){
-        userFile = context.getSharedPreferences("userFile", Context.MODE_PRIVATE);
-        user_id = userFile.getString("user_id", null);
-    }
-
-    // SharedPreference의 userInfoList 데이터를 가져온다
-    private void get_userInfoList(Context context) {
-        userFile = context.getSharedPreferences("userFile", Context.MODE_PRIVATE);
-        // 저장된 userInfoList가 있을 경우
-        if (userFile.getString("userInfoList", null) != null) {
-            String info = userFile.getString("userInfoList", null);
-            Type listType = new TypeToken<ArrayList<userInfo>>() {
-            }.getType();
-            userInfoList = new GsonBuilder().create().fromJson(info, listType);
-
-        }// 저장된 userInfoList가 없을 경우
-        else {
-            userInfoList = new ArrayList<>();
-        }
-    }
-
-    // 아이디와 일치하는 alarm_check 값을 가져옴
-    private void get_userAlarm(Context context){
-        if(user_id != null){
-            for (int i = 0; i < userInfoList.size(); i++) {
-                if(userInfoList.get(i).getUser_id().equals(user_id)){
-                    user_alarm = userInfoList.get(i).getAlarm_check();
-                }
-            }
-        }
-
-    }
 
     private void set_alarmManager(Calendar calendar, Context context) {
         // 현재 시간

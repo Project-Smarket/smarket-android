@@ -31,7 +31,6 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.gson.GsonBuilder;
@@ -41,9 +40,7 @@ import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.techtown.smarket_android.NewSearch.newsearch_fragment;
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.smarketClass.userInfo;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
@@ -66,7 +63,6 @@ public class user_login_fragment extends Fragment {
 
     // ** 로그인 및 토큰 정보 ** //
     private SharedPreferences userFile;
-    private List<userInfo> userInfoList;
     private String user_id;
     private String access_token;
     private String refresh_token;
@@ -151,7 +147,8 @@ public class user_login_fragment extends Fragment {
                         JSONObject data = jsonObject.getJSONObject("data");
                         String access_token = data.getString("accessToken"); // userFile에 저장할 access_token
                         String refresh_token = data.getString("refreshToken");
-                        set_userFile(user_id, access_token, refresh_token); // userFile에 user_id와 access_token을 저장
+                        String nickname = data.getString("nickname");
+                        set_userFile(user_id, access_token, refresh_token, nickname); // userFile에 user_id와 access_token을 저장
 
                         createToken(access_token, getContext());
 
@@ -293,32 +290,18 @@ public class user_login_fragment extends Fragment {
         }
     }
 
-    // SharedPreference의 userInfoList 데이터를 가져온다
-    private void get_userInfoList() {
-        userFile = getActivity().getSharedPreferences("userFile", Context.MODE_PRIVATE);
-        // 저장된 userInfoList가 있을 경우
-        if (userFile.getString("userInfoList", null) != null) {
-            String userInfo = userFile.getString("userInfoList", null);
-            Type listType = new TypeToken<ArrayList<userInfo>>() {
-            }.getType();
-            userInfoList = new GsonBuilder().create().fromJson(userInfo, listType);
-
-        }// 저장된 userInfoList가 없을 경우
-        else {
-            userInfoList = new ArrayList<>();
-        }
-    }
 
     private void generate_userFile() {
         userFile = getActivity().getSharedPreferences("userFile", MODE_PRIVATE);
     } // user의 로그인 정보를 젖아하는 userFile 생성
 
-    private void set_userFile(String user_id, String access_token, String refresh_token) {
+    private void set_userFile(String user_id, String access_token, String refresh_token, String nickname) {
         SharedPreferences.Editor editor = userFile.edit();
         editor.putString("user_id", user_id);
         editor.putString("access_token", access_token);
         editor.putString("refresh_token", refresh_token);
-        editor.commit(); //완료한다.
+        editor.putString("user_nickname", nickname);
+        editor.apply(); //완료한다.
     } // 로그인 시 user의 아이디와 토큰 정보를 저장
 
     private void validate_user() {
