@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,11 +23,13 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.techtown.smarket_android.smarketClass.Hotdeal;
+import org.techtown.smarket_android.DTO_Class.Hotdeal;
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.searchItemList.RecyclerDecoration;
+import org.techtown.smarket_android.Search.RecyclerDecoration;
 
 import java.util.ArrayList;
+
+import static com.android.volley.VolleyLog.TAG;
 
 // 해외 뽐뿌
 public class hotdeal_page2_ppomppu2 extends Fragment {
@@ -35,13 +39,22 @@ public class hotdeal_page2_ppomppu2 extends Fragment {
     private hotdealListAdapter hotdealListAdapter;
     private ArrayList<Hotdeal> hotdealList;
 
+    private int page_num = 1;
+
+    private boolean isMoreLoad = false;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.hotdeal_list, container, false);
 
         hotdealList = new ArrayList<>();
-
         String site_name = "해외뽐뿌";
         // 아이템 줄간격 설정
         RecyclerDecoration spaceDecoration = new RecyclerDecoration(10);
@@ -52,14 +65,28 @@ public class hotdeal_page2_ppomppu2 extends Fragment {
         recyclerView.addItemDecoration(spaceDecoration);
         hotdealListAdapter = new hotdealListAdapter(getActivity(), getContext(), hotdealList, site_name);
         recyclerView.setAdapter(hotdealListAdapter);
-
+        /*recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                // 스크롤이 가장 위에 있을 때
+                if (!recyclerView.canScrollVertically(-1)) {
+                    Log.i(TAG, "Top of list");
+                    // 스크롤 가장 아래로 내려왔을 때
+                } else if (!recyclerView.canScrollVertically(1)) {
+                    Log.i(TAG, "End of list");
+                    if (!isMoreLoad) {
+                        isMoreLoad = true;
+                        request_ppomppu();
+                    }
+                }
+            }
+        });*/
         request_ppomppu();
-
         return viewGroup;
     }
 
     private void request_ppomppu(){
-        String url = getString(R.string.crawlingEndpoint) + "/ppomppu?id=ppomppu4&page=1"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        String url = getString(R.string.crawlingEndpoint) + "/ppomppu?id=ppomppu4&page="+page_num; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -83,6 +110,9 @@ public class hotdeal_page2_ppomppu2 extends Fragment {
                             Hotdeal hotdeal = new Hotdeal( category,title, url, replyCount, hit, time);
                             hotdealList.add(hotdeal);
                             hotdealListAdapter.notifyDataSetChanged();
+
+                            isMoreLoad = false;
+                            page_num += 1;
                         }
                     } else if (!success)
                         // ** 북마크 조회 실패시 ** //

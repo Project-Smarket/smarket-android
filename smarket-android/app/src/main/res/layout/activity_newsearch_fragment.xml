@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NewSearch.newsearch_fragment">
+    tools:context=".Search.search_fragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
@@ -48,7 +48,7 @@
                     android:paddingRight="16dp"
                     android:paddingLeft="16dp">
 
-                    <org.techtown.smarket_android.searchItemList.ClearEditText
+                    <org.techtown.smarket_android.Search.ClearEditText
                         android:id="@+id/newsearch_editText"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"

@@ -102,7 +102,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/recent"
+            android:id="@+id/latest"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -110,7 +110,7 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/recent_img"
+                android:id="@+id/latest_img"
                 android:layout_width="25dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
@@ -125,7 +125,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/recent_tv"
+                android:id="@+id/latest_tv"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -135,7 +135,7 @@
                 android:textSize="24sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/recent_img"
+                app:layout_constraintStart_toEndOf="@+id/latest_img"
                 app:layout_constraintTop_toTopOf="parent" />
 
 

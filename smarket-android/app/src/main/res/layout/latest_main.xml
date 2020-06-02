@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/latest_toolbar"
+        app:title="최근 본 상품"
+        android:elevation="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorWhite"
+        app:titleTextColor="@color/colorBlack"
+        app:titleTextAppearance="@style/Toolbar.TitleText"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/latest_recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/color_lite_gray"/>
+
+</LinearLayout>
