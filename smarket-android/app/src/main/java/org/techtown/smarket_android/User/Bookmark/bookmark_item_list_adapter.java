@@ -1,12 +1,15 @@
 package org.techtown.smarket_android.User.Bookmark;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,21 +19,42 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.techtown.smarket_android.DTO_Class.DTO;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.Search.search_detail_fragment;
 import org.techtown.smarket_android.DTO_Class.Bookmark;
+import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_item_list_adapter.bmViewHolder> {
 
@@ -118,7 +142,7 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
 
         private DTO bookmark_data;
 
-        private String id; // 북마크 삭제시 id로 요청
+        private String id; // 북마크 삭제 및 알람 ON/OFF 시 id로 요청
         private boolean item_selling; // 판매 여부 확인
 
         private String item_title; // 상품 이름
@@ -126,7 +150,7 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
         private String item_type; // "최저가" 텍스트 결정
         private String item_lprice; // 상품 가격
 
-        private String item_alarm; // 알람 버튼 색 결정
+        private String item_alarm; // 알람 버튼 색 결정 및 ON/OFF 요청
 
         // 뷰홀더에 표시될 View
         private TextView bookmark_title;
@@ -174,6 +198,12 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
                 @Override
                 public void onClick(View v) {
                     // TODO : 알람 ON/OFF
+                    if(item_alarm.equals("true")){
+                        request_alarm("false");
+                    }
+                    else if(item_alarm.equals("false")){
+                        request_alarm("true");
+                    }
                 }
             });
 
@@ -294,6 +324,183 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
 
 
             return bundle;
+        }
+
+        public void request_alarm(final String value) {
+            String url = mContext.getResources().getString(R.string.bookmarksEndpoint) + "/alarm";
+
+            StringRequest stringRequest = new StringRequest(Request.Method.PATCH, url, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response);
+                        boolean success = jsonObject.getBoolean("success");
+                        // 알람 ON/OFF 설정 성공시
+                        if(success){
+                            if(value.equals("true")){
+                                item_alarm = "true";
+                                alarm_btn.setColorFilter(itemView.getResources().getColor(R.color.smarketyello), PorterDuff.Mode.SRC_IN);
+                                Toast.makeText(mContext, "상품 알람 : ON", Toast.LENGTH_SHORT).show();
+                            }else if(value.equals("false")){
+                                item_alarm = "false";
+                                alarm_btn.setColorFilter(itemView.getResources().getColor(R.color.colorBlack), PorterDuff.Mode.SRC_IN);
+                                Toast.makeText(mContext, "상품 알람 : OFF", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        // 알람 ON/OFF 설정 실패 시
+                        else{
+
+                        }
+
+                    } catch (JSONException e) {
+                        Toast.makeText(mContext, e.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(mContext, error.toString(), Toast.LENGTH_SHORT).show();
+                    error_handling(error, value);
+                }
+            }
+            ) {
+
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> params = new HashMap();
+                    params.put("x-access-token", access_token);
+                    return params;
+                }
+
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("id", id);
+                    params.put("item_alarm", value);
+                    return params;
+                }
+            };
+            RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+            requestQueue.add(stringRequest);
+        }
+
+        // Error Handling - request 오류(bookmarkList 조회, bookmarkFolder 삭제, bookmark 삭제 오류) 처리 - 실패 시 access-token 갱신 요청
+        private void error_handling(VolleyError error, String value) {
+            NetworkResponse response = error.networkResponse;
+            if (error instanceof AuthFailureError && response != null) {
+                try {
+                    String res = new String(response.data, HttpHeaderParser.parseCharset(response.headers, "utf-8"));
+
+                    JsonParser parser = new JsonParser();
+                    JsonElement element = parser.parse(res);
+                    JsonObject data = element.getAsJsonObject().get("data").getAsJsonObject();
+                    String name = data.get("name").getAsString();
+                    String msg = data.get("msg").getAsString();
+
+                    // access-token 만료 시 refresh-token을 통해 토큰 갱신
+                    if (name.equals("TokenExpiredError") && msg.equals("jwt expired"))
+                        refresh_accessToken(value);
+
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        // access-token 갱신 요청 후 폴더 목록 재요청 - 실패 시 logout
+        private void refresh_accessToken(final String value) {
+            String url = mActivity.getString(R.string.authEndpoint) + "/refresh"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+
+                    JSONObject jsonObject = null;
+                    try {
+                        jsonObject = new JSONObject(response);
+                        boolean success = jsonObject.getBoolean("success");
+                        if (success) {
+                            // ** access-token 갱신 성공 시 ** // access-token 업데이트
+                            String data = jsonObject.getString("data");
+                            // SharedPreference 의 access-token 갱신
+                            update_accessToken(data);
+                            request_alarm(value);
+
+                        } else if (!success)
+                            Toast.makeText(mContext, jsonObject.toString(), Toast.LENGTH_LONG).show();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    // ** access-token 갱신 실패 시 ** // refresh-token 만료로 인해 logout
+                    Log.d("REQUESTERROR", "onErrorResponse: refresh-toke이 만료되었습니다");
+                    NetworkResponse response = error.networkResponse;
+                    if (error instanceof AuthFailureError && response != null) {
+                        try {
+                            String res = new String(response.data, HttpHeaderParser.parseCharset(response.headers, "utf-8"));
+                            JsonParser parser = new JsonParser();
+                            JsonElement element = parser.parse(res);
+                            JsonObject data = element.getAsJsonObject().get("data").getAsJsonObject();
+                            String name = data.get("name").getAsString();
+                            String msg = data.get("msg").getAsString();
+
+                            // refresh-token 만료되어 logout
+                            if (name.equals("TokenExpiredError") && msg.equals("jwt expired"))
+                                logout();
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+            ) {
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<>();
+                    params.put("x-refresh-token", refresh_token);
+                    return params;
+                }
+            };
+
+            RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+            requestQueue.add(stringRequest);
+        }
+
+        // 만료된 access-token을 새로 갱신한 access-token으로 교체
+        private void update_accessToken(String new_token) {
+            access_token = new_token;
+            SharedPreferences.Editor editor = userFile.edit();
+            editor.putString("access_token", access_token); //Second라는 key값으로 infoSecond 데이터를 저장한다.
+            editor.commit();
+        }
+
+        // 사용자 정보를 지우고 로그인 화면으로 이동
+        private void logout() {
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
+                    .setTitle("로그아웃")
+                    .setMessage("로그인이 필요합니다.")
+                    .setCancelable(false)
+                    .setPositiveButton("로그아웃", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            null_userFile();
+                            FragmentManager fragmentManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
+                            fragmentManager.beginTransaction().replace(R.id.main_layout, user_login_fragment.newInstance()).commit();
+                        }
+                    });
+            builder.create();
+            builder.show();
+        }
+
+        // 현재 로그인된 id와 access_token 제거
+        private void null_userFile() {
+            SharedPreferences.Editor editor = userFile.edit();
+            editor.putString("user_id", null);
+            editor.putString("access_token", null);
+            editor.putString("refresh_token", null);
+            editor.apply();
         }
     }
 

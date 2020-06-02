@@ -113,7 +113,7 @@ public class newbookmark_fragment extends Fragment {
         set_plus_btn(); // 북마크 추가 버튼 설정
         set_trashcan_btn(); // 북마크 삭제 버튼 설정
 
-        toolbar =  viewGroup.findViewById(R.id.newbookmark_toolbar);
+        toolbar = viewGroup.findViewById(R.id.newbookmark_toolbar);
 
         toolbar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -551,7 +551,7 @@ public class newbookmark_fragment extends Fragment {
     // Request - 서버로 folder_name과 일치하는 DB 북마크 조회 요청 - 실패 시 request 오류(토큰만료) 처리
     private void request_bookmarkList_by_folder_name(final String folder_name) throws UnsupportedEncodingException {
 
-        String url = getString(R.string.bookmarksEndpoint)+"?foldername=" + URLEncoder.encode(folder_name, "UTF-8"); // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        String url = getString(R.string.bookmarksEndpoint) + "?foldername=" + URLEncoder.encode(folder_name, "UTF-8"); // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -559,39 +559,39 @@ public class newbookmark_fragment extends Fragment {
                 try {
                     jsonObject = new JSONObject(response);
                     boolean success = jsonObject.getBoolean("success");
-                    Log.d("SUCCESS", "onResponse: " + success);
-                    JSONArray data = jsonObject.getJSONArray("data");
-                    Log.d("DATA", "onResponse: " + data.toString());
                     if (success) {
                         // ** 북마크 리스트 조회 성공시 ** //
-
-                        // 토큰에 user_id에 대한 정보가 들어 있기 때문에 별도 아이디검사를 하지 않아도됨
-                        for (int i = 0; i < data.length(); i++) {
-                            String id = data.getJSONObject(i).getString("id");
-                            String folder_name = data.getJSONObject(i).getString("folder_name");
-                            Boolean item_selling = data.getJSONObject(i).getBoolean("item_selling");
-                            String item_alarm = String.valueOf(data.getJSONObject(i).getBoolean("item_alarm"));
-                            String item_title = data.getJSONObject(i).getString("item_title");
-                            String item_link = data.getJSONObject(i).getString("item_link");
-                            String item_image = data.getJSONObject(i).getString("item_image");
-                            String item_lprice = data.getJSONObject(i).getString("item_lprice");
-                            String item_mallName = data.getJSONObject(i).getString("item_mallname");
-                            String item_id = data.getJSONObject(i).getString("item_id");
-                            String item_type = data.getJSONObject(i).getString("item_type");
-                            String item_brand = data.getJSONObject(i).getString("item_brand");
-                            String item_maker = data.getJSONObject(i).getString("item_maker");
-                            String item_category1 = data.getJSONObject(i).getString("item_category1");
-                            String item_category2 = data.getJSONObject(i).getString("item_category2");
-                            String item_category3 = data.getJSONObject(i).getString("item_category3");
-                            String item_category4 = data.getJSONObject(i).getString("item_category4");
-                            DTO bookmark = new DTO(id,user_id,folder_name,item_selling,item_alarm,item_title,item_link,item_image,item_lprice,item_mallName
-                            , item_id,item_type, item_brand, item_maker, item_category1, item_category2, item_category3, item_category4);
-                            bookmarkList.add(bookmark);
-                        }
-                        adapter.notifyDataSetChanged();
+                        if (!jsonObject.isNull("data")) {
+                            JSONArray data = jsonObject.getJSONArray("data");
+                            // 토큰에 user_id에 대한 정보가 들어 있기 때문에 별도 아이디검사를 하지 않아도됨
+                            for (int i = 0; i < data.length(); i++) {
+                                String id = data.getJSONObject(i).getString("id");
+                                String folder_name = data.getJSONObject(i).getString("folder_name");
+                                Boolean item_selling = data.getJSONObject(i).getBoolean("item_selling");
+                                String item_alarm = String.valueOf(data.getJSONObject(i).getBoolean("item_alarm"));
+                                String item_title = data.getJSONObject(i).getString("item_title");
+                                String item_link = data.getJSONObject(i).getString("item_link");
+                                String item_image = data.getJSONObject(i).getString("item_image");
+                                String item_lprice = data.getJSONObject(i).getString("item_lprice");
+                                String item_mallName = data.getJSONObject(i).getString("item_mallname");
+                                String item_id = data.getJSONObject(i).getString("item_id");
+                                String item_type = data.getJSONObject(i).getString("item_type");
+                                String item_brand = data.getJSONObject(i).getString("item_brand");
+                                String item_maker = data.getJSONObject(i).getString("item_maker");
+                                String item_category1 = data.getJSONObject(i).getString("item_category1");
+                                String item_category2 = data.getJSONObject(i).getString("item_category2");
+                                String item_category3 = data.getJSONObject(i).getString("item_category3");
+                                String item_category4 = data.getJSONObject(i).getString("item_category4");
+                                DTO bookmark = new DTO(id, user_id, folder_name, item_selling, item_alarm, item_title, item_link, item_image, item_lprice, item_mallName
+                                        , item_id, item_type, item_brand, item_maker, item_category1, item_category2, item_category3, item_category4);
+                                bookmarkList.add(bookmark);
+                            }
+                            adapter.notifyDataSetChanged();
+                        }else
+                            Log.d(TAG, "onResponse: 북마크가 비엇습니다");
                     } else if (!success)
                         // ** 북마크 조회 실패시 ** //
-                        Toast.makeText(getContext(), "북마크 조회 - false",  Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), "북마크 조회 - false", Toast.LENGTH_LONG).show();
 
                 } catch (JSONException e) {
                     e.printStackTrace();

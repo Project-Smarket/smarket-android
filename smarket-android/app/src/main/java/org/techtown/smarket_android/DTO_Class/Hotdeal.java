@@ -1,6 +1,9 @@
 package org.techtown.smarket_android.DTO_Class;
 
-public class Hotdeal {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Hotdeal implements Parcelable {
 
     private String category;
     private String title;
@@ -65,4 +68,45 @@ public class Hotdeal {
     public void setTime(String time) {
         this.time = time;
     }
+
+    protected Hotdeal(Parcel in){
+        readFromParcel(in);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+        dest.writeString(category);
+        dest.writeString(title);
+        dest.writeString(url);
+        dest.writeString(replyCount);
+        dest.writeString(hit);
+        dest.writeString(time);
+
+    }
+
+    public void readFromParcel(Parcel in){
+        category = in.readString();
+        title = in.readString();
+        url = in.readString();
+        replyCount = in.readString();
+        hit = in.readString();
+        time = in.readString();
+
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public Hotdeal createFromParcel(Parcel in) {
+            return new Hotdeal(in);
+        }
+
+        public Hotdeal[] newArray(int size) {
+            return new Hotdeal[size];
+        }
+    };
 }
