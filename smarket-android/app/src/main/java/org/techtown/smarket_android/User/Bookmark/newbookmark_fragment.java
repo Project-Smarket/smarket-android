@@ -80,7 +80,7 @@ public class newbookmark_fragment extends Fragment {
     private Toolbar toolbar;
     private Spinner bookmark_spinner; // 북마크 스피너
     private ArrayAdapter spinnerAdapter; // 스피너 어댑터
-    private List<String> bookmarkFolderList = new ArrayList<>(); // SharedPreference에 저장된 bookmarkFolderList
+    private List<String> bookmarkFolderList; // SharedPreference에 저장된 bookmarkFolderList
 
     private EditText bookmark_folder_name; // 추가할 북마크 이름
 
@@ -97,8 +97,12 @@ public class newbookmark_fragment extends Fragment {
     // 스피너 중복 실행 방지 변수
     int iCurrentSelection;
 
+    // 북마크 폴더 중복 요청 방지
+    boolean isRequested = false;
+
     private TextView add_bookmarkFolder;
     private TextView remove_bookmarkFolder;
+
 
     @Nullable
     @Override
@@ -141,6 +145,7 @@ public class newbookmark_fragment extends Fragment {
                     boolean success = jsonObject.getBoolean("success");
                     JSONArray data = jsonObject.getJSONArray("data");
                     if (success) {
+                        bookmarkFolderList = new ArrayList<>();
                         // ** 북마크 폴더 조회 성공 시 ** //
                         for (int i = 0; i < data.length(); i++) {
                             // user_id가 일치하는 북마크 폴더만 가져온다
@@ -387,7 +392,7 @@ public class newbookmark_fragment extends Fragment {
             adapter = new bookmark_item_list_adapter(getContext(), getActivity(), bookmarkList);
             adapter.setOnItemClickListener(new bookmark_item_list_adapter.OnItemClickListener() {
                 @Override
-                public void onItemClick(View view, int position, final String bookmark_id) {
+                public void onItemClick(View view, int position, final String id) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
                             .setTitle("북마크 해제")
                             .setMessage("북마크 등록을 해제 하시겠습니까?")
@@ -395,7 +400,7 @@ public class newbookmark_fragment extends Fragment {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     // 단일 북마크 제거
-                                    request_remove_bookmark_to_server(bookmark_id);
+                                    request_remove_bookmark_to_server(id);
                                 }
                             })
                             .setNegativeButton("취소", null);
@@ -413,8 +418,8 @@ public class newbookmark_fragment extends Fragment {
     }
 
     // Request - 서버로 bookmark_id와 일치하는 DB 북마크 삭제 요청 - 실패 시 request 오류(토큰만료) 처리
-    private void request_remove_bookmark_to_server(final String bookmark_id) {
-        String url = getString(R.string.bookmarksEndpoint) + "/" + bookmark_id; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+    private void request_remove_bookmark_to_server(final String id) {
+        String url = getString(R.string.bookmarksEndpoint) + "/" + id; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.DELETE, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -429,7 +434,8 @@ public class newbookmark_fragment extends Fragment {
                         // ** 북마크 삭제 성공시 ** //
 
                         // bookmarkList에서 bookmark_id와 일치하는 bookmark 삭제
-                        remove_bookmark_in_bookmarkList(bookmark_id);
+                        remove_bookmark_in_bookmarkList(id);
+                        remove_fluctuationList(id);
                         Toast.makeText(getContext(), "해당 북마크를 삭제했습니다.", Toast.LENGTH_LONG).show();
                     } else if (!success)
                         // ** 북마크 삭제 실패시 ** //
@@ -446,7 +452,7 @@ public class newbookmark_fragment extends Fragment {
                 // ** 북마크 삭제 실패시 ** //
                 // Error Handling - request 오류(토큰만료) 처리
                 String request_type = "request_remove_bookmark";
-                error_handling(error, request_type, bookmark_id);
+                error_handling(error, request_type, id);
             }
         }
         ) {
@@ -471,6 +477,13 @@ public class newbookmark_fragment extends Fragment {
             }
         }
         adapter.notifyDataSetChanged();
+    }
+
+    private void remove_fluctuationList(String id){
+        String key = user_id + "/alarmList/" + id;
+        SharedPreferences.Editor editor = userFile.edit();
+        editor.remove(key);
+        editor.apply();
     }
 
     // Request - 서버로 folder_name과 일치하는 DB 북마크 삭제 요청 - 실패 시 request 오류(토큰만료) 처리

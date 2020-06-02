@@ -5,6 +5,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +15,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.techtown.smarket_android.DTO_Class.Alarm;
 import org.techtown.smarket_android.R;
+import org.techtown.smarket_android.Search.search_detail_fragment;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,6 +69,8 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
 
     public class alViewHolder extends RecyclerView.ViewHolder {
 
+        private Alarm item_data;
+
         private int lprice_diff;
 
         private TextView alarm_title; // 상품 제목
@@ -94,10 +103,33 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
             direction = itemView.findViewById(R.id.direction_imageView);
             direction2 = itemView.findViewById(R.id.direction_imageView2);
 
-            //alarm_posted = itemView.findViewById(R.id.alarm_posted_textView);
+            // fluctuation_fragment로 데이터 전송
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    fluctuation_fragment fluctuation_fragment = new fluctuation_fragment();
+
+                    Bundle bundle = settingBundle();
+                    fluctuation_fragment.setArguments(bundle);
+
+                    FragmentTransaction fragmentTransaction = ((AppCompatActivity)mContext).getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.main_layout, fluctuation_fragment, "search").addToBackStack(null);
+                    fragmentTransaction.commit();
+                }
+            });
+        }
+
+        private Bundle settingBundle(){
+            Bundle bundle = new Bundle();
+
+            bundle.putParcelable("item_image", bitmap);
+            bundle.putParcelable("item_data", item_data);
+
+            return bundle;
         }
 
         public void onBind(Alarm data) {
+            item_data = data;
             alarm_title.setText(data.getItem_title());
             String item_image = data.getItem_image();
             set_alarm_image(item_image);
