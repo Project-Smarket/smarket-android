@@ -177,9 +177,9 @@ public class MainNavigationActivity extends AppCompatActivity {
 
     //참고사이트 https://featherwing.tistory.com/9
     private void checkNotification(){
-        String str = getIntent().getStringExtra("notification");
+        String str = getIntent().getStringExtra("data");
 
-        if(str !=null && str.equals("Notification")){
+        if(str !=null && str.equals("data")){
                 Handler handler = new Handler();
                 handler.postDelayed(
                         new Runnable() {

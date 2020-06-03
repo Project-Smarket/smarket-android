@@ -111,8 +111,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             title = "푸시 알림";
         }
         Intent intent = new Intent(this, MainNavigationActivity.class);//Intent는 아직 모름ㅠ
-        intent.putExtra("notification", "Notification");
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.putExtra("data", "data");
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP); //문제점
 
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), (int)(System.currentTimeMillis()/1000), intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);

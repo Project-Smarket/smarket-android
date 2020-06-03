@@ -34,6 +34,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -176,6 +177,8 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
             bookmark_btn = itemView.findViewById(R.id.bookmark_btn);
             alarm_btn = itemView.findViewById(R.id.alarm_btn);
 
+
+
             bookmark_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -274,45 +277,8 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
 
         // 북마크 아이템 이미지 설정
         void set_bookmark_image() {
-            Thread mThread = new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        try {
-                            URL url = new URL(item_image);
 
-                            //웹에서 이미지를 가져온 뒤
-                            //이미지뷰에 지정할 비트맵을 만든다
-                            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                            connection.setDoInput(true); //서버로부터 응답 수신
-                            connection.connect();
-
-                            InputStream is = connection.getInputStream(); //inputStream 값 가져오기
-                            bitmap = BitmapFactory.decodeStream(is); // Bitmap으로 변환
-                        } catch (MalformedURLException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
-            mThread.setDaemon(true);
-            mThread.start(); //쓰레드 실행
-
-            try {
-                // 메인 쓰레드는 별도의 작업 쓰레드가 작업을 완료할 때까지 대기
-                // join()을 호출하여 별도의 작업 쓰레드가 종료될 때까지 메인 쓰레드가 기다리게 한다.
-                mThread.join();
-
-                // 작업 쓰레드에서 이미지를 불러오는 작업을 완료한 뒤
-                // UI 작업을 할 수 있는 메인 쓰레드에서 imageView에 이미지를 지정한다.
-                bookmark_image.setImageBitmap(bitmap);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            Glide.with(mContext).asBitmap().load(item_image).into(bookmark_image);
         }
 
         // 상품 상세로 전달되는 Bundle
