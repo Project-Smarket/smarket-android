@@ -34,7 +34,7 @@ public class search_detail_review_fragment extends Fragment {
 
 
 
-     if( recyclerView == null || reviewList.size() == 0){
+     if( reviewList == null || reviewList.size() == 0){
             viewGroup = (ViewGroup) inflater.inflate(R.layout.search_detail_review_none_fragment, container, false);
         }else{
             viewGroup = (ViewGroup) inflater.inflate(R.layout.search_detail_review_fragment, container, false);

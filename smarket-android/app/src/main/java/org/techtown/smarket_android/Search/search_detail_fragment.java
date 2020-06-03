@@ -121,6 +121,7 @@ public class search_detail_fragment extends Fragment {
 
         //로딩
         progressDialog = createProgressDialog(getContext());
+        progressDialog.setCancelable(false);
         progressDialog.show();
 
         // 사용자 정보 가져옴
@@ -800,6 +801,7 @@ public class search_detail_fragment extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "onErrorResponse: "+ error.toString());
                 error_handling(error, null, null, null, null);
             }
         });
