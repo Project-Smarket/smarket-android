@@ -20,6 +20,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,6 +31,7 @@ import org.techtown.smarket_android.DTO_Class.Alarm;
 import org.techtown.smarket_android.DTO_Class.Fluctuation;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.Search.RecyclerDecoration;
+import org.techtown.smarket_android.User.Latest.latest_fragment;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -141,5 +143,20 @@ public class fluctuation_fragment extends Fragment {
     private void get_userFile() {
         userFile = getContext().getSharedPreferences("userFile", MODE_PRIVATE);
         user_id = userFile.getString("user_id", null);
+    }
+
+    // toolbar 뒤로가기 메소드
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:{
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                fm.beginTransaction().remove(fluctuation_fragment.this).commit();
+                fm.popBackStack();
+                return true;
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
