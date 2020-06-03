@@ -25,6 +25,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -175,7 +176,7 @@ public class fluctuation_fragment extends Fragment {
         get_fluctuation(id);
 
         ImageView fluctuation_image = viewGroup.findViewById(R.id.fluctuation_ImageView);
-        fluctuation_image.setImageBitmap(image_bitmap);
+        Glide.with(getContext()).asBitmap().load(image_bitmap).into(fluctuation_image);
 
         TextView fluctuation_textView = viewGroup.findViewById(R.id.fluctuation_textView);
         fluctuation_textView.setText(item_title);
