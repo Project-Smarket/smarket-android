@@ -1,6 +1,9 @@
 package org.techtown.smarket_android.DTO_Class;
 
-public class Alarm {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Alarm implements Parcelable {
 
     // 상품 상세
     private String id;
@@ -210,4 +213,59 @@ public class Alarm {
     public void setAlarm_date(String alarm_date) {
         this.alarm_date = alarm_date;
     }
+
+    protected Alarm(Parcel in){
+        readFromParcel(in);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(item_title);
+        dest.writeString(item_link);
+        dest.writeString(item_image);
+        dest.writeString(item_lprice);
+        dest.writeString(item_mallName);
+        dest.writeString(item_id);
+        dest.writeString(item_type);
+        dest.writeString(item_brand);
+        dest.writeString(item_maker);
+        dest.writeString(item_category1);
+        dest.writeString(item_category2);
+        dest.writeString(item_category3);
+        dest.writeString(item_category4);
+        dest.writeInt(lprice_diff);
+    }
+
+    public void readFromParcel(Parcel in){
+        item_title = in.readString();
+        item_link = in.readString();
+        item_image = in.readString();
+        item_lprice = in.readString();
+        item_mallName = in.readString();
+        item_id = in.readString();
+        item_type = in.readString();
+        item_brand = in.readString();
+        item_maker = in.readString();
+        item_category1 = in.readString();
+        item_category2 = in.readString();
+        item_category3 = in.readString();
+        item_category4 = in.readString();
+        lprice_diff = in.readInt();
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public Alarm createFromParcel(Parcel in) {
+            return new Alarm(in);
+        }
+
+        public Alarm[] newArray(int size) {
+            return new Alarm[size];
+        }
+    };
 }
