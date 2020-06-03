@@ -44,14 +44,6 @@ public class hotdeal_page1_ppomppu1 extends Fragment {
 
     private boolean isMoreLoad = false;
 
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.hotdeal_list, container, false);
@@ -89,7 +81,7 @@ public class hotdeal_page1_ppomppu1 extends Fragment {
     }
 
     private void request_ppomppu() {
-        String url = getString(R.string.crawlingEndpoint) + "/ppomppu?id=ppomppu&page=" + page_num; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        String url = getString(R.string.crawlingEndpoint) + "/ppomppu?id=ppomppu&page=1"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -135,5 +127,6 @@ public class hotdeal_page1_ppomppu1 extends Fragment {
 
         RequestQueue requestQueue = Volley.newRequestQueue(getContext());
         requestQueue.add(stringRequest);
+        Log.d(TAG, "request_ppomppu: 요청");
     }
 }
