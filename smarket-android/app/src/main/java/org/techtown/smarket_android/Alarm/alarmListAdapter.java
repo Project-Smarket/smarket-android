@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 
 import org.techtown.smarket_android.DTO_Class.Alarm;
+import org.techtown.smarket_android.DTO_Class.DTO;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.Search.search_detail_fragment;
 
@@ -35,11 +36,11 @@ import java.util.List;
 
 public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alViewHolder> {
 
-    private List<Alarm> alarmList;
+    private List<DTO> alarmList;
     private Context mContext;
     private Activity mActivity;
 
-    alarmListAdapter(Activity activity, Context context, List<Alarm> list) {
+    alarmListAdapter(Activity activity, Context context, List<DTO> list) {
         mActivity = activity;
         mContext = context;
         alarmList = list;
@@ -71,9 +72,10 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
 
     public class alViewHolder extends RecyclerView.ViewHolder {
 
-        private Alarm item_data;
+        private DTO item_data;
 
         private int lprice_diff;
+        private String item_image;
 
         private TextView alarm_title; // 상품 제목
         private TextView alarm_diff;
@@ -84,11 +86,8 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
         private ImageView direction;
         private ImageView direction2;
         private TextView alarm_date;
-        //private TextView alarm_posted;
 
         private ImageView alarm_image;
-
-        private Bitmap bitmap;
 
         alViewHolder(View itemView) {
             super(itemView);
@@ -111,29 +110,26 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
                 public void onClick(View v) {
                     fluctuation_fragment fluctuation_fragment = new fluctuation_fragment();
 
-                    Bundle bundle = settingBundle();
+                    Bundle bundle = set_bundle();
                     fluctuation_fragment.setArguments(bundle);
 
                     FragmentTransaction fragmentTransaction = ((AppCompatActivity)mContext).getSupportFragmentManager().beginTransaction();
-                    fragmentTransaction.replace(R.id.main_layout, fluctuation_fragment, "search").addToBackStack(null);
+                    fragmentTransaction.replace(R.id.main_layout, fluctuation_fragment, "alarmList").addToBackStack(null);
                     fragmentTransaction.commit();
                 }
             });
         }
 
-        private Bundle settingBundle(){
+        private Bundle set_bundle(){
             Bundle bundle = new Bundle();
-
-            bundle.putParcelable("item_image", bitmap);
             bundle.putParcelable("item_data", item_data);
-
             return bundle;
         }
 
-        public void onBind(Alarm data) {
+        public void onBind(DTO data) {
             item_data = data;
             alarm_title.setText(data.getItem_title());
-            String item_image = data.getItem_image();
+            item_image = data.getItem_image();
             set_alarm_image(item_image);
             int item_lprice = Integer.parseInt(data.getItem_lprice());
             alarm_lprice.setText(String.format("%,d", item_lprice));

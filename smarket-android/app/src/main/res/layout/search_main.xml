@@ -12,19 +12,6 @@
     android:background="@color/colorWhite"
     android:orientation="vertical">
 
-
-    <Button
-        android:id="@+id/login_lock"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_gravity="right"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:background="@drawable/lock"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

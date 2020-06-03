@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.method.PasswordTransformationMethod;
@@ -17,6 +18,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -68,7 +70,9 @@ public class user_login_success extends Fragment {
     private ConstraintLayout bookmark;
     private ConstraintLayout latest;
     private ConstraintLayout userinform;
+    private ConstraintLayout clock;
     private ConstraintLayout logout;
+
 
     // ** 로그인 및 토큰 정보 ** //
     private SharedPreferences userFile;
@@ -145,8 +149,10 @@ public class user_login_success extends Fragment {
             on_alarm();
         }
 
-        final Switch priceAlarm = viewGroup.findViewById(R.id.priceAlarm_switch);
+        final Switch priceAlarm = viewGroup.findViewById(R.id.alarm_switch);
+        clock = viewGroup.findViewById(R.id.clock);
         priceAlarm.setChecked(alarm_check);
+        set_clock(String.valueOf(alarm_check));
 
         priceAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,16 +161,28 @@ public class user_login_success extends Fragment {
                 if (alarm_check) {
                     alarm_check = false;
                     off_alarm();
+                    set_clock("false");
                     Toast.makeText(getContext(), "가격 변동 알람 : OFF", Toast.LENGTH_LONG).show();
                 }
                 // 알람이 Off일 경우 - 알람을 On으로 설정하고, alarm_check = true 설정(알람 설정)
                 else {
                     alarm_check = true;
                     on_alarm();
+                    set_clock("true");
                     Toast.makeText(getContext(), "가격 변동 알람 : ON", Toast.LENGTH_LONG).show();
                 }
             }
         });
+
+
+        clock.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+
 
         logout = viewGroup.findViewById(R.id.logout);
         logout.setOnClickListener(new View.OnClickListener() {
@@ -182,6 +200,29 @@ public class user_login_success extends Fragment {
         return viewGroup;
     }
 
+    private void set_clock(String state){
+
+        ImageView clock_img = viewGroup.findViewById(R.id.clock_img);
+        TextView clock_tv = viewGroup.findViewById(R.id.clock_tv);
+        TextView set_time =  viewGroup.findViewById(R.id.set_time);
+
+        switch (state){
+            case "true":{
+                clock.setClickable(true);
+                clock_img.setColorFilter(getResources().getColor(R.color.colorBlack), PorterDuff.Mode.SRC_IN);
+                clock_tv.setTextColor(getResources().getColor(R.color.colorBlack));
+                set_time.setTextColor(getResources().getColor(R.color.colorgray));
+                break;
+            }
+            case "false":{
+                clock.setClickable(false);
+                clock_img.setColorFilter(getResources().getColor(R.color.color_lite_gray), PorterDuff.Mode.SRC_IN);
+                clock_tv.setTextColor(getResources().getColor(R.color.color_lite_gray));
+                set_time.setTextColor(getResources().getColor(R.color.color_lite_gray));
+                break;
+            }
+        }
+    }
 
     // 설정된 알람 삭제
     private void off_alarm() {

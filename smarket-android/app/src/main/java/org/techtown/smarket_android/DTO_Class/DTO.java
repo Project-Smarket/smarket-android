@@ -5,12 +5,9 @@ import android.os.Parcelable;
 
 public class DTO implements Parcelable {
 
-    private String id;
-    private String user_id;
-    private String folder_name;
-    private boolean item_selling;
-    private String item_alarm;
 
+
+    // 상품 상세
     private String item_title;
     private String item_link;
     private String item_image;
@@ -25,7 +22,14 @@ public class DTO implements Parcelable {
     private String item_category3;
     private String item_category4;
 
+    // 북마크
+    private String id;
+    private boolean item_selling;
+    private String item_alarm;
+
+    // 알람
     private int lprice_diff;
+    private String alarm_date;
 
     // SearchedItem
     public DTO(String item_title, String item_link, String item_image, String item_lprice, String item_mallName, String item_id, String item_type, String item_brand, String item_maker, String item_category1, String item_category2, String item_category3, String item_category4) {
@@ -46,10 +50,8 @@ public class DTO implements Parcelable {
 
 
     // Bookmark
-    public DTO(String id, String user_id, String folder_name, boolean item_selling, String item_alarm, String item_title, String item_link, String item_image, String item_lprice, String item_mallName, String item_id, String item_type, String item_brand, String item_maker, String item_category1, String item_category2, String item_category3, String item_category4) {
+    public DTO(String id, boolean item_selling, String item_alarm, String item_title, String item_link, String item_image, String item_lprice, String item_mallName, String item_id, String item_type, String item_brand, String item_maker, String item_category1, String item_category2, String item_category3, String item_category4) {
         this.id = id;
-        this.user_id = user_id;
-        this.folder_name = folder_name;
         this.item_selling = item_selling;
         this.item_alarm = item_alarm;
         this.item_title = item_title;
@@ -67,28 +69,49 @@ public class DTO implements Parcelable {
         this.item_category4 = item_category4;
     }
 
+    public DTO(String id, boolean item_selling, String item_alarm, String item_title, String item_link, String item_image, String item_lprice, String item_mallName, String item_id, String item_type, String item_brand, String item_maker, String item_category1, String item_category2, String item_category3, String item_category4, int lprice_diff, String alarm_date) {
+        this.id = id;
+        this.item_selling = item_selling;
+        this.item_alarm = item_alarm;
+        this.item_title = item_title;
+        this.item_link = item_link;
+        this.item_image = item_image;
+        this.item_lprice = item_lprice;
+        this.item_mallName = item_mallName;
+        this.item_id = item_id;
+        this.item_type = item_type;
+        this.item_brand = item_brand;
+        this.item_maker = item_maker;
+        this.item_category1 = item_category1;
+        this.item_category2 = item_category2;
+        this.item_category3 = item_category3;
+        this.item_category4 = item_category4;
+        this.lprice_diff = lprice_diff;
+        this.alarm_date = alarm_date;
+    }
+
+    public int getLprice_diff() {
+        return lprice_diff;
+    }
+
+    public void setLprice_diff(int lprice_diff) {
+        this.lprice_diff = lprice_diff;
+    }
+
+    public String getAlarm_date() {
+        return alarm_date;
+    }
+
+    public void setAlarm_date(String alarm_date) {
+        this.alarm_date = alarm_date;
+    }
+
     public String getId() {
         return id;
     }
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getUser_id() {
-        return user_id;
-    }
-
-    public void setUser_id(String user_id) {
-        this.user_id = user_id;
-    }
-
-    public String getFolder_name() {
-        return folder_name;
-    }
-
-    public void setFolder_name(String folder_name) {
-        this.folder_name = folder_name;
     }
 
     public boolean isItem_selling() {

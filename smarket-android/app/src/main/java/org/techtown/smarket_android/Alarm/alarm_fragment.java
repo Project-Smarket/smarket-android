@@ -27,6 +27,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import org.techtown.smarket_android.DTO_Class.Alarm;
+import org.techtown.smarket_android.DTO_Class.DTO;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.Search.RecyclerDecoration;
 import org.techtown.smarket_android.Search.search_detail_fragment;
@@ -45,7 +46,7 @@ public class alarm_fragment extends Fragment {
 
     private RecyclerView alarmRecyclerView;
     private alarmListAdapter alarmListAdapter;
-    private List<Alarm> alarmList;
+    private List<DTO> alarmList;
 
     // ** 로그인 및 토큰 정보 ** //
     private SharedPreferences userFile;
@@ -95,7 +96,7 @@ public class alarm_fragment extends Fragment {
         // 저장된 alarmList 있을 경우
         if (userFile.getString(key, null) != null) {
             String key_alarmList = userFile.getString(key, null);
-            Type listType = new TypeToken<ArrayList<Alarm>>() {
+            Type listType = new TypeToken<ArrayList<DTO>>() {
             }.getType();
             alarmList = new GsonBuilder().create().fromJson(key_alarmList, listType);
 
@@ -110,7 +111,7 @@ public class alarm_fragment extends Fragment {
     private void save_alarmList() {
         String key = user_id + "/alarmList";
         // List<Alarm> 클래스 객체를 String 객체로 변환
-        Type listType = new TypeToken<ArrayList<Alarm>>() {
+        Type listType = new TypeToken<ArrayList<DTO>>() {
         }.getType();
         String json = new GsonBuilder().create().toJson(alarmList, listType);
 

@@ -34,6 +34,7 @@ import com.google.gson.reflect.TypeToken;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.techtown.smarket_android.DTO_Class.DTO;
 import org.techtown.smarket_android.DTO_Class.Fluctuation;
 import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
 import org.techtown.smarket_android.DTO_Class.Alarm;
@@ -64,7 +65,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     private String refresh_token;
     private String device_token;
 
-    private List<Alarm> alarmList;
+    private List<DTO> alarmList;
     private List<Fluctuation> fluctuationList;
 
     private String alarm_date;
@@ -173,9 +174,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                                     // 북마크 고유 id로 fluctuationList를 가져옴
                                     get_fluctuationList(id);
 
-                                    String user_id = data.getString("user_id");
-                                    String folder_name = data.getString("folder_name");
-                                    Boolean item_selling = data.getBoolean("item_selling");
+                                    boolean item_selling = data.getBoolean("item_selling");
                                     String item_alarm = String.valueOf(data.getBoolean("item_alarm"));
                                     String item_title = data.getString("item_title");
                                     String item_link = data.getString("item_link");
@@ -195,11 +194,11 @@ public class AlarmReceiver extends BroadcastReceiver {
                                     // fluctuationList 리스트를 저장
                                     save_fluctuationList(id, fluctuationList);
 
-                                    Alarm alarm = new Alarm(id, user_id, folder_name, item_selling, item_alarm, item_title, item_link, item_image, item_lprice, item_mallName
+                                    DTO alarm = new DTO(id, item_selling, item_alarm, item_title, item_link, item_image, item_lprice, item_mallName
                                             , item_id, item_type, item_brand, item_maker, item_category1, item_category2, item_category3, item_category4, lprice_diff, alarm_date);
 
-                                    // alarmList에 새로운 alarm을 저장 - stack 형식으로 저장
-                                    alarmList.add(0, alarm);
+                                    // alarmList에 새로운 alarm을 저장 - stack 형식으로 저장 (한도 : 50)
+                                    add_alarmList(alarm);
 
                                     // 가격 변동된 알람의 개수를 증가
                                     count += 1;
@@ -249,6 +248,14 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         requestQueue.add(stringRequest);
+    }
+
+    private void add_alarmList(DTO alarm){
+        int MAX = 50; // 알람리스트 저장 한도 설정
+        if(alarmList.size() == MAX){
+            alarmList.remove(alarmList.get(alarmList.size()-1));
+        }
+        alarmList.add(0, alarm);
     }
 
 
@@ -472,7 +479,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         String key = user_id + "/alarmList";
         if (userFile.getString(key, null) != null) {
             String key_alarmList = userFile.getString(key, null);
-            Type listType = new TypeToken<ArrayList<Alarm>>() {
+            Type listType = new TypeToken<ArrayList<DTO>>() {
             }.getType();
             alarmList = new GsonBuilder().create().fromJson(key_alarmList, listType);
 
@@ -486,8 +493,8 @@ public class AlarmReceiver extends BroadcastReceiver {
     // SharedPreference에 alarmList 데이터 저장
     private void save_alarmList() {
         String key = user_id + "/alarmList";
-        // List<Alarm> 클래스 객체를 String 객체로 변환
-        Type listType = new TypeToken<ArrayList<Alarm>>() {
+        // List<DTO> 클래스 객체를 String 객체로 변환
+        Type listType = new TypeToken<ArrayList<DTO>>() {
         }.getType();
         String json = new GsonBuilder().create().toJson(alarmList, listType);
 
@@ -499,7 +506,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     // SharedPreference의 가격 변동 리스트 데이터를 가져온다
     private void get_fluctuationList(String id) {
-        // 저장된 alarmList 있을 경우
+        // 저장된 fluctuationList 있을 경우
         String key = user_id + "/alarmList/" + id;
         if (userFile.getString(key, null) != null) {
             String key_fluctuationList = userFile.getString(key, null);

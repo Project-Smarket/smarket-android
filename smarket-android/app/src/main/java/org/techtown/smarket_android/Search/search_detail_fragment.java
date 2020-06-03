@@ -44,6 +44,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.common.internal.Objects;
 import com.google.android.material.tabs.TabLayout;
 import com.google.gson.JsonElement;
@@ -128,7 +129,7 @@ public class search_detail_fragment extends Fragment {
         get_userFile();
 
         // Bundle로 부터 item_data를 전달받음
-        receive_itemData();
+        receive_bundle();
 
         // 상세정보 요청
         try {
@@ -610,7 +611,7 @@ public class search_detail_fragment extends Fragment {
         });
     }
 
-    private void receive_itemData() {
+    private void receive_bundle() {
         Bundle bundle = getArguments();
 
         if (bundle != null) {
@@ -619,9 +620,10 @@ public class search_detail_fragment extends Fragment {
             String item_type = item_data.getItem_type();
             int lprice = Integer.parseInt(item_data.getItem_lprice());
             String item_lprice = String.format("%,d", lprice);
-            Bitmap bitmap = bundle.getParcelable("item_image");
+            String item_image = item_data.getItem_image();
 
-            ImageView item_image = viewGroup.findViewById(R.id.detail_item_image);
+
+            ImageView item_image_imageView = viewGroup.findViewById(R.id.detail_item_image);
             TextView item_title_textView = viewGroup.findViewById(R.id.detail_item_name);
             TextView item_type_textView = viewGroup.findViewById(R.id.detail_item_type);
             TextView item_lprice_textView = viewGroup.findViewById(R.id.detail_item_value);
@@ -630,8 +632,7 @@ public class search_detail_fragment extends Fragment {
             TextView item_maker_textView = viewGroup.findViewById(R.id.detail_item_maker);
             TextView item_category_textView = viewGroup.findViewById(R.id.detail_item_category);
 
-
-            item_image.setImageBitmap(bitmap);
+            Glide.with(getContext()).asBitmap().load(item_image).into(item_image_imageView);
             item_title_textView.setText(item_title);
             if(!item_type.equals("1"))
                 item_type_textView.setText("");
