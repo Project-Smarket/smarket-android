@@ -54,6 +54,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.smarket_android.Hotdeal.hotdeal_webView;
+import org.techtown.smarket_android.Loading.CustomAnimationDialog;
 import org.techtown.smarket_android.User.Bookmark.bookmark_dialog;
 import org.techtown.smarket_android.User.Bookmark.bookmark_recyclerview_adapater;
 import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
@@ -117,6 +118,8 @@ public class search_detail_fragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.search_item_detail, container, false);
         userFile = getContext().getSharedPreferences("userFile", Context.MODE_PRIVATE);
+
+        //로딩
         progressDialog = createProgressDialog(getContext());
         progressDialog.show();
 
@@ -876,12 +879,8 @@ public class search_detail_fragment extends Fragment {
         imm.hideSoftInputFromWindow(bookmark_folder_name.getWindowToken(), 0);
     }
 
-    public static ProgressDialog createProgressDialog(Context context) {
-        progressDialog = new ProgressDialog(context, R.style.custom_progress);
-        progressDialog.setCancelable(false);
-        progressDialog.getWindow()
-                .setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-        progressDialog.setContentView(R.layout.progress_dialog);
+    public ProgressDialog createProgressDialog(Context context) {
+        progressDialog = new CustomAnimationDialog(context);
 
         // dialog.setMessage(Message);
         return progressDialog;

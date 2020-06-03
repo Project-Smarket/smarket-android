@@ -3,6 +3,7 @@ package org.techtown.smarket_android.MainNavigation;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,6 +31,7 @@ public class MainNavigationActivity extends AppCompatActivity {
     //user_login_success user_fragment2; // 로그인 완료 창
     private user_login_fragment user_fragment3; // 로그인 창
     private alarm_fragment alarm_fragment4;
+    private boolean checkbackbtn = false;
 
 
     @Override
@@ -38,7 +40,6 @@ public class MainNavigationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_navigation);
         bottomNavigationView = findViewById(R.id.bottomNavigationView); //프래그먼트 생성
 
-        checkNotification();     //알림으로 들어올시 실행되는 메소드
 
         search_fragment1 = new search_fragment();//제일 처음 띄워줄 뷰를 세팅해줍니다. commit();까지 해줘야 합니다.
 
@@ -52,6 +53,8 @@ public class MainNavigationActivity extends AppCompatActivity {
         set_navigation();
         //check_alarmManager();
 
+        checkNotification();     //알림으로 들어올시 실행되는 메소드
+
 
     }
 
@@ -60,7 +63,8 @@ public class MainNavigationActivity extends AppCompatActivity {
     // https://hwanine.github.io/android/backStack/
 
     private void set_navigation() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, search_fragment1, "search").addToBackStack(null).commitAllowingStateLoss(); //bottomnavigationview의 아이콘을 선택 했을때 원하는 프래그먼트가 띄워질 수 있도록 리스너를 추가합니다.
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, search_fragment1, "search").addToBackStack(null).commit(); //bottomnavigationview의 아이콘을 선택 했을때 원하는 프래그먼트가 띄워질 수 있도록 리스너를 추가합니다.
+
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -84,13 +88,11 @@ public class MainNavigationActivity extends AppCompatActivity {
                         fragmentTransaction.replace(R.id.main_layout, user_fragment3, "login");
                         break;
                     }
-
                     case R.id.tab4: {
                         alarm_fragment4 = new alarm_fragment(); // 최저가 알림창
                         fragmentTransaction.replace(R.id.main_layout, alarm_fragment4, "alarm");
                         break;
                     }
-
                     default:
                         break;
                 }
@@ -135,8 +137,9 @@ public class MainNavigationActivity extends AppCompatActivity {
         if (search != null && search.isVisible()) { //첫화면 뒤로가기 종료
             //this.finish();
 
-            if(System.currentTimeMillis() > backKeyPressedTime + 2000) {
+            if(System.currentTimeMillis() > backKeyPressedTime + 1000) {
                 backKeyPressedTime = System.currentTimeMillis();
+                checkbackbtn = false;
                 List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
                 for (Fragment fragment : fragmentList){
                     if(fragment instanceof OnBackpressedListener){
@@ -146,8 +149,18 @@ public class MainNavigationActivity extends AppCompatActivity {
                 return;
             }
 
-            if(System.currentTimeMillis() <= backKeyPressedTime + 2000){
+            if(checkbackbtn){
+                Toast.makeText(this, "한번 더 누르면 종료", Toast.LENGTH_SHORT).cancel();
                 this.finish();
+            }
+
+            if(System.currentTimeMillis() <= backKeyPressedTime + 1000){
+                checkbackbtn = true;
+                backKeyPressedTime = System.currentTimeMillis();
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.main_layout, search_fragment.newInstance(), "search").addToBackStack(null).commit();
+                Toast.makeText(this, "한 번더 누르면 종료",Toast.LENGTH_SHORT).show();
+                return;
             }
 
         } else if (logout != null && logout.isVisible()) { // 로그아웃 후 뒤로가기 방지
@@ -164,12 +177,11 @@ public class MainNavigationActivity extends AppCompatActivity {
 
     //참고사이트 https://featherwing.tistory.com/9
     private void checkNotification(){
-        String str = getIntent().getStringExtra("notification");
+        String str = getIntent().getStringExtra("data");
 
-        if(str !=null && str.equals("Notification")){
+        if(str !=null && str.equals("data")){
                 Handler handler = new Handler();
                 handler.postDelayed(
-
                         new Runnable() {
                     @Override
                     public void run() {

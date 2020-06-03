@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,7 +40,6 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class alarm_fragment extends Fragment {
 
-
     private static final String TAG = "알람리스트";
     private ViewGroup viewGroup;
 
@@ -47,11 +47,9 @@ public class alarm_fragment extends Fragment {
     private alarmListAdapter alarmListAdapter;
     private List<Alarm> alarmList;
 
-
     // ** 로그인 및 토큰 정보 ** //
     private SharedPreferences userFile;
     private String user_id;
-
 
     @Nullable
     @Override
@@ -86,6 +84,7 @@ public class alarm_fragment extends Fragment {
         alarmRecyclerView.setLayoutManager(linearLayoutManager);
         alarmRecyclerView.addItemDecoration(spaceDecoration);
         alarmListAdapter = new alarmListAdapter(getActivity(), getContext(), alarmList);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(alarmRecyclerView);
         alarmRecyclerView.setAdapter(alarmListAdapter);
 
     }
@@ -170,4 +169,20 @@ public class alarm_fragment extends Fragment {
         userFile = getContext().getSharedPreferences("userFile", MODE_PRIVATE);
         user_id = userFile.getString("user_id", null);
     }
+
+    //스와이프 테스트중
+    // https://www.youtube.com/watch?v=M1XEqqo6Ktg
+    ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            alarmList.remove(viewHolder.getAdapterPosition());
+            alarmListAdapter.notifyDataSetChanged();
+            save_alarmList();
+        }
+    };
 }

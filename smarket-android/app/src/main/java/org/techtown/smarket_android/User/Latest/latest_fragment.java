@@ -7,6 +7,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -17,6 +18,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -156,4 +158,18 @@ public class latest_fragment extends Fragment {
         user_id = userFile.getString("user_id", null);
     }
 
+    // toolbar 뒤로가기 메소드
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:{
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                fm.beginTransaction().remove(latest_fragment.this).commit();
+                fm.popBackStack();
+                return true;
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 }

@@ -233,7 +233,7 @@ public class search_fragment extends Fragment implements OnBackpressedListener {
                 searchdetailFragment.setArguments(bundle);
 
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.main_layout, searchdetailFragment, "search").addToBackStack(null);
+                fragmentTransaction.add(R.id.main_layout, searchdetailFragment, "search").addToBackStack(null);
                 fragmentTransaction.commit();
             }
         });
@@ -273,6 +273,7 @@ public class search_fragment extends Fragment implements OnBackpressedListener {
                         itemList.add(item);
                     }
                     adapter.notifyDataSetChanged();
+
 
                     // 스마켓 고양이 축소
                     ViewGroup.LayoutParams cat_params = smarket_cat.getLayoutParams();

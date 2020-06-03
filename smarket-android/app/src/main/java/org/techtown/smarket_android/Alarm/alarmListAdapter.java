@@ -20,6 +20,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import org.techtown.smarket_android.DTO_Class.Alarm;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.Search.search_detail_fragment;
@@ -140,47 +142,7 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
         }
 
         void set_alarm_image(final String item_image) {
-            //안드로이드에서 네트워크와 관련된 작업을 할 때,
-            //반드시 메인 쓰레드가 아닌 별도의 작업 쓰레드를 생성하여 작업해야 한다.
-            Thread mThread = new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        try {
-                            URL url = new URL(item_image);
-
-                            //웹에서 이미지를 가져온 뒤
-                            //이미지뷰에 지정할 비트맵을 만든다
-                            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                            connection.setDoInput(true); //서버로부터 응답 수신
-                            connection.connect();
-
-                            InputStream is = connection.getInputStream(); //inputStream 값 가져오기
-                            bitmap = BitmapFactory.decodeStream(is); // Bitmap으로 변환
-                        } catch (MalformedURLException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
-            mThread.setDaemon(true);
-            mThread.start(); //쓰레드 실행
-
-            try {
-                // 메인 쓰레드는 별도의 작업 쓰레드가 작업을 완료할 때까지 대기
-                // join()을 호출하여 별도의 작업 쓰레드가 종료될 때까지 메인 쓰레드가 기다리게 한다.
-                mThread.join();
-
-                // 작업 쓰레드에서 이미지를 불러오는 작업을 완료한 뒤
-                // UI 작업을 할 수 있는 메인 쓰레드에서 imageView에 이미지를 지정한다.
-                alarm_image.setImageBitmap(bitmap);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            Glide.with(mContext).asBitmap().load(item_image).into(alarm_image);
         }
 
         // direction ImageView 설정정
