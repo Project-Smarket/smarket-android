@@ -34,6 +34,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -133,6 +134,7 @@ public class search_detail_fragment extends Fragment {
         }
 
         // tabLayout 설정
+        fragmentManager = getChildFragmentManager();
         set_tabLayout();
 
         Button gotoMall = viewGroup.findViewById(R.id.detail_gotoMall);
@@ -474,6 +476,9 @@ public class search_detail_fragment extends Fragment {
         } else if(error instanceof TimeoutError){
             progressDialog.dismiss();
             Toast.makeText(getContext(), "통신이 원활하지 않습니다", Toast.LENGTH_LONG).show();
+            newsList = new ArrayList<>();
+            specList = new ArrayList<>();
+            reviewList = new ArrayList<>();
         }
     }
 
@@ -753,9 +758,16 @@ public class search_detail_fragment extends Fragment {
                 try {
                     JSONObject jsonObject = new JSONObject(response);
 
-                    // 검색 성공시
-                    if(!jsonObject.isNull("spec") || !jsonObject.isNull("news") || !jsonObject.isNull("review")){
+                    // 검색 실패시
+                    if(jsonObject.isNull("spec") && jsonObject.isNull("news") && jsonObject.isNull("review")){
 
+                        specList = new ArrayList<>();
+                        reviewList = new ArrayList<>();
+                        newsList = new ArrayList<>();
+
+                    }
+                    // 검색 성공 시
+                    else{
                         //리뷰 json파싱
                         reviewJson(jsonObject);
 
@@ -770,14 +782,8 @@ public class search_detail_fragment extends Fragment {
                         //뉴스 json파싱
                         newsJson(jsonObject);
                     }
-                    // 검색 실패 시
-                    else{
-                        specList = new ArrayList<>();
-                        reviewList = new ArrayList<>();
-                        newsList = new ArrayList<>();
-                    }
 
-                    fragmentManager = getChildFragmentManager();
+
                     detail_review_fragment = new search_detail_review_fragment();
                     Bundle reviewbundle = new Bundle();
                     reviewbundle.putParcelableArrayList("review", reviewList);
@@ -795,11 +801,18 @@ public class search_detail_fragment extends Fragment {
                 error_handling(error, null, null, null, null);
             }
         });
+
+        detailRequest.setRetryPolicy(new DefaultRetryPolicy(
+                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS*2,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
         RequestQueue queue = Volley.newRequestQueue(getContext());
         queue.add(detailRequest);
     }
 
     private void specJson(JSONObject jsonObject) throws JSONException {
+        specList = new ArrayList<>();
         ArrayList<String> keyList = new ArrayList<>();
         ArrayList<String> keyValueList = new ArrayList<>();
         JSONArray data = jsonObject.getJSONArray("spec");
@@ -818,6 +831,7 @@ public class search_detail_fragment extends Fragment {
     }
 
     private void reviewJson(JSONObject jsonObject) throws JSONException {
+        reviewList = new ArrayList<>();
         JSONArray review = jsonObject.getJSONArray("review");
 
         for (int i = 0, length = review.length(); i < length; i++) {
@@ -835,6 +849,7 @@ public class search_detail_fragment extends Fragment {
     }
 
     private void newsJson(JSONObject jsonObject) throws JSONException {
+        newsList = new ArrayList<>();
         JSONArray news = jsonObject.getJSONArray("news");
 
         for (int i = 0, length = news.length(); i < length; i++) {

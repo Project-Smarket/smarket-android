@@ -34,6 +34,7 @@ import com.google.gson.reflect.TypeToken;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.techtown.smarket_android.DTO_Class.Fluctuation;
 import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
 import org.techtown.smarket_android.DTO_Class.Alarm;
 import org.techtown.smarket_android.R;
@@ -64,8 +65,10 @@ public class AlarmReceiver extends BroadcastReceiver {
     private String device_token;
 
     private List<Alarm> alarmList;
+    private List<Fluctuation> fluctuationList;
 
     private String alarm_date;
+    private String date;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -84,7 +87,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         int hour = calendar.get(Calendar.SECOND);
         Date currentTime = Calendar.getInstance().getTime();
         alarm_date = new SimpleDateFormat("yy/MM/dd", Locale.getDefault()).format(currentTime);
-
+        date = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault()).format(currentTime);
 
         Toast.makeText(context, String.valueOf(hour), Toast.LENGTH_SHORT).show();
 
@@ -166,6 +169,10 @@ public class AlarmReceiver extends BroadcastReceiver {
                                 // 갱신된 가격이 다른 경우만 alarm을 저장
                                 if (lprice_diff != 0) {
                                     String id = data.getString("id");
+
+                                    // 북마크 고유 id로 fluctuationList를 가져옴
+                                    get_fluctuationList(id);
+
                                     String user_id = data.getString("user_id");
                                     String folder_name = data.getString("folder_name");
                                     Boolean item_selling = data.getBoolean("item_selling");
@@ -183,6 +190,11 @@ public class AlarmReceiver extends BroadcastReceiver {
                                     String item_category2 = data.getString("item_category2");
                                     String item_category3 = data.getString("item_category3");
                                     String item_category4 = data.getString("item_category4");
+
+                                    fluctuationList.add(new Fluctuation(date, item_lprice, lprice_diff));
+                                    // fluctuationList 리스트를 저장
+                                    save_fluctuationList(id, fluctuationList);
+
                                     Alarm alarm = new Alarm(id, user_id, folder_name, item_selling, item_alarm, item_title, item_link, item_image, item_lprice, item_mallName
                                             , item_id, item_type, item_brand, item_maker, item_category1, item_category2, item_category3, item_category4, lprice_diff, alarm_date);
 
@@ -478,6 +490,36 @@ public class AlarmReceiver extends BroadcastReceiver {
         Type listType = new TypeToken<ArrayList<Alarm>>() {
         }.getType();
         String json = new GsonBuilder().create().toJson(alarmList, listType);
+
+        // 스트링 객체로 변환된 데이터를 alarmList에 저장
+        SharedPreferences.Editor editor = userFile.edit();
+        editor.putString(key, json);
+        editor.apply();
+    }
+
+    // SharedPreference의 가격 변동 리스트 데이터를 가져온다
+    private void get_fluctuationList(String id) {
+        // 저장된 alarmList 있을 경우
+        String key = user_id + "/alarmList/" + id;
+        if (userFile.getString(key, null) != null) {
+            String key_fluctuationList = userFile.getString(key, null);
+            Type listType = new TypeToken<ArrayList<Fluctuation>>() {
+            }.getType();
+            fluctuationList = new GsonBuilder().create().fromJson(key_fluctuationList, listType);
+
+        }// 저장된 alarmList 없을 경우
+        else {
+            fluctuationList = new ArrayList<>();
+        }
+    }
+
+    // 가격 변동 리스트 저장
+    private void save_fluctuationList(String id, List<Fluctuation> fluctuationList) {
+        String key = user_id + "/alarmList/" + id;
+        // List<Fluctuation> 클래스 객체를 String 객체로 변환
+        Type listType = new TypeToken<ArrayList<Fluctuation>>() {
+        }.getType();
+        String json = new GsonBuilder().create().toJson(fluctuationList, listType);
 
         // 스트링 객체로 변환된 데이터를 alarmList에 저장
         SharedPreferences.Editor editor = userFile.edit();
