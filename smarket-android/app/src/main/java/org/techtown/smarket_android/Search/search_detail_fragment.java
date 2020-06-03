@@ -783,7 +783,6 @@ public class search_detail_fragment extends Fragment {
                         newsJson(jsonObject);
                     }
 
-
                     detail_review_fragment = new search_detail_review_fragment();
                     Bundle reviewbundle = new Bundle();
                     reviewbundle.putParcelableArrayList("review", reviewList);
@@ -803,7 +802,7 @@ public class search_detail_fragment extends Fragment {
         });
 
         detailRequest.setRetryPolicy(new DefaultRetryPolicy(
-                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS*2,
+                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
         ));

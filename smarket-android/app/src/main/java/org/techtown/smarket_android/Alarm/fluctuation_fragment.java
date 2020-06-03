@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,6 +24,13 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
@@ -42,6 +50,7 @@ public class fluctuation_fragment extends Fragment {
 
     private ViewGroup viewGroup;
 
+    private LineChart lineChart;
     private RecyclerView ftRecyclerView;
     private ftAdapter ftAdapter;
     private List<Fluctuation> fluctuationList;
@@ -69,13 +78,65 @@ public class fluctuation_fragment extends Fragment {
         // 번들로 데이터 가져옴
         receive_bundle(savedInstanceState);
 
-
+        // lineChart 설정
+        set_lineChart();
 
         // 리사이클러뷰 설정
         set_recyclerView();
 
 
         return viewGroup;
+    }
+
+    private void set_lineChart(){
+        lineChart = viewGroup.findViewById(R.id.fluctuation_lineChart);
+
+        ArrayList<Entry> values = new ArrayList<>();
+        for (int i = 0; i < fluctuationList.size(); i++) {
+            values.add(new Entry(i+1,Integer.parseInt(fluctuationList.get(i).getLprice())));
+        }
+
+        LineDataSet set = new LineDataSet(values, "fluctuation");
+        set.setColor(getResources().getColor(R.color.colorBlack));
+        set.setCircleColor(getResources().getColor(R.color.colorBlack));
+        set.setValueTextSize(12);
+        set.setLineWidth(3);
+        set.setCircleRadius(6);
+        set.setCircleHoleRadius(3);
+        set.setCircleHoleColor(getResources().getColor(R.color.colorWhite));
+        set.setLabel("");
+
+
+        LineData data = new LineData(set);
+        lineChart.getXAxis().setDrawGridLines(false);
+        lineChart.getXAxis().setLabelCount(0,false);
+        lineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        lineChart.getAxisLeft().setDrawGridLines(false);
+        lineChart.getAxisRight().setDrawGridLines(false);
+        lineChart.getAxisLeft().setEnabled(false);
+        lineChart.getAxisRight().setEnabled(false);
+        //lineChart.setDrawGridBackground(true);
+        lineChart.setNoDataText("가겨 변동 내역이 없습니다");
+        lineChart.setNoDataTextColor(getResources().getColor(R.color.colorBlack));
+        lineChart.getLegend().setEnabled(false);
+        lineChart.setDescription(null);
+        lineChart.setExtraOffsets(30,30,30,10);
+        lineChart.setScaleEnabled(false);
+
+        lineChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                Toast.makeText(getContext(), "눌림" + e.getX(), Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onNothingSelected() {
+
+            }
+        });
+
+
+        lineChart.setData(data);
     }
 
     // alarmList 데이터 가져옴

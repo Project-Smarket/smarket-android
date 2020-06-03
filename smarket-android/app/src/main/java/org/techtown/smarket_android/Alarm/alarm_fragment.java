@@ -87,6 +87,7 @@ public class alarm_fragment extends Fragment {
         alarmRecyclerView.addItemDecoration(spaceDecoration);
         alarmListAdapter = new alarmListAdapter(getActivity(), getContext(), alarmList);
         alarmRecyclerView.setAdapter(alarmListAdapter);
+
     }
 
     // SharedPreference의 alarmList 데이터를 가져온다
