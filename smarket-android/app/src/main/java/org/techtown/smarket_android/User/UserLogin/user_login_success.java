@@ -8,10 +8,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +28,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -39,6 +42,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -56,6 +60,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.android.volley.VolleyLog.TAG;
 
 
 public class user_login_success extends Fragment {
@@ -84,7 +90,11 @@ public class user_login_success extends Fragment {
     private String refresh_token;
 
     private int alarm_unique_id = 1212;
-    private Boolean alarm_check = false;
+    private Boolean alarm_check;
+    private String[] timeList_s;
+    private int alarm_time;
+    private String alarm_time_s;
+    private TextView set_time;
 
     @Nullable
     @Override
@@ -126,7 +136,7 @@ public class user_login_success extends Fragment {
             public void onClick(View v) {
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_layout, latest_fragment.newInstance(),"login");
+                fragmentTransaction.replace(R.id.main_layout, latest_fragment.newInstance(), "login");
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             }
@@ -152,7 +162,7 @@ public class user_login_success extends Fragment {
         final Switch priceAlarm = viewGroup.findViewById(R.id.alarm_switch);
         clock = viewGroup.findViewById(R.id.clock);
         priceAlarm.setChecked(alarm_check);
-        set_clock(String.valueOf(alarm_check));
+        set_clock_layout(String.valueOf(alarm_check));
 
         priceAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -161,27 +171,35 @@ public class user_login_success extends Fragment {
                 if (alarm_check) {
                     alarm_check = false;
                     off_alarm();
-                    set_clock("false");
+                    set_clock_layout("false");
                     Toast.makeText(getContext(), "가격 변동 알람 : OFF", Toast.LENGTH_LONG).show();
                 }
                 // 알람이 Off일 경우 - 알람을 On으로 설정하고, alarm_check = true 설정(알람 설정)
                 else {
                     alarm_check = true;
                     on_alarm();
-                    set_clock("true");
+                    set_clock_layout("true");
                     Toast.makeText(getContext(), "가격 변동 알람 : ON", Toast.LENGTH_LONG).show();
                 }
             }
         });
 
+        // 시간 리스트
+        timeList_s = new String[]{"15초 마다", "1분 마다", "5분 마다", "10분 마다", "30분 마다", "1시간 마다", "3시간 마다", "6시간 마다"};
+
+        // 설정된 사용자 시간으로 String 설정
+        alarm_time_s = timeList_s[alarm_time];
+
+        // 설정된 시간 표시
+        set_time = viewGroup.findViewById(R.id.set_time);
+        set_time.setText(alarm_time_s);
 
         clock.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                select_time();
             }
         });
-
 
 
         logout = viewGroup.findViewById(R.id.logout);
@@ -200,28 +218,94 @@ public class user_login_success extends Fragment {
         return viewGroup;
     }
 
-    private void set_clock(String state){
+    // 알람 시간 설정 레이아웃 설정
+    private void set_clock_layout(String state) {
 
         ImageView clock_img = viewGroup.findViewById(R.id.clock_img);
         TextView clock_tv = viewGroup.findViewById(R.id.clock_tv);
-        TextView set_time =  viewGroup.findViewById(R.id.set_time);
+        TextView set_time = viewGroup.findViewById(R.id.set_time);
 
-        switch (state){
-            case "true":{
-                clock.setClickable(true);
+        switch (state) {
+            case "true": {
+                // 버튼 클릭 효과 설정
+                clock.setEnabled(true);
+                TypedValue ouvalue = new TypedValue();
+                getContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackground, ouvalue, true);
+                clock.setBackgroundResource(ouvalue.resourceId);
+
+                // 레이아웃 활성화
                 clock_img.setColorFilter(getResources().getColor(R.color.colorBlack), PorterDuff.Mode.SRC_IN);
                 clock_tv.setTextColor(getResources().getColor(R.color.colorBlack));
                 set_time.setTextColor(getResources().getColor(R.color.colorgray));
                 break;
             }
-            case "false":{
-                clock.setClickable(false);
+            case "false": {
+                // 버튼 클릭 효과 삭제
+                clock.setEnabled(false);
+                clock.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+
+                // 레이아웃 비활성화
                 clock_img.setColorFilter(getResources().getColor(R.color.color_lite_gray), PorterDuff.Mode.SRC_IN);
                 clock_tv.setTextColor(getResources().getColor(R.color.color_lite_gray));
                 set_time.setTextColor(getResources().getColor(R.color.color_lite_gray));
                 break;
             }
         }
+    }
+
+    // 알람 시간 설정
+    private void select_time() {
+
+
+        // 선택된 시간 임시 저장 - "설정" 버튼 누를 시 적용
+        final int[] selectedTime = new int[1];
+        selectedTime[0] = -1;
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
+                .setTitle("알람 시간 설정")
+                .setSingleChoiceItems(timeList_s, alarm_time, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        selectedTime[0] = which;
+                    }
+                })
+                .setPositiveButton("설정", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // 선택된 시간이 있을 경우
+                        if (selectedTime[0] >= 0) {
+
+                            // 알람 시간 설정
+                            alarm_time = selectedTime[0];
+                            alarm_time_s = timeList_s[alarm_time];
+
+                            // 설정된 시간 토스트 알람
+                            Snackbar snackbar = Snackbar.make(viewGroup.findViewById(R.id.placeSnackBar), alarm_time_s + " 알람이 울립니다", 3000)
+                                    .setActionTextColor(getResources().getColor(R.color.smarketyello));
+
+                            // 스낵바 배경 색 설정
+                            View sbView = snackbar.getView();
+                            sbView.setBackgroundColor(getResources().getColor(R.color.smarketyello));
+
+                            // 스낵바 글씨 색 설정
+                            TextView svTextView = sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                            svTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorBlack));
+
+                            snackbar.show();
+                            // 설정된 시간 표시
+                            set_time.setText(alarm_time_s);
+
+                            // 설정된 시간 저장
+                            save_alarmTime();
+
+                            // 설정된 시간으로 알람 설정
+                            on_alarm();
+                        }
+                    }
+                })
+                .setNegativeButton("취소", null);
+
+        builder.create().show();
     }
 
     // 설정된 알람 삭제
@@ -246,43 +330,34 @@ public class user_login_success extends Fragment {
 
     }
 
-    // 알람 설정
     private void on_alarm() {
+        // 초, 분, 시
+        int SECOND = 1000;
+        int MINUTE = 60 * SECOND;
+        int HOUR = 60 * MINUTE;
 
-        // 알람 시간 설정
-        Calendar calendar = Calendar.getInstance();
+        // 타임 리스트 : 15초, 1분, 5분, 10분, 30분, 1시간, 3시간, 6시간
+        int[] timeList = new int[]{(15*SECOND), (1*MINUTE), (5*MINUTE), (10*MINUTE), (30*MINUTE), (1*HOUR), (3*HOUR), (6*HOUR)};
+        int set_time = timeList[alarm_time];
 
-        // 알람 10분 - 오후 12시
-        if (calendar.get(Calendar.SECOND) >= 0 && calendar.get(Calendar.SECOND) < 15) {
-            calendar.set(Calendar.SECOND, 15);
-        }
-        // 알람 20분 - 오후 3시
-        else if (calendar.get(Calendar.SECOND) >= 15 && calendar.get(Calendar.SECOND) < 30) {
-            calendar.set(Calendar.SECOND, 30);
-        }
-        // 알람 30분 - 오후 6시
-        else if (calendar.get(Calendar.SECOND) >= 30 && calendar.get(Calendar.SECOND) < 45) {
-            calendar.set(Calendar.SECOND, 45);
-        } // 알람 40분 - 오후 9시
-        else if (calendar.get(Calendar.SECOND) >= 45 && calendar.get(Calendar.SECOND) < 60) {
-            calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) + 1);
-            calendar.set(Calendar.SECOND, 0);
-        }
-        set_alarmManager(calendar);
+        // 설정된 시간으로 alarmManager 설정
+        set_alarmManager(set_time);
     }
 
     // alarmManager 설정
-    private void set_alarmManager(Calendar calendar) {
+    private void set_alarmManager(int set_time) {
         // 현재 시간
-        Date date = new Date();
 
         AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(getContext(), AlarmReceiver.class);
+        // 설정된 시간 AlarmReceiver로 전달
+        intent.putExtra("set_time", set_time);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(getContext(), alarm_unique_id, intent, 0);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Log.d("알람", date.toString() + " : 알람이 " + calendar.get(Calendar.SECOND) + "분로 설정되었습니다");
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
+
+
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + set_time, alarmIntent);
 
         }
         save_alarmCheck();
@@ -290,8 +365,16 @@ public class user_login_success extends Fragment {
 
 
     private void save_alarmCheck() {
+        String key = userID + "/alarm/check";
         SharedPreferences.Editor editor = userFile.edit();
-        editor.putBoolean("alarm_check", alarm_check);
+        editor.putBoolean(key, alarm_check);
+        editor.apply();
+    }
+
+    private void save_alarmTime() {
+        String key = userID + "/alarm/time";
+        SharedPreferences.Editor editor = userFile.edit();
+        editor.putInt(key, alarm_time);
         editor.apply();
     }
 
@@ -540,7 +623,8 @@ public class user_login_success extends Fragment {
         user_nickname = userFile.getString("user_nickname", null);
         access_token = userFile.getString("access_token", null);
         refresh_token = userFile.getString("refresh_token", null);
-        alarm_check = userFile.getBoolean("alarm_check", false);
+        alarm_check = userFile.getBoolean(userID + "/alarm/check", false);
+        alarm_time = userFile.getInt(userID + "/alarm/time", 1);
         Log.d("TOKEN", "access_token: " + access_token);
         Log.d("TOKEN", "refresh_token: " + refresh_token);
     }
