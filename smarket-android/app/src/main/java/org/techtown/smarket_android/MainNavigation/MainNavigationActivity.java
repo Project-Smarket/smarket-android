@@ -1,21 +1,24 @@
 package org.techtown.smarket_android.MainNavigation;
 
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.techtown.smarket_android.Alarm.alarm_fragment;
+import org.techtown.smarket_android.Alarm.fluctuation_fragment;
 import org.techtown.smarket_android.Hotdeal.hotdeal_fragment;
 import org.techtown.smarket_android.Search.OnBackpressedListener;
+import org.techtown.smarket_android.Search.search_detail_fragment;
 import org.techtown.smarket_android.Search.search_fragment;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
@@ -70,6 +73,7 @@ public class MainNavigationActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
+
                 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
                 switch (menuItem.getItemId()) { //menu_bottom.xml에서 지정해줬던 아이디 값을 받아와서 각 아이디값마다 다른 이벤트를 발생시킵니다.
@@ -97,9 +101,17 @@ public class MainNavigationActivity extends AppCompatActivity {
                     default:
                         break;
                 }
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                fragmentTransaction.commit(); //로그인 완료 창
+
+                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.main_layout);
+                if (currentFragment instanceof search_detail_fragment || currentFragment instanceof fluctuation_fragment) {
+                    fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                    fragmentTransaction.commit(); //로그인 완료 창
+                } else {
+
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                    fragmentTransaction.commit(); //로그인 완료 창
+                }
 
                 return true;
             }
@@ -139,29 +151,29 @@ public class MainNavigationActivity extends AppCompatActivity {
         if (search != null && search.isVisible()) { //첫화면 뒤로가기 종료
             //this.finish();
 
-            if(System.currentTimeMillis() > backKeyPressedTime + 1000) {
+            if (System.currentTimeMillis() > backKeyPressedTime + 1000) {
                 backKeyPressedTime = System.currentTimeMillis();
                 checkbackbtn = false;
                 List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
-                for (Fragment fragment : fragmentList){
-                    if(fragment instanceof OnBackpressedListener){
-                        ((OnBackpressedListener)fragment).onBackPressed();
+                for (Fragment fragment : fragmentList) {
+                    if (fragment instanceof OnBackpressedListener) {
+                        ((OnBackpressedListener) fragment).onBackPressed();
                     }
                 }
                 return;
             }
 
-            if(checkbackbtn){
+            if (checkbackbtn) {
                 Toast.makeText(this, "한번 더 누르면 종료", Toast.LENGTH_SHORT).cancel();
                 this.finish();
             }
 
-            if(System.currentTimeMillis() <= backKeyPressedTime + 1000){
+            if (System.currentTimeMillis() <= backKeyPressedTime + 1000) {
                 checkbackbtn = true;
                 backKeyPressedTime = System.currentTimeMillis();
                 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.main_layout, search_fragment.newInstance(), "search").addToBackStack(null).commit();
-                Toast.makeText(this, "한 번더 누르면 종료",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "한 번더 누르면 종료", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -169,9 +181,7 @@ public class MainNavigationActivity extends AppCompatActivity {
 
         } else if (loginS != null && loginS.isVisible()) { //로그인 후 뒤로가기 방지
 
-        } else if (detail != null && !detail.isVisible()){ // 상세보기 후 뒤로가기 방지
-
-        } else {
+        }else {
             super.onBackPressed();
             BottomNavigationView bnv = findViewById(R.id.bottomNavigationView);
             updateBottomMenu(bnv);
@@ -180,18 +190,18 @@ public class MainNavigationActivity extends AppCompatActivity {
     }
 
     //참고사이트 https://featherwing.tistory.com/9
-    private void checkNotification(){
+    private void checkNotification() {
         String str = getIntent().getStringExtra("data");
 
-        if(str !=null && str.equals("data")){
-                Handler handler = new Handler();
-                handler.postDelayed(
-                        new Runnable() {
-                    @Override
-                    public void run() {
-                        bottomNavigationView.setSelectedItemId(R.id.tab4);
-                    }
-                },300);
+        if (str != null && str.equals("data")) {
+            Handler handler = new Handler();
+            handler.postDelayed(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            bottomNavigationView.setSelectedItemId(R.id.tab4);
+                        }
+                    }, 300);
         }
     }
 
