@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,11 +37,20 @@ public class hotdeal_page4_ppomppu4 extends Fragment {
     private ArrayList<Hotdeal> hotdealList;
 
 
+    private int page_num = 1;
+
+    private boolean isMoreLoad = false;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        hotdealList = new ArrayList<>();
+        request_ppomppu();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.hotdeal_list, container, false);
-
-        hotdealList = new ArrayList<>();
 
         String site_name = "뽐뿌쇼핑특가";
         // 아이템 줄간격 설정
@@ -51,14 +62,26 @@ public class hotdeal_page4_ppomppu4 extends Fragment {
         recyclerView.addItemDecoration(spaceDecoration);
         hotdealListAdapter = new hotdealListAdapter(getActivity(), getContext(), hotdealList, site_name);
         recyclerView.setAdapter(hotdealListAdapter);
-
-        request_ppomppu();
+        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                // 스크롤이 가장 위에 있을 때
+                if (!recyclerView.canScrollVertically(-1)) {
+                    // 스크롤 가장 아래로 내려왔을 때
+                } else if (!recyclerView.canScrollVertically(1)) {
+                    if (!isMoreLoad) {
+                        isMoreLoad = true;
+                        request_ppomppu();
+                    }
+                }
+            }
+        });
 
         return viewGroup;
     }
 
     private void request_ppomppu(){
-        String url = getString(R.string.crawlingEndpoint) + "/ppomppu?id=shopping&page=1"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
+        String url = getString(R.string.crawlingEndpoint) + "/ppomppu?id=shopping&page="+ page_num; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -83,6 +106,8 @@ public class hotdeal_page4_ppomppu4 extends Fragment {
                             hotdealList.add(hotdeal);
                             hotdealListAdapter.notifyDataSetChanged();
                         }
+                        isMoreLoad = false;
+                        page_num += 1;
                     } else if (!success)
                         // ** 북마크 조회 실패시 ** //
                         Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();

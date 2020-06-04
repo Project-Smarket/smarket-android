@@ -4,7 +4,7 @@
     >
     <item
         android:id="@+id/menu_bookmark"
-        android:title="search"
+        android:title="북마크 추가"
         android:icon="@drawable/bookmark"
         app:showAsAction="always" />
 </menu>

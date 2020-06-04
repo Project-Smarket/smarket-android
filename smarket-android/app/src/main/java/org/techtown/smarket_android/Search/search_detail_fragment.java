@@ -45,6 +45,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.common.internal.Objects;
 import com.google.android.material.tabs.TabLayout;
 import com.google.gson.JsonElement;
@@ -122,14 +123,14 @@ public class search_detail_fragment extends Fragment {
 
         //로딩
         progressDialog = createProgressDialog(getContext());
+        progressDialog.setCancelable(false);
         progressDialog.show();
 
         // 사용자 정보 가져옴
         get_userFile();
 
         // Bundle로 부터 item_data를 전달받음
-        receive_itemData();
-
+        receive_bundle();
 
         // 상세정보 요청
         try {
@@ -137,7 +138,6 @@ public class search_detail_fragment extends Fragment {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-
 
         // tabLayout 설정
         fragmentManager = getChildFragmentManager();
@@ -162,7 +162,7 @@ public class search_detail_fragment extends Fragment {
         return viewGroup;
     }
 
-    private void add_bookmark() {
+    private void add_bookmark(){
         // 비로그인 시 로그인 창으로 이동
         if (user_id == null && access_token == null) {
             goto_login();
@@ -479,7 +479,7 @@ public class search_detail_fragment extends Fragment {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-        } else if (error instanceof TimeoutError) {
+        } else if(error instanceof TimeoutError){
             progressDialog.dismiss();
             Toast.makeText(getContext(), "통신이 원활하지 않습니다", Toast.LENGTH_LONG).show();
             newsList = new ArrayList<>();
@@ -612,7 +612,7 @@ public class search_detail_fragment extends Fragment {
         });
     }
 
-    private void receive_itemData() {
+    private void receive_bundle() {
         Bundle bundle = getArguments();
 
         if (bundle != null) {
@@ -621,9 +621,10 @@ public class search_detail_fragment extends Fragment {
             String item_type = item_data.getItem_type();
             int lprice = Integer.parseInt(item_data.getItem_lprice());
             String item_lprice = String.format("%,d", lprice);
-            Bitmap bitmap = bundle.getParcelable("item_image");
+            String item_image = item_data.getItem_image();
 
-            ImageView item_image = viewGroup.findViewById(R.id.detail_item_image);
+
+            ImageView item_image_imageView = viewGroup.findViewById(R.id.detail_item_image);
             TextView item_title_textView = viewGroup.findViewById(R.id.detail_item_name);
             TextView item_type_textView = viewGroup.findViewById(R.id.detail_item_type);
             TextView item_lprice_textView = viewGroup.findViewById(R.id.detail_item_value);
@@ -632,10 +633,9 @@ public class search_detail_fragment extends Fragment {
             TextView item_maker_textView = viewGroup.findViewById(R.id.detail_item_maker);
             TextView item_category_textView = viewGroup.findViewById(R.id.detail_item_category);
 
-
-            item_image.setImageBitmap(bitmap);
+            Glide.with(getContext()).asBitmap().load(item_image).into(item_image_imageView);
             item_title_textView.setText(item_title);
-            if (!item_type.equals("1"))
+            if(!item_type.equals("1"))
                 item_type_textView.setText("");
             item_lprice_textView.setText(item_lprice);
             item_mall_textView.setText("판매처 : " + item_data.getItem_mallName());
@@ -675,7 +675,14 @@ public class search_detail_fragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: {
-                FragmentManager fm = getActivity().getSupportFragmentManager();
+                FragmentManager fm = getFragmentManager();
+                if(fm.getBackStackEntryAt(fm.getBackStackEntryCount()-1).getName().equals("fluctuation")){
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("item_data", item_data);
+                }
+
+
+
                 fm.beginTransaction().remove(search_detail_fragment.this).commit();
                 fm.popBackStack();
                 return true;
@@ -765,7 +772,7 @@ public class search_detail_fragment extends Fragment {
                     JSONObject jsonObject = new JSONObject(response);
 
                     // 검색 실패시
-                    if (jsonObject.isNull("spec") && jsonObject.isNull("news") && jsonObject.isNull("review")) {
+                    if(jsonObject.isNull("spec") && jsonObject.isNull("news") && jsonObject.isNull("review")){
 
                         specList = new ArrayList<>();
                         reviewList = new ArrayList<>();
@@ -773,7 +780,7 @@ public class search_detail_fragment extends Fragment {
 
                     }
                     // 검색 성공 시
-                    else {
+                    else{
                         //리뷰 json파싱
                         reviewJson(jsonObject);
 
@@ -781,7 +788,7 @@ public class search_detail_fragment extends Fragment {
                         // item_type이 2가 아닐 경우 상세정보 제공함
                         if (!item_productType.equals("2")) {
                             specJson(jsonObject);
-                        } else {
+                        }else{
                             specList = new ArrayList<>();
                         }
 
@@ -804,12 +811,13 @@ public class search_detail_fragment extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "onErrorResponse: "+ error.toString());
                 error_handling(error, null, null, null, null);
             }
         });
 
         detailRequest.setRetryPolicy(new DefaultRetryPolicy(
-                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS * 2,
+                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
         ));

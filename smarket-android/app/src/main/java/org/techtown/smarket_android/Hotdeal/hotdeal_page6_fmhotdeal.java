@@ -69,10 +69,8 @@ public class hotdeal_page6_fmhotdeal extends Fragment {
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 // 스크롤이 가장 위에 있을 때
                 if (!recyclerView.canScrollVertically(-1)) {
-                    Log.i(TAG, "Top of list");
                     // 스크롤 가장 아래로 내려왔을 때
                 } else if (!recyclerView.canScrollVertically(1)) {
-                    Log.i(TAG, "End of list");
                     if (!isMoreLoad) {
                         isMoreLoad = true;
                         request_fmhotdeal();
@@ -80,7 +78,6 @@ public class hotdeal_page6_fmhotdeal extends Fragment {
                 }
             }
         });
-
 
         return viewGroup;
     }
@@ -110,10 +107,9 @@ public class hotdeal_page6_fmhotdeal extends Fragment {
                             Hotdeal hotdeal = new Hotdeal(category, title, url, replyCount, hit, time);
                             hotdealList.add(hotdeal);
                             hotdealListAdapter.notifyDataSetChanged();
-
-                            isMoreLoad = false;
-                            page_num += 1;
                         }
+                        isMoreLoad = false;
+                        page_num += 1;
                     } else if (!success)
                         // ** 북마크 조회 실패시 ** //
                         Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();

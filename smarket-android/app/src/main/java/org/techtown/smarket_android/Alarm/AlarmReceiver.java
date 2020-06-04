@@ -1,11 +1,9 @@
 package org.techtown.smarket_android.Alarm;
 
 import android.app.AlarmManager;
-import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -13,8 +11,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -34,9 +30,8 @@ import com.google.gson.reflect.TypeToken;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.techtown.smarket_android.DTO_Class.DTO;
 import org.techtown.smarket_android.DTO_Class.Fluctuation;
-import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
-import org.techtown.smarket_android.DTO_Class.Alarm;
 import org.techtown.smarket_android.R;
 
 import java.io.UnsupportedEncodingException;
@@ -64,15 +59,14 @@ public class AlarmReceiver extends BroadcastReceiver {
     private String refresh_token;
     private String device_token;
 
-    private List<Alarm> alarmList;
+    private List<DTO> alarmList;
     private List<Fluctuation> fluctuationList;
 
     private String alarm_date;
-    private String date;
+    private String fluctation_date;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
 
         // SharedPreference의 user 정보 가져옴
         get_userFile(context);
@@ -80,63 +74,45 @@ public class AlarmReceiver extends BroadcastReceiver {
         // SharedPreference의 alarmList 정보 가져옴
         get_alarmList();
 
-
-        Calendar calendar = Calendar.getInstance();
-
-        // TODO : 각 시간별로 최저가 알람이 설정된 제품의 가격 정보 조회를 요청
-        int hour = calendar.get(Calendar.SECOND);
         Date currentTime = Calendar.getInstance().getTime();
         alarm_date = new SimpleDateFormat("yy/MM/dd", Locale.getDefault()).format(currentTime);
-        date = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault()).format(currentTime);
+        fluctation_date = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault()).format(currentTime);
 
-        Toast.makeText(context, String.valueOf(hour), Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "북마크 상품 가격을 재조회합니다", Toast.LENGTH_LONG).show();
+
 
         // 가격 조회 요청
         request_get_item_lprice(context);
 
 
         // 알람 시간과 alarmmanager를 재설정합니다.
-        set_time(context, intent);
+        //set_time(context, intent);
 
-    }
+        // 다음 알람 시간 설정
+        int set_time = intent.getIntExtra("set_time", 0);
 
-    private void set_time(Context context, Intent intent) {
-        Calendar calendar = Calendar.getInstance();
-        // 알람 10분 - 오후 12시
-        if (calendar.get(Calendar.SECOND) >= 0 && calendar.get(Calendar.SECOND) < 15) {
-            calendar.set(Calendar.SECOND, 15);
-        }
-        // 알람 20분 - 오후 3시
-        else if (calendar.get(Calendar.SECOND) >= 15 && calendar.get(Calendar.SECOND) < 30) {
-            calendar.set(Calendar.SECOND, 30);
-        }
-        // 알람 30분 - 오후 6시
-        else if (calendar.get(Calendar.SECOND) >= 30 && calendar.get(Calendar.SECOND) < 45) {
-            calendar.set(Calendar.SECOND, 45);
-        } // 알람 40분 - 오후 9시
-        else if (calendar.get(Calendar.SECOND) >= 45 && calendar.get(Calendar.SECOND) < 60) {
-            calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) + 1);
-            calendar.set(Calendar.SECOND, 0);
+        if (set_time == 0) {
+            Toast.makeText(context, "알람이 꺼졌습니다", Toast.LENGTH_LONG).show();
+        } else {
+            set_alarmManager(context, intent, set_time);
         }
 
-        // 설정된 시간으로 alarmManager 재설정
-        set_alarmManager(calendar, context, intent);
+
     }
 
     // 설정된 시간으로 alarmManager 재설정
-    private void set_alarmManager(Calendar calendar, Context context, Intent intent) {
+    private void set_alarmManager(Context context, Intent intent, int set_time) {
 
-        // 현재 시간
-        Date date = new Date();
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         intent = new Intent(context, AlarmReceiver.class);
+        intent.putExtra("set_time", set_time);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(context, alarm_unique_id, intent, 0);
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Log.d("알람", date.toString() + " : 알람이 " + calendar.get(Calendar.SECOND) + "분로 설정되었습니다");
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
+
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + set_time, alarmIntent);
         }
     }
 
@@ -173,9 +149,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                                     // 북마크 고유 id로 fluctuationList를 가져옴
                                     get_fluctuationList(id);
 
-                                    String user_id = data.getString("user_id");
-                                    String folder_name = data.getString("folder_name");
-                                    Boolean item_selling = data.getBoolean("item_selling");
+                                    boolean item_selling = data.getBoolean("item_selling");
                                     String item_alarm = String.valueOf(data.getBoolean("item_alarm"));
                                     String item_title = data.getString("item_title");
                                     String item_link = data.getString("item_link");
@@ -191,15 +165,15 @@ public class AlarmReceiver extends BroadcastReceiver {
                                     String item_category3 = data.getString("item_category3");
                                     String item_category4 = data.getString("item_category4");
 
-                                    fluctuationList.add(new Fluctuation(date, item_lprice, lprice_diff));
+                                    fluctuationList.add(new Fluctuation(fluctation_date, item_lprice, lprice_diff));
                                     // fluctuationList 리스트를 저장
                                     save_fluctuationList(id, fluctuationList);
 
-                                    Alarm alarm = new Alarm(id, user_id, folder_name, item_selling, item_alarm, item_title, item_link, item_image, item_lprice, item_mallName
+                                    DTO alarm = new DTO(id, item_selling, item_alarm, item_title, item_link, item_image, item_lprice, item_mallName
                                             , item_id, item_type, item_brand, item_maker, item_category1, item_category2, item_category3, item_category4, lprice_diff, alarm_date);
 
-                                    // alarmList에 새로운 alarm을 저장 - stack 형식으로 저장
-                                    alarmList.add(0, alarm);
+                                    // alarmList에 새로운 alarm을 저장 - stack 형식으로 저장 (한도 : 50)
+                                    add_alarmList(alarm);
 
                                     // 가격 변동된 알람의 개수를 증가
                                     count += 1;
@@ -249,6 +223,14 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         requestQueue.add(stringRequest);
+    }
+
+    private void add_alarmList(DTO alarm) {
+        int MAX = 50; // 알람리스트 저장 한도 설정
+        if (alarmList.size() == MAX) {
+            alarmList.remove(alarmList.get(alarmList.size() - 1));
+        }
+        alarmList.add(0, alarm);
     }
 
 
@@ -406,7 +388,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                         String msg = data.get("msg").getAsString();
 
                         // refresh-token 만료되어 logout
-                        if (name.equals("TokenExpiredError") && msg.equals("jwt expired")){
+                        if (name.equals("TokenExpiredError") && msg.equals("jwt expired")) {
                             null_userFile();
                             off_alarm(context);
                         }
@@ -472,7 +454,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         String key = user_id + "/alarmList";
         if (userFile.getString(key, null) != null) {
             String key_alarmList = userFile.getString(key, null);
-            Type listType = new TypeToken<ArrayList<Alarm>>() {
+            Type listType = new TypeToken<ArrayList<DTO>>() {
             }.getType();
             alarmList = new GsonBuilder().create().fromJson(key_alarmList, listType);
 
@@ -486,8 +468,8 @@ public class AlarmReceiver extends BroadcastReceiver {
     // SharedPreference에 alarmList 데이터 저장
     private void save_alarmList() {
         String key = user_id + "/alarmList";
-        // List<Alarm> 클래스 객체를 String 객체로 변환
-        Type listType = new TypeToken<ArrayList<Alarm>>() {
+        // List<DTO> 클래스 객체를 String 객체로 변환
+        Type listType = new TypeToken<ArrayList<DTO>>() {
         }.getType();
         String json = new GsonBuilder().create().toJson(alarmList, listType);
 
@@ -499,7 +481,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     // SharedPreference의 가격 변동 리스트 데이터를 가져온다
     private void get_fluctuationList(String id) {
-        // 저장된 alarmList 있을 경우
+        // 저장된 fluctuationList 있을 경우
         String key = user_id + "/alarmList/" + id;
         if (userFile.getString(key, null) != null) {
             String key_fluctuationList = userFile.getString(key, null);

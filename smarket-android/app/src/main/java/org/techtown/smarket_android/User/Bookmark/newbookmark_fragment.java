@@ -25,11 +25,9 @@ import com.google.gson.JsonParser;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -53,11 +51,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.smarket_android.Alarm.AlarmReceiver;
 import org.techtown.smarket_android.DTO_Class.DTO;
-import org.techtown.smarket_android.MainActivity;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
 import org.techtown.smarket_android.Search.RecyclerDecoration;
-import org.techtown.smarket_android.DTO_Class.Bookmark;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -81,6 +77,7 @@ public class newbookmark_fragment extends Fragment {
     private ViewGroup viewGroup;
 
     private Toolbar toolbar;
+    private boolean toolbar_check = true;
     private Spinner bookmark_spinner; // 북마크 스피너
     private ArrayAdapter spinnerAdapter; // 스피너 어댑터
     private List<String> bookmarkFolderList; // SharedPreference에 저장된 bookmarkFolderList
@@ -106,6 +103,7 @@ public class newbookmark_fragment extends Fragment {
     private TextView add_bookmarkFolder;
     private TextView remove_bookmarkFolder;
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -130,7 +128,13 @@ public class newbookmark_fragment extends Fragment {
             @Override
             public void onClick(View v) {
                 AppBarLayout mAppbar = viewGroup.findViewById(R.id.bookmark_app_bar);
-                mAppbar.setExpanded(true);
+                if(toolbar_check){
+                    mAppbar.setExpanded(false);
+                    toolbar_check = false;
+                } else{
+                    mAppbar.setExpanded(true);
+                    toolbar_check = true;
+                }
             }
         });
 
@@ -587,7 +591,6 @@ public class newbookmark_fragment extends Fragment {
                             // 토큰에 user_id에 대한 정보가 들어 있기 때문에 별도 아이디검사를 하지 않아도됨
                             for (int i = 0; i < data.length(); i++) {
                                 String id = data.getJSONObject(i).getString("id");
-                                String folder_name = data.getJSONObject(i).getString("folder_name");
                                 Boolean item_selling = data.getJSONObject(i).getBoolean("item_selling");
                                 String item_alarm = String.valueOf(data.getJSONObject(i).getBoolean("item_alarm"));
                                 String item_title = data.getJSONObject(i).getString("item_title");
@@ -603,7 +606,7 @@ public class newbookmark_fragment extends Fragment {
                                 String item_category2 = data.getJSONObject(i).getString("item_category2");
                                 String item_category3 = data.getJSONObject(i).getString("item_category3");
                                 String item_category4 = data.getJSONObject(i).getString("item_category4");
-                                DTO bookmark = new DTO(id, user_id, folder_name, item_selling, item_alarm, item_title, item_link, item_image, item_lprice, item_mallName
+                                DTO bookmark = new DTO(id, item_selling, item_alarm, item_title, item_link, item_image, item_lprice, item_mallName
                                         , item_id, item_type, item_brand, item_maker, item_category1, item_category2, item_category3, item_category4);
                                 bookmarkList.add(bookmark);
                             }

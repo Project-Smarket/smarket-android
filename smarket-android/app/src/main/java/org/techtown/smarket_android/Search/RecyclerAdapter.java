@@ -49,7 +49,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.smarket_android.Alarm.AlarmReceiver;
-import org.techtown.smarket_android.DTO_Class.Alarm;
 import org.techtown.smarket_android.DTO_Class.DTO;
 import org.techtown.smarket_android.DTO_Class.Fluctuation;
 import org.techtown.smarket_android.R;
