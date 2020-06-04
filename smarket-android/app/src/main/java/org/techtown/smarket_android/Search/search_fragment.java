@@ -59,7 +59,9 @@ import static com.android.volley.VolleyLog.TAG;
 
 public class search_fragment extends Fragment implements OnBackpressedListener {
 
-    public static search_fragment newInstance(){return new search_fragment();}
+    public static search_fragment newInstance() {
+        return new search_fragment();
+    }
 
     private ViewGroup viewGroup;
     private RecyclerView recyclerView;
@@ -123,7 +125,6 @@ public class search_fragment extends Fragment implements OnBackpressedListener {
         getActivity().setTitle("");
 
 
-
         final AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) collapsingToolbarLayout.getLayoutParams();
         params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED);
 
@@ -165,7 +166,7 @@ public class search_fragment extends Fragment implements OnBackpressedListener {
                                 e.printStackTrace();
                             }
                         }
-                    },300);
+                    }, 300);
 
                 }
                 return false;
@@ -222,19 +223,22 @@ public class search_fragment extends Fragment implements OnBackpressedListener {
         adapter.setOnRecyclerClickListener(new RecyclerAdapter.OnRecyclerClickListener() {
             @Override
             public void OnRecyclerClickListener(View v, int position, DTO item_data) {
-                search_detail_fragment searchdetailFragment = new search_detail_fragment();
+                final search_detail_fragment searchdetailFragment = new search_detail_fragment();
 
                 // 최근 본 상품 목록 추가
-                latestList.add(0,item_data);
+                latestList.add(0, item_data);
                 save_latestList();
 
                 // 상품 상세로 데이터 전송
                 Bundle bundle = settingBundle(v, item_data);
                 searchdetailFragment.setArguments(bundle);
 
+
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                 fragmentTransaction.add(R.id.main_layout, searchdetailFragment, "search").addToBackStack(null);
                 fragmentTransaction.commit();
+
+
             }
         });
 
@@ -268,7 +272,7 @@ public class search_fragment extends Fragment implements OnBackpressedListener {
                         String item_category3 = items.getJSONObject(index).getString("category3");
                         String item_category4 = items.getJSONObject(index).getString("category4");
 
-                        DTO item = new DTO(item_title, item_link, item_image, item_lprice, item_mallName, item_id, item_type, item_brand, item_maker,item_category1, item_category2, item_category3, item_category4);
+                        DTO item = new DTO(item_title, item_link, item_image, item_lprice, item_mallName, item_id, item_type, item_brand, item_maker, item_category1, item_category2, item_category3, item_category4);
 
                         itemList.add(item);
                     }
@@ -378,7 +382,7 @@ public class search_fragment extends Fragment implements OnBackpressedListener {
 
     @Override
     public void onBackPressed() {
-        if(back_check){
+        if (back_check) {
             mAppBarLayout.setExpanded(true);
             back_check = false;
         }
