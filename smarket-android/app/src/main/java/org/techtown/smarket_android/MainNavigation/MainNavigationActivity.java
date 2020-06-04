@@ -8,6 +8,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -133,6 +134,7 @@ public class MainNavigationActivity extends AppCompatActivity {
         Fragment search = getSupportFragmentManager().findFragmentByTag("search");
         Fragment logout = getSupportFragmentManager().findFragmentByTag("logout");
         Fragment loginS = getSupportFragmentManager().findFragmentByTag("loginS");
+        Fragment detail = getSupportFragmentManager().findFragmentByTag("detail");
 
         if (search != null && search.isVisible()) { //첫화면 뒤로가기 종료
             //this.finish();
@@ -166,6 +168,8 @@ public class MainNavigationActivity extends AppCompatActivity {
         } else if (logout != null && logout.isVisible()) { // 로그아웃 후 뒤로가기 방지
 
         } else if (loginS != null && loginS.isVisible()) { //로그인 후 뒤로가기 방지
+
+        } else if (detail != null && !detail.isVisible()){ // 상세보기 후 뒤로가기 방지
 
         } else {
             super.onBackPressed();
