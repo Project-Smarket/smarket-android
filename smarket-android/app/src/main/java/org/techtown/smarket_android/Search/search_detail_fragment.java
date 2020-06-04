@@ -32,6 +32,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -54,6 +55,7 @@ import com.google.gson.JsonParser;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.techtown.smarket_android.Alarm.fluctuation_fragment;
 import org.techtown.smarket_android.Hotdeal.hotdeal_webView;
 import org.techtown.smarket_android.Loading.CustomAnimationDialog;
 import org.techtown.smarket_android.User.Bookmark.bookmark_dialog;
@@ -113,6 +115,8 @@ public class search_detail_fragment extends Fragment {
 
     private DTO item_data;
 
+    private boolean flag;
+
 
     @Nullable
     @Override
@@ -161,7 +165,7 @@ public class search_detail_fragment extends Fragment {
         return viewGroup;
     }
 
-    private void add_bookmark(){
+    private void add_bookmark() {
         // 비로그인 시 로그인 창으로 이동
         if (user_id == null && access_token == null) {
             goto_login();
@@ -478,7 +482,7 @@ public class search_detail_fragment extends Fragment {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-        } else if(error instanceof TimeoutError){
+        } else if (error instanceof TimeoutError) {
             progressDialog.dismiss();
             Toast.makeText(getContext(), "통신이 원활하지 않습니다", Toast.LENGTH_LONG).show();
             newsList = new ArrayList<>();
@@ -616,6 +620,8 @@ public class search_detail_fragment extends Fragment {
 
         if (bundle != null) {
             item_data = bundle.getParcelable("item_data");
+            flag = bundle.getBoolean("flag", false);
+
             item_title = item_data.getItem_title();
             String item_type = item_data.getItem_type();
             int lprice = Integer.parseInt(item_data.getItem_lprice());
@@ -634,7 +640,7 @@ public class search_detail_fragment extends Fragment {
 
             Glide.with(getContext()).asBitmap().load(item_image).into(item_image_imageView);
             item_title_textView.setText(item_title);
-            if(!item_type.equals("1"))
+            if (!item_type.equals("1"))
                 item_type_textView.setText("");
             item_lprice_textView.setText(item_lprice);
             item_mall_textView.setText("판매처 : " + item_data.getItem_mallName());
@@ -675,15 +681,18 @@ public class search_detail_fragment extends Fragment {
         switch (item.getItemId()) {
             case android.R.id.home: {
                 FragmentManager fm = getFragmentManager();
-                if(fm.getBackStackEntryAt(fm.getBackStackEntryCount()-1).getName().equals("fluctuation")){
+
+                if (flag) {
+                    fluctuation_fragment fluctuation_fragment = new fluctuation_fragment();
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("item_data", item_data);
+                    fluctuation_fragment.setArguments(bundle);
+                    fm.beginTransaction().replace(R.id.main_layout, fluctuation_fragment, "fluctuation").commit();
+                } else {
+
+                    fm.beginTransaction().remove(search_detail_fragment.this).commit();
+                    fm.popBackStack();
                 }
-
-
-
-                fm.beginTransaction().remove(search_detail_fragment.this).commit();
-                fm.popBackStack();
                 return true;
             }
             case R.id.menu_bookmark:
@@ -771,7 +780,7 @@ public class search_detail_fragment extends Fragment {
                     JSONObject jsonObject = new JSONObject(response);
 
                     // 검색 실패시
-                    if(jsonObject.isNull("spec") && jsonObject.isNull("news") && jsonObject.isNull("review")){
+                    if (jsonObject.isNull("spec") && jsonObject.isNull("news") && jsonObject.isNull("review")) {
 
                         specList = new ArrayList<>();
                         reviewList = new ArrayList<>();
@@ -779,7 +788,7 @@ public class search_detail_fragment extends Fragment {
 
                     }
                     // 검색 성공 시
-                    else{
+                    else {
                         //리뷰 json파싱
                         reviewJson(jsonObject);
 
@@ -787,7 +796,7 @@ public class search_detail_fragment extends Fragment {
                         // item_type이 2가 아닐 경우 상세정보 제공함
                         if (!item_productType.equals("2")) {
                             specJson(jsonObject);
-                        }else{
+                        } else {
                             specList = new ArrayList<>();
                         }
 
@@ -809,7 +818,7 @@ public class search_detail_fragment extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "onErrorResponse: "+ error.toString());
+                Log.d(TAG, "onErrorResponse: " + error.toString());
                 error_handling(error, null, null, null, null);
             }
         });

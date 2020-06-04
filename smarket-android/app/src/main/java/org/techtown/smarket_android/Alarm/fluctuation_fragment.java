@@ -87,12 +87,21 @@ public class fluctuation_fragment extends Fragment {
     private ImageView fluctuation_alarm;
     private boolean item_alarm;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.price_fluctuation, container, false);
 
+
+        FragmentManager fm = getFragmentManager();
+        for (int i = 0; i < fm.getBackStackEntryCount(); i++) {
+            Log.d("STACK", "onCreateView: " + fm.getBackStackEntryAt(i).getName());
+        }
         // 툴바 설정
         set_toolbar();
 
@@ -110,11 +119,6 @@ public class fluctuation_fragment extends Fragment {
 
         // 리사이클러뷰 설정
         set_recyclerView();
-
-        FragmentManager fm = getFragmentManager();
-        for (int i = 0; i < fm.getBackStackEntryCount(); i++) {
-            Log.d("STACK", "onCreateView: " + fm.getBackStackEntryAt(i).getName());
-        }
 
 
         return viewGroup;
@@ -244,7 +248,7 @@ public class fluctuation_fragment extends Fragment {
                 search_detail_fragment.setArguments(bundle);
 
                 FragmentTransaction fragmentTransaction = ((AppCompatActivity) getContext()).getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.main_layout, search_detail_fragment).addToBackStack("fluctuation");
+                fragmentTransaction.replace(R.id.main_layout, search_detail_fragment);
                 fragmentTransaction.commit();
             }
         });
@@ -253,6 +257,7 @@ public class fluctuation_fragment extends Fragment {
     private Bundle set_bundle(DTO item_data) {
         Bundle bundle = new Bundle();
         bundle.putParcelable("item_data", item_data);
+        bundle.putBoolean("flag", true);
         return bundle;
     }
 
@@ -472,4 +477,8 @@ public class fluctuation_fragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
 }

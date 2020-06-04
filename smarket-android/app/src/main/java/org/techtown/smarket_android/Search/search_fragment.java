@@ -234,7 +234,7 @@ public class search_fragment extends Fragment implements OnBackpressedListener {
 
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                 fragmentTransaction.setCustomAnimations(R.anim.enter_from_right, 0 ,0, 0);
-                fragmentTransaction.add(R.id.main_layout, searchdetailFragment, "search").addToBackStack(null);
+                fragmentTransaction.add(R.id.main_layout, searchdetailFragment, "detail").addToBackStack(null);
                 fragmentTransaction.commit();
             }
         });
