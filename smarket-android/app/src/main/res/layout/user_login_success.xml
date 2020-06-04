@@ -21,50 +21,40 @@
             <TextView
                 android:id="@+id/login_success_title"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:layout_marginLeft="24dp"
                 android:layout_marginTop="16dp"
                 android:text="합리적인 소비 파트너, 스마켓과 함께 하세요!"
                 android:textColor="@color/colorBlack"
                 android:textSize="16sp" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="@+id/login_smarket_logo"
-                app:layout_constraintTop_toBottomOf="@+id/login_smarket_logo">
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/user_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
                     android:layout_marginLeft="24dp"
-                    android:text=""
+                    android:text="스마켓"
                     android:textColor="@color/colorBlack"
-                    android:textSize="34sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:textSize="30sp" />
 
                 <TextView
                     android:id="@+id/user_tv3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
                     android:layout_marginLeft="4dp"
                     android:text="님"
                     android:textColor="@color/colorBlack"
-                    android:textSize="24sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/user_tv"
-                    app:layout_constraintStart_toEndOf="@+id/user_tv"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="1.0" />
+                    android:textSize="24sp" />
 
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
 
         </LinearLayout>
 

@@ -3,13 +3,10 @@ package org.techtown.smarket_android.Alarm;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +38,6 @@ import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.data.BubbleEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -55,13 +51,11 @@ import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.techtown.smarket_android.DTO_Class.Alarm;
 import org.techtown.smarket_android.DTO_Class.DTO;
 import org.techtown.smarket_android.DTO_Class.Fluctuation;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.Search.RecyclerDecoration;
 import org.techtown.smarket_android.Search.search_detail_fragment;
-import org.techtown.smarket_android.User.Latest.latest_fragment;
 import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
 
 import java.io.UnsupportedEncodingException;
@@ -116,6 +110,11 @@ public class fluctuation_fragment extends Fragment {
 
         // 리사이클러뷰 설정
         set_recyclerView();
+
+        FragmentManager fm = getFragmentManager();
+        for (int i = 0; i < fm.getBackStackEntryCount(); i++) {
+            Log.d("STACK", "onCreateView: " + fm.getBackStackEntryAt(i).getName());
+        }
 
 
         return viewGroup;
@@ -245,7 +244,7 @@ public class fluctuation_fragment extends Fragment {
                 search_detail_fragment.setArguments(bundle);
 
                 FragmentTransaction fragmentTransaction = ((AppCompatActivity) getContext()).getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.main_layout, search_detail_fragment, "fluctuation").addToBackStack(null);
+                fragmentTransaction.replace(R.id.main_layout, search_detail_fragment).addToBackStack("fluctuation");
                 fragmentTransaction.commit();
             }
         });

@@ -1,21 +1,16 @@
 package org.techtown.smarket_android.Alarm;
 
 import android.app.AlarmManager;
-import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -26,7 +21,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -38,8 +32,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.smarket_android.DTO_Class.DTO;
 import org.techtown.smarket_android.DTO_Class.Fluctuation;
-import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
-import org.techtown.smarket_android.DTO_Class.Alarm;
 import org.techtown.smarket_android.R;
 
 import java.io.UnsupportedEncodingException;

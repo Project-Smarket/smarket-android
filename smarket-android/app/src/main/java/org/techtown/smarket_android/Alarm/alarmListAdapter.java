@@ -2,11 +2,7 @@ package org.techtown.smarket_android.Alarm;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,22 +12,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
-import org.techtown.smarket_android.DTO_Class.Alarm;
 import org.techtown.smarket_android.DTO_Class.DTO;
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.Search.search_detail_fragment;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 
 public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alViewHolder> {
@@ -114,7 +102,7 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
                     fluctuation_fragment.setArguments(bundle);
 
                     FragmentTransaction fragmentTransaction = ((AppCompatActivity)mContext).getSupportFragmentManager().beginTransaction();
-                    fragmentTransaction.replace(R.id.main_layout, fluctuation_fragment, "alarmList").addToBackStack(null);
+                    fragmentTransaction.replace(R.id.main_layout, fluctuation_fragment).addToBackStack(null);
                     fragmentTransaction.commit();
                 }
             });

@@ -25,11 +25,9 @@ import com.google.gson.JsonParser;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -53,11 +51,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.smarket_android.Alarm.AlarmReceiver;
 import org.techtown.smarket_android.DTO_Class.DTO;
-import org.techtown.smarket_android.MainActivity;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
 import org.techtown.smarket_android.Search.RecyclerDecoration;
-import org.techtown.smarket_android.DTO_Class.Bookmark;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

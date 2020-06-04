@@ -674,7 +674,14 @@ public class search_detail_fragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: {
-                FragmentManager fm = getActivity().getSupportFragmentManager();
+                FragmentManager fm = getFragmentManager();
+                if(fm.getBackStackEntryAt(fm.getBackStackEntryCount()-1).getName().equals("fluctuation")){
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("item_data", item_data);
+                }
+
+
+
                 fm.beginTransaction().remove(search_detail_fragment.this).commit();
                 fm.popBackStack();
                 return true;

@@ -44,7 +44,6 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.techtown.smarket_android.DTO_Class.Alarm;
 import org.techtown.smarket_android.DTO_Class.DTO;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.Search.Request.searchRequest;
@@ -96,6 +95,7 @@ public class search_fragment extends Fragment implements OnBackpressedListener {
     // 사용자 정보
     private SharedPreferences userFile;
     private String user_id;
+
 
     @Nullable
     @Override
@@ -233,6 +233,7 @@ public class search_fragment extends Fragment implements OnBackpressedListener {
                 searchdetailFragment.setArguments(bundle);
 
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.setCustomAnimations(R.anim.enter_from_right, 0 ,0, 0);
                 fragmentTransaction.add(R.id.main_layout, searchdetailFragment, "search").addToBackStack(null);
                 fragmentTransaction.commit();
             }
