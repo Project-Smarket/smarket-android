@@ -681,8 +681,6 @@ public class search_detail_fragment extends Fragment {
                     bundle.putParcelable("item_data", item_data);
                 }
 
-
-
                 fm.beginTransaction().remove(search_detail_fragment.this).commit();
                 fm.popBackStack();
                 return true;
