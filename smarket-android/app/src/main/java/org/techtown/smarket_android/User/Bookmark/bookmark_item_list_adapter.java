@@ -39,6 +39,7 @@ import com.google.gson.JsonParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.techtown.smarket_android.Alarm.fluctuation_fragment;
 import org.techtown.smarket_android.DTO_Class.DTO;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.Search.search_detail_fragment;
@@ -205,14 +206,14 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    search_detail_fragment searchdetailFragment = new search_detail_fragment();
+                    fluctuation_fragment fluctuation_fragment = new fluctuation_fragment();
 
                     // 상품 상세로 데이터 전송
-                    Bundle bundle = settingBundle(bitmap, bookmark_data);
-                    searchdetailFragment.setArguments(bundle);
+                    Bundle bundle = settingBundle(bookmark_data);
+                    fluctuation_fragment.setArguments(bundle);
 
                     FragmentTransaction fragmentTransaction = ((FragmentActivity)mContext).getSupportFragmentManager().beginTransaction();
-                    fragmentTransaction.replace(R.id.main_layout, searchdetailFragment, "search").addToBackStack(null);
+                    fragmentTransaction.replace(R.id.main_layout, fluctuation_fragment, "search").addToBackStack(null);
                     fragmentTransaction.commit();
                 }
             });
@@ -274,13 +275,9 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
         }
 
         // 상품 상세로 전달되는 Bundle
-        private Bundle settingBundle(Bitmap bitmap, DTO bookmark_data) {
+        private Bundle settingBundle(DTO bookmark_data) {
             Bundle bundle = new Bundle();
-
-            bundle.putParcelable("item_image", bitmap);
             bundle.putParcelable("item_data", bookmark_data);
-
-
             return bundle;
         }
 

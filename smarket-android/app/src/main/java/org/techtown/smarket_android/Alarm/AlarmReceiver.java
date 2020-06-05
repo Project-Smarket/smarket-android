@@ -208,7 +208,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(context, "lprice 에러 : " + error.toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Alarm 에러 : " + error.toString(), Toast.LENGTH_SHORT).show();
                 String request_type = "request_get_item_price";
                 error_handling(error, request_type, context, null, 0);
             }
