@@ -597,7 +597,7 @@ public class search_detail_fragment extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
                         null_userFile();
                         FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
-                        fragmentManager.beginTransaction().replace(R.id.main_layout, user_login_fragment.newInstance()).commit();
+                        fragmentManager.beginTransaction().replace(R.id.main_layout, user_login_fragment.newInstance()).addToBackStack(null).commit();
                     }
                 });
         builder.create();

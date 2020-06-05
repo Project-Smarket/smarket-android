@@ -1,7 +1,7 @@
 <resources>
     <string name="localhost">http://10.0.2.2:3000/</string>
-    <string name="server">http://118.47.184.245:80/</string>
-<!--    <string name="server">http://10.0.2.2:3000/</string>-->
+<!--    <string name="server">http://118.47.184.245:80/</string>-->
+    <string name="server">http://10.0.2.2:3000/</string>
 
 
     <string name="app_name">스마켓</string>
