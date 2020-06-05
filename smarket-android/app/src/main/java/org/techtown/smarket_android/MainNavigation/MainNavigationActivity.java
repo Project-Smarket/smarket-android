@@ -110,7 +110,6 @@ public class MainNavigationActivity extends AppCompatActivity {
                 }
 
                 Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.main_layout);
-                fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                 // 상세보기 && 가격 변동 내역 && 로그인 창은 백스택에 추가하지 않음
                 if (currentFragment instanceof search_detail_fragment || currentFragment instanceof fluctuation_fragment || currentFragment instanceof user_login_fragment || currentFragment instanceof user_login_success) {
 
