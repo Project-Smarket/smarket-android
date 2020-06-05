@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.android.volley.VolleyLog.TAG;
 
 public class user_login_fragment extends Fragment {
 
@@ -152,15 +153,16 @@ public class user_login_fragment extends Fragment {
 
                         createToken(access_token, getContext());
 
+                        user_login_success user_login_success = new user_login_success();
                         FragmentManager fragmentManager = getFragmentManager();
                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                        fragmentTransaction.replace(R.id.main_layout, user_login_success.newInstance(), "loginS")
-                                .addToBackStack(null).commit(); // 로그인 성공화면으로 이동
+                        fragmentTransaction.replace(R.id.main_layout, user_login_success, "loginS").commit(); // 로그인 성공화면으로 이동
                     } else if (!success)
                         // ** 로그인 실패 시 ** //
                         Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
 
                 } catch (JSONException e) {
+                    Log.d(TAG, "onResponse: 실패" + e);
                     e.printStackTrace();
 
                 }
@@ -196,7 +198,7 @@ public class user_login_fragment extends Fragment {
                     public void onSuccess(InstanceIdResult instanceIdResult) {
                         //instanceIdResult.getToken(); 토큰 조회
                         sendRegistrationToServer(access, instanceIdResult.getToken(), mContext);
-                    }
+                }
                 }
         );
     }
@@ -278,7 +280,7 @@ public class user_login_fragment extends Fragment {
         if (user_id != null && access_token != null) {
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.main_layout, user_login_success.newInstance(), "loginS").addToBackStack(null).commit(); // 로그인 성공화면으로 이동
+            fragmentTransaction.replace(R.id.main_layout, user_login_success.newInstance(), "loginS").commit(); // 로그인 성공화면으로 이동
 
         }
     }

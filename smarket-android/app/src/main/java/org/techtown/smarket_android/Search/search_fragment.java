@@ -45,6 +45,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.smarket_android.DTO_Class.DTO;
+import org.techtown.smarket_android.MainNavigation.MainNavigationActivity;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.Search.Request.searchRequest;
 
@@ -97,10 +98,12 @@ public class search_fragment extends Fragment implements OnBackpressedListener {
     private String user_id;
 
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.activity_newsearch_fragment, container, false);
+
 
         get_userFile();
         get_latestList();
@@ -138,6 +141,8 @@ public class search_fragment extends Fragment implements OnBackpressedListener {
                 itemList.clear();
                 params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED);
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+
+                    ((MainNavigationActivity)getActivity()).set_backCheck(false);
                     // "검색" 버튼을 누를 경우 start 초기화
                     start = 1;
                     back_check = true;
@@ -384,4 +389,9 @@ public class search_fragment extends Fragment implements OnBackpressedListener {
             back_check = false;
         }
     }
+
+    public boolean get_backCheck(){
+        return back_check;
+    }
+
 }

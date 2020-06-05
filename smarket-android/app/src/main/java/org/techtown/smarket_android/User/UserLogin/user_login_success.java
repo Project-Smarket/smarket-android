@@ -121,10 +121,10 @@ public class user_login_success extends Fragment {
         bookmark.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                newbookmark_fragment newbookmark_fragment = new newbookmark_fragment();
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_layout, newbookmark_fragment.newInstance(), "login");
-                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.replace(R.id.main_layout, newbookmark_fragment, "login").addToBackStack(null);
                 fragmentTransaction.commit();
             }
         });
@@ -134,10 +134,10 @@ public class user_login_success extends Fragment {
         latest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                latest_fragment latest_fragment = new latest_fragment();
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_layout, latest_fragment.newInstance(), "login");
-                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.replace(R.id.main_layout, latest_fragment, "login").addToBackStack(null);
                 fragmentTransaction.commit();
             }
         });
@@ -603,18 +603,15 @@ public class user_login_success extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: sadfasdfsa");
         get_userFile();
         Fragment logout = getFragmentManager().findFragmentByTag("logout");
         if (logout != null && userID == null) {
+            Log.d(TAG, "onCreate: logout");
             getActivity().finish();
         }
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        null_userFile();
-    }
 
     // userFile에 저장된 user_id 와 access_token 값 가져오기
     private void get_userFile() {
