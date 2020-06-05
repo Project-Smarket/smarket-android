@@ -2,6 +2,7 @@ package org.techtown.smarket_android.MainNavigation;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -72,6 +73,10 @@ public class MainNavigationActivity extends AppCompatActivity {
 
                 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
+                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.main_layout);
+                Log.d(TAG, "onNavigationItemSelected: "+ currentFragment);
+
+
                 switch (menuItem.getItemId()) { //menu_bottom.xml에서 지정해줬던 아이디 값을 받아와서 각 아이디값마다 다른 이벤트를 발생시킵니다.
                     case R.id.tab1: {
                         search_fragment1 = new search_fragment();
@@ -100,6 +105,7 @@ public class MainNavigationActivity extends AppCompatActivity {
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                 fragmentTransaction.commit(); //로그인 완료 창
+
 
                 return true;
             }
@@ -138,7 +144,6 @@ public class MainNavigationActivity extends AppCompatActivity {
 
         if (search != null && search.isVisible()) { //첫화면 뒤로가기 종료
             //this.finish();
-
             if(System.currentTimeMillis() > backKeyPressedTime + 1000) {
                 backKeyPressedTime = System.currentTimeMillis();
                 checkbackbtn = false;
