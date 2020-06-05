@@ -57,7 +57,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     private String user_id;
     private String access_token;
     private String refresh_token;
-    private String device_token;
+
 
     private List<DTO> alarmList;
     private List<Fluctuation> fluctuationList;
@@ -187,7 +187,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 
                             // 가격 변동된 알람의 개수와 title로 notification 요청
                             if (count >= 1 && !noti_title.equals(""))
-                                request_notification(noti_title, count, context);
+                                getDeviceToken(context, noti_title, count);
+
                         } else
                             Log.d(TAG, "onResponse: 데이터 없음");
                     } else if (!success) {
@@ -210,7 +211,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(context, "Alarm 에러 : " + error.toString(), Toast.LENGTH_SHORT).show();
                 String request_type = "request_get_item_price";
-                error_handling(error, request_type, context, null, 0);
+                error_handling(error, request_type, context, null, 0, null);
             }
         }
         ) {
@@ -233,9 +234,47 @@ public class AlarmReceiver extends BroadcastReceiver {
         alarmList.add(0, alarm);
     }
 
+    public void getDeviceToken(final Context mContext, final String noti_title, final int count) {
+        String url = mContext.getResources().getString(R.string.fcmEndpoint) + "/select";
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    boolean success = jsonObject.getBoolean("success");
+                    if (success) {
+                        JSONObject data = jsonObject.getJSONObject("data");
+                        String device_token = data.getString("deviceToken");
+                        request_notification(noti_title, count, mContext, device_token);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }
+        ) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap();
+                params.put("x-access-token", access_token);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+        requestQueue.add(stringRequest);
+    }
+
 
     // Request - 가격 변동된 제품의 푸쉬 알림 요청
-    private void request_notification(final String noti_title, final int count, final Context context) {
+    private void request_notification(final String noti_title, final int count, final Context context, final String device_token) {
         String url = context.getString(R.string.fcmEndpoint) + "/send"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
@@ -263,7 +302,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show();
                 String request_type = "request_notification";
-                error_handling(error, request_type, context, noti_title, count);
+                error_handling(error, request_type, context, noti_title, count, device_token);
             }
         }
         ) {
@@ -314,7 +353,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     // Error Handling - request 오류(제품 가격 정보 조회) 처리 - 실패 시 access-token 갱신 요청
     private void error_handling(VolleyError error, String request_type, Context context,
-                                @Nullable String noti_title, @Nullable int count) {
+                                @Nullable String noti_title, @Nullable int count, @Nullable String device_token) {
         NetworkResponse response = error.networkResponse;
         if (error instanceof AuthFailureError && response != null) {
             try {
@@ -329,7 +368,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
                 // access-token 만료 시 refresh-token을 통해 토큰 갱신
                 if (name.equals("TokenExpiredError") && msg.equals("jwt expired"))
-                    refresh_accessToken(request_type, context, noti_title, count);
+                    refresh_accessToken(request_type, context, noti_title, count, device_token);
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -338,7 +377,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     // access-token 갱신 요청 후 폴더 목록 재요청 - 실패 시 logout
-    private void refresh_accessToken(final String request_type, final Context context, @Nullable final String noti_title, @Nullable final int count) {
+    private void refresh_accessToken(final String request_type, final Context context, @Nullable final String noti_title, @Nullable final int count, @Nullable final String device_token) {
         Log.d(TAG, "refresh_accessToken: access-token을 갱신합니다.");
         String url = context.getString(R.string.authEndpoint) + "/refresh"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
@@ -360,7 +399,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                                 request_get_item_lprice(context);
                                 break;
                             case "request_notification":
-                                request_notification(noti_title, count, context);
+                                request_notification(noti_title, count, context, device_token);
                                 break;
                         }
 
@@ -515,6 +554,5 @@ public class AlarmReceiver extends BroadcastReceiver {
         user_id = userFile.getString("user_id", null);
         access_token = userFile.getString("access_token", null);
         refresh_token = userFile.getString("refresh_token", null);
-        device_token = userFile.getString("device_token", null);
     }
 }

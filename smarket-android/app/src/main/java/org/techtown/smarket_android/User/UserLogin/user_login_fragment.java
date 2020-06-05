@@ -231,41 +231,7 @@ public class user_login_fragment extends Fragment {
         requestQueue.add(stringRequest);
     }
 
-    public static void getDeviceToken(String a_token, Context mContext) {
-        final String access = a_token;
-        String url = mContext.getResources().getString(R.string.fcmEndpoint) + "/select";
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    boolean success = jsonObject.getBoolean("success");
-                    JSONObject data = jsonObject.getJSONObject("data");
-                    String token = data.getString("id");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        }
-        ) {
-
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap();
-                params.put("x-access-token", access);
-                return params;
-            }
-        };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
-        requestQueue.add(stringRequest);
-    }
 
     private void error_handling(VolleyError error) {
         NetworkResponse response = error.networkResponse;

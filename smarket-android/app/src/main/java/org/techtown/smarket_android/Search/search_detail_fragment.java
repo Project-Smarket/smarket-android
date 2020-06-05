@@ -48,14 +48,17 @@ import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.common.internal.Objects;
 import com.google.android.material.tabs.TabLayout;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.smarket_android.Alarm.fluctuation_fragment;
+import org.techtown.smarket_android.DTO_Class.Fluctuation;
 import org.techtown.smarket_android.Hotdeal.hotdeal_webView;
 import org.techtown.smarket_android.Loading.CustomAnimationDialog;
 import org.techtown.smarket_android.User.Bookmark.bookmark_dialog;
@@ -72,10 +75,15 @@ import org.techtown.smarket_android.Search.Pager.review.search_detail_review_fra
 import org.techtown.smarket_android.Search.Request.danawaRequest;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static com.android.volley.VolleyLog.TAG;
@@ -378,6 +386,16 @@ public class search_detail_fragment extends Fragment {
                     boolean success = jsonObject.getBoolean("success");
                     if (success) {
                         // ** 북마크 등록 성공 시 ** //
+                        JSONObject data = jsonObject.getJSONObject("data");
+                        String id = data.getString("id");
+
+                        Date currentTime = Calendar.getInstance().getTime();
+                        String date = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault()).format(currentTime);
+                        List<Fluctuation> fluctuationList = new ArrayList<>();
+                        //fluctuationList.add(new Fluctuation(date ,item_data.getItem_lprice()));
+                        fluctuationList.add(new Fluctuation(date , "1000"));
+                        save_fluctuationList(id, fluctuationList);
+
                         Toast.makeText(getContext(), folder_name + " 폴더에 북마크가 등록 되었습니다.", Toast.LENGTH_LONG).show();
 
                     } else if (!success)
@@ -883,6 +901,20 @@ public class search_detail_fragment extends Fragment {
 
             newsList.add(new Detail_news(img, title, url, user, hit, date));
         }
+    }
+
+    // 가격 변동 리스트 저장
+    private void save_fluctuationList(String id, List<Fluctuation> fluctuationList) {
+        String key = user_id + "/alarmList/" + id;
+        // List<Fluctuation> 클래스 객체를 String 객체로 변환
+        Type listType = new TypeToken<ArrayList<Fluctuation>>() {
+        }.getType();
+        String json = new GsonBuilder().create().toJson(fluctuationList, listType);
+
+        // 스트링 객체로 변환된 데이터를 alarmList에 저장
+        SharedPreferences.Editor editor = userFile.edit();
+        editor.putString(key, json);
+        editor.apply();
     }
 
     // userFile에 저장된 user_id 와 access_token 값 가져오기

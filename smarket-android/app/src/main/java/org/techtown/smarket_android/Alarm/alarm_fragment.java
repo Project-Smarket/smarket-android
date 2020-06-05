@@ -9,6 +9,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,6 +42,8 @@ public class alarm_fragment extends Fragment {
     private RecyclerView alarmRecyclerView;
     private alarmListAdapter alarmListAdapter;
     private List<DTO> alarmList;
+
+    private FrameLayout alarm_frameLayout;
 
     // ** 로그인 및 토큰 정보 ** //
     private SharedPreferences userFile;

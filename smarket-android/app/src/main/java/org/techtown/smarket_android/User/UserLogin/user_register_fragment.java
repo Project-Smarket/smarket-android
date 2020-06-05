@@ -86,14 +86,13 @@ public class user_register_fragment extends Fragment {
         //get_userInfoList();
 
         register_id = viewGroup.findViewById(R.id.register_id_et); // 사용자 아이디
-        register_id.setFilters(new InputFilter[]{filterEng});
 
         register_nickname = viewGroup.findViewById(R.id.register_nick_et); // 사용자 닉네임
         register_pw_layout = viewGroup.findViewById(R.id.register_pw_layout);
         register_pw = viewGroup.findViewById(R.id.register_pw_et); // 사용자 비번호
 
         register_name = viewGroup.findViewById(R.id.register_name_et); // 사용자 이름
-        register_name.setFilters(new InputFilter[]{filterKor});
+
 
         register_id.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -362,10 +361,12 @@ public class user_register_fragment extends Fragment {
                         if (!element.getAsJsonObject().get("data").isJsonNull()) {
                             data = element.getAsJsonObject().get("data").getAsJsonObject();
                             JsonArray errors = data.getAsJsonArray("errors");
-                            JsonObject error_object = errors.get(0).getAsJsonObject();
-                            String msg = error_object.get("msg").getAsString();
-                            register_pw.setError(msg);
-                            Log.d(TAG, "onErrorResponse: " + msg);
+                            for (int i = 0; i < errors.size(); i++) {
+                                String param = errors.get(i).getAsJsonObject().get("param").getAsString();
+                                String msg = errors.get(i).getAsJsonObject().get("msg").getAsString();
+                                set_errorMsg(param, msg);
+                            }
+
                         }
 
                     } catch (UnsupportedEncodingException e) {
@@ -378,6 +379,14 @@ public class user_register_fragment extends Fragment {
         queue.add(registerRequest);
     }
 
+    private void set_errorMsg(String param, String msg){
+        switch (param){
+            case "password": register_pw.setError(msg); break;
+            case "name": register_name.setError(msg); break;
+            case "phonenum": Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();break;
+        }
+    }
+
 
     @Override
     public void onStop() {
@@ -388,28 +397,4 @@ public class user_register_fragment extends Fragment {
         }
     }
 
-    protected InputFilter filterEng = new InputFilter() {
-        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-
-            Pattern ps = Pattern.compile("^[a-zA-Z0-9]+$");
-            if (!ps.matcher(source).matches()) {
-                return "";
-
-            }
-            return null;
-        }
-
-    }; // EditText 영문만 허용
-
-
-    public InputFilter filterKor = new InputFilter() {
-        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-
-            Pattern ps = Pattern.compile("^[ㄱ-ㅣ가-힣]+$");
-            if (!ps.matcher(source).matches()) {
-                return "";
-            }
-            return null;
-        }
-    }; // EditText 영문만 허용
 }
