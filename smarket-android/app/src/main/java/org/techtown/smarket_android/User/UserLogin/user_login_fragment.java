@@ -287,7 +287,7 @@ public class user_login_fragment extends Fragment {
 
     private void goto_register() {
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.main_layout, user_register_fragment.newInstance(getContext()), "login").addToBackStack(null).commit();
+        fragmentManager.beginTransaction().replace(R.id.main_layout, user_register_fragment.newInstance(getContext()), "login").commit();
     }
 
 }

@@ -405,8 +405,7 @@ public class user_login_success extends Fragment {
                             if (success) {
                                 FragmentManager fragmentManager = getFragmentManager();
                                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                fragmentTransaction.replace(R.id.main_layout, userinform_fragment.newInstance(), "login")
-                                        .addToBackStack(null).commit();
+                                fragmentTransaction.replace(R.id.main_layout, userinform_fragment.newInstance(), "login").commit();
                             } else {
                                 AlertDialog alertDialog = new AlertDialog.Builder(getContext())
                                         .setMessage("비밀번호가 일치하지 않습니다.")
