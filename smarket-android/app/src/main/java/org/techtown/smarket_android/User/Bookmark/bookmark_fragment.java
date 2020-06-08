@@ -19,6 +19,7 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -26,6 +27,7 @@ import com.google.gson.JsonParser;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -443,7 +445,21 @@ public class bookmark_fragment extends Fragment {
                         // bookmarkList에서 bookmark_id와 일치하는 bookmark 삭제
                         remove_bookmark_in_bookmarkList(id);
                         remove_fluctuationList(id);
-                        Toast.makeText(getContext(), "해당 북마크를 삭제했습니다.", Toast.LENGTH_LONG).show();
+
+                        Snackbar snackbar = Snackbar.make(getView(), "해당 북마크를 삭제했습니다." , 3000)
+                                .setActionTextColor(getActivity().getResources().getColor(R.color.smarketyello));
+
+                        // 스낵바 배경 색 설정
+                        View sbView = snackbar.getView();
+                        sbView.setBackgroundColor(getActivity().getResources().getColor(R.color.smarketyello));
+
+                        // 스낵바 글씨 색 설정
+                        TextView svTextView = sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                        svTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.colorBlack));
+
+                        snackbar.show();
+
+
                     } else if (!success)
                         // ** 북마크 삭제 실패시 ** //
                         Toast.makeText(getContext(), "북마크 삭제 - false", Toast.LENGTH_LONG).show();
@@ -508,7 +524,19 @@ public class bookmark_fragment extends Fragment {
 
                     if (success) {
                         // ** 북마크 폴더 삭제 성공시 ** //
-                        Toast.makeText(getContext(), folder_name + " 북마크 폴더를 삭제했습니다.", Toast.LENGTH_LONG).show();
+                        Snackbar snackbar = Snackbar.make(getView(), "북마크 폴더를 삭제했습니다." , 3000)
+                                .setActionTextColor(getActivity().getResources().getColor(R.color.smarketyello));
+
+                        // 스낵바 배경 색 설정
+                        View sbView = snackbar.getView();
+                        sbView.setBackgroundColor(getActivity().getResources().getColor(R.color.smarketyello));
+
+                        // 스낵바 글씨 색 설정
+                        TextView svTextView = sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                        svTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.colorBlack));
+
+                        snackbar.show();
+                        
                         remove_bookmarkFolder_in_bookmarkFolderList(folder_name);
                     } else if (!success)
                         // ** 북마크 폴더 삭제 실패시 ** //

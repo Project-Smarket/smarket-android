@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -449,8 +450,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                         fluctuationList.add(new Fluctuation(currentTime , "1000"));
                         save_fluctuationList(id, fluctuationList);
 
-                        // 설정된 시간 토스트 알람
-                        /*Snackbar snackbar = Snackbar.make(view.findViewById(R.id.placeSnackBar), folder_name + " 폴더에 북마크가 등록 되었습니다.", 3000)
+                        Fragment fragment = ((AppCompatActivity)mActivity).getSupportFragmentManager().findFragmentById(R.id.main_layout);
+
+                        Snackbar snackbar = Snackbar.make(fragment.getView(), folder_name + " 폴더에 북마크가 등록 되었습니다.", 3000)
                                 .setActionTextColor(mActivity.getResources().getColor(R.color.smarketyello));
 
                         // 스낵바 배경 색 설정
@@ -461,8 +463,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                         TextView svTextView = sbView.findViewById(com.google.android.material.R.id.snackbar_text);
                         svTextView.setTextColor(ContextCompat.getColor(mContext, R.color.colorBlack));
 
-                        snackbar.show();*/
-                        Toast.makeText(mContext, folder_name + " 폴더에 북마크가 등록 되었습니다.", Toast.LENGTH_LONG).show();
+                        snackbar.show();
+                        //Toast.makeText(mContext, folder_name + " 폴더에 북마크가 등록 되었습니다.", Toast.LENGTH_LONG).show();
 
                     } else if (!success)
                         // ** 북마크 등록 실패 시 ** //
