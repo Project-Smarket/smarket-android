@@ -64,12 +64,12 @@ import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
 
-public class newbookmark_fragment extends Fragment {
+public class bookmark_fragment extends Fragment {
 
     private String TAG = "tag";
 
-    public static newbookmark_fragment newInstance() {
-        return new newbookmark_fragment();
+    public static bookmark_fragment newInstance() {
+        return new bookmark_fragment();
     } // 프래그먼트 생성
 
     private int alarm_unique_id = 1212;

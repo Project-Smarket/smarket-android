@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.method.PasswordTransformationMethod;
@@ -51,13 +50,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.smarket_android.Alarm.AlarmReceiver;
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.User.Bookmark.newbookmark_fragment;
+import org.techtown.smarket_android.User.Bookmark.bookmark_fragment;
 import org.techtown.smarket_android.User.Latest.latest_fragment;
 import org.techtown.smarket_android.User.UserInfrom.userinform_fragment;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -121,7 +118,7 @@ public class user_login_success extends Fragment {
         bookmark.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                newbookmark_fragment newbookmark_fragment = new newbookmark_fragment();
+                bookmark_fragment newbookmark_fragment = new bookmark_fragment();
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.main_layout, newbookmark_fragment, "login").addToBackStack(null);
@@ -242,7 +239,6 @@ public class user_login_success extends Fragment {
             case "false": {
                 // 버튼 클릭 효과 삭제
                 clock.setEnabled(false);
-                clock.setBackgroundColor(getResources().getColor(R.color.colorWhite));
 
                 // 레이아웃 비활성화
                 clock_img.setColorFilter(getResources().getColor(R.color.color_lite_gray), PorterDuff.Mode.SRC_IN);

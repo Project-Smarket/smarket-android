@@ -26,6 +26,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,6 +40,7 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -156,7 +158,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                         public void onItemClick(View v, int position, List<String> list) {
 
                             // DB에 북마크 등록 요청
-                            set_alarm(list.get(position), holder.item_data);
+                            set_alarm(list.get(position), holder.item_data, v);
                             bookmarkDialog.dismiss();
 
                         }
@@ -426,7 +428,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     }
 
     // Request - 서버로 bookmark 등록 요청
-    private void request_add_bookmark(final String folder_name, final DTO item_data, final String item_alarm) {
+    private void request_add_bookmark(final String folder_name, final DTO item_data, final String item_alarm, final View view) {
         String reques_url = mContext.getResources().getString(R.string.bookmarksEndpoint); // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.POST, reques_url, new Response.Listener<String>() {
             @Override
@@ -447,7 +449,20 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                         fluctuationList.add(new Fluctuation(date , "1000"));
                         save_fluctuationList(id, fluctuationList);
 
-                        Toast.makeText(mContext, folder_name + " 폴더에 북마크가 등록 되었습니다.", Toast.LENGTH_LONG).show();
+                        // 설정된 시간 토스트 알람
+                        Snackbar snackbar = Snackbar.make(view.findViewById(R.id.placeSnackBar), folder_name + " 폴더에 북마크가 등록 되었습니다.", 3000)
+                                .setActionTextColor(mActivity.getResources().getColor(R.color.smarketyello));
+
+                        // 스낵바 배경 색 설정
+                        View sbView = snackbar.getView();
+                        sbView.setBackgroundColor(mActivity.getResources().getColor(R.color.smarketyello));
+
+                        // 스낵바 글씨 색 설정
+                        TextView svTextView = sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                        svTextView.setTextColor(ContextCompat.getColor(mContext, R.color.colorBlack));
+
+                        snackbar.show();
+                        //Toast.makeText(mContext, , Toast.LENGTH_LONG).show();
 
                     } else if (!success)
                         // ** 북마크 등록 실패 시 ** //
@@ -464,7 +479,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                 // ** 북마크 등록 실패시 ** //
                 // Error Handling - request 오류(토큰만료) 처리
                 String request_type = "request_add_bookmark";
-                error_handling(error, request_type, folder_name, item_data, item_alarm);
+                error_handling(error, request_type, folder_name, item_data, item_alarm, view);
             }
         }
         ) {
@@ -509,20 +524,20 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     }
 
     // 북마크 등록 시 alarm 설정
-    private void set_alarm(final String folder_name, final DTO item_data) {
+    private void set_alarm(final String folder_name, final DTO item_data, final View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
                 .setTitle("최저가 알람 등록")
                 .setMessage("최저가 알람을 등록하시겠습니까?")
                 .setPositiveButton("등록", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        request_add_bookmark(folder_name, item_data, "true");
+                        request_add_bookmark(folder_name, item_data, "true", view);
                     }
                 })
                 .setNegativeButton("아니오", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        request_add_bookmark(folder_name, item_data, "false");
+                        request_add_bookmark(folder_name, item_data, "false", view);
                     }
                 })
                 .setCancelable(false);
@@ -532,7 +547,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     }
 
     // Error Handling - request 오류(bookmark 등록 오류) 처리 - 실패 시 access-token 갱신 요청
-    private void error_handling(VolleyError error, String request_type, String folder_name, DTO item_data, String item_alarm) {
+    private void error_handling(VolleyError error, String request_type, String folder_name, DTO item_data, String item_alarm, View view) {
         NetworkResponse response = error.networkResponse;
         if (error instanceof AuthFailureError && response != null) {
             try {
@@ -547,7 +562,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
                 // access-token 만료 시 refresh-token을 통해 토큰 갱신
                 if (name.equals("TokenExpiredError") && msg.equals("jwt expired"))
-                    refresh_accessToken(request_type, folder_name, item_data, item_alarm);
+                    refresh_accessToken(request_type, folder_name, item_data, item_alarm, view);
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -556,7 +571,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     }
 
     // access-token 갱신 요청 후 폴더 목록 재요청 - 실패 시 logout
-    private void refresh_accessToken(final String request_type, final String folder_name, final DTO item_data, final String item_alarm) {
+    private void refresh_accessToken(final String request_type, final String folder_name, final DTO item_data, final String item_alarm, final View view) {
         Log.d(TAG, "refresh_accessToken: access-token을 갱신합니다.");
         String url = mContext.getString(R.string.authEndpoint) + "/refresh"; // 10.0.2.2 안드로이드에서 localhost 주소 접속 방법
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
@@ -575,7 +590,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                         switch (request_type) {
                             // 북마크 등록 재요청
                             case "request_bookmark":
-                                request_add_bookmark(folder_name, item_data, item_alarm);
+                                request_add_bookmark(folder_name, item_data, item_alarm, view);
                                 break;
                         }
 

@@ -2,7 +2,6 @@ package org.techtown.smarket_android.MainNavigation;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -21,12 +20,10 @@ import org.techtown.smarket_android.Search.OnBackpressedListener;
 import org.techtown.smarket_android.Search.search_detail_fragment;
 import org.techtown.smarket_android.Search.search_fragment;
 import org.techtown.smarket_android.R;
-import org.techtown.smarket_android.User.Bookmark.newbookmark_fragment;
+import org.techtown.smarket_android.User.Bookmark.bookmark_fragment;
 import org.techtown.smarket_android.User.Latest.latest_fragment;
 import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
 import org.techtown.smarket_android.User.UserLogin.user_login_success;
-
-import java.util.List;
 
 
 public class MainNavigationActivity extends AppCompatActivity {
@@ -96,7 +93,7 @@ public class MainNavigationActivity extends AppCompatActivity {
                     case R.id.tab3: {
                         user_fragment3 = new user_login_fragment(); // 로그인 창
                         fragmentTransaction.replace(R.id.main_layout, user_fragment3, "login");
-                        back_check = false;
+
                         break;
                     }
                     case R.id.tab4: {
@@ -155,7 +152,7 @@ public class MainNavigationActivity extends AppCompatActivity {
                     bottomNavigationView.getMenu().findItem(R.id.tab1).setChecked(true);
                 else if (currentFragment instanceof hotdeal_fragment)
                     bottomNavigationView.getMenu().findItem(R.id.tab2).setChecked(true);
-                else if (currentFragment instanceof user_login_success || currentFragment instanceof user_login_fragment || currentFragment instanceof newbookmark_fragment || currentFragment instanceof latest_fragment)
+                else if (currentFragment instanceof user_login_success || currentFragment instanceof user_login_fragment || currentFragment instanceof bookmark_fragment || currentFragment instanceof latest_fragment)
                     bottomNavigationView.getMenu().findItem(R.id.tab3).setChecked(true);
                 else if (currentFragment instanceof alarm_fragment)
                     bottomNavigationView.getMenu().findItem(R.id.tab4).setChecked(true);
