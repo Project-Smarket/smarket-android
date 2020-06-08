@@ -35,7 +35,7 @@
 
         <TextView
             android:id="@+id/search_list_item_title"
-            android:layout_width="230dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginStart="8dp"
@@ -125,8 +125,8 @@
 
         <ImageView
             android:id="@+id/bookmark_btn"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
@@ -138,16 +138,14 @@
 
         <ImageView
             android:id="@+id/alarm_btn"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:layout_marginTop="12dp"
             android:src="@drawable/mybookmark"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/bookmark_btn"
+            app:layout_constraintEnd_toEndOf="@+id/bookmark_btn"
             app:layout_constraintTop_toBottomOf="@+id/bookmark_btn" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
