@@ -443,10 +443,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                         String id = data.getString("id");
 
                         Date currentTime = Calendar.getInstance().getTime();
-                        String date = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault()).format(currentTime);
+
                         List<Fluctuation> fluctuationList = new ArrayList<>();
                         //fluctuationList.add(new Fluctuation(date ,item_data.getItem_lprice()));
-                        fluctuationList.add(new Fluctuation(date , "1000"));
+                        fluctuationList.add(new Fluctuation(currentTime , "1000"));
                         save_fluctuationList(id, fluctuationList);
 
                         // 설정된 시간 토스트 알람

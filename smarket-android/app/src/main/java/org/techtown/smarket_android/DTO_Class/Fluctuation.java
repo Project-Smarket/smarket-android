@@ -1,27 +1,28 @@
 package org.techtown.smarket_android.DTO_Class;
 
+import java.util.Date;
+
 public class Fluctuation {
-    String date;
+    Date date;
     String lprice;
     int lprice_diff;
 
-    public Fluctuation(String date, String lprice) {
+    public Fluctuation(Date date, String lprice) {
         this.date = date;
         this.lprice = lprice;
-        this.lprice_diff = 0;
     }
 
-    public Fluctuation(String date, String lprice, int lprice_diff) {
+    public Fluctuation(Date date, String lprice, int lprice_diff) {
         this.date = date;
         this.lprice = lprice;
         this.lprice_diff = lprice_diff;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 

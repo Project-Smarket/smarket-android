@@ -390,10 +390,9 @@ public class search_detail_fragment extends Fragment {
                         String id = data.getString("id");
 
                         Date currentTime = Calendar.getInstance().getTime();
-                        String date = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault()).format(currentTime);
                         List<Fluctuation> fluctuationList = new ArrayList<>();
                         //fluctuationList.add(new Fluctuation(date ,item_data.getItem_lprice()));
-                        fluctuationList.add(new Fluctuation(date , "1000"));
+                        fluctuationList.add(new Fluctuation(currentTime , "1000"));
                         save_fluctuationList(id, fluctuationList);
 
                         Toast.makeText(getContext(), folder_name + " 폴더에 북마크가 등록 되었습니다.", Toast.LENGTH_LONG).show();

@@ -21,16 +21,17 @@ public class ftMarkerview extends MarkerView {
 
     @Override
     public MPPointF getOffset() {
-        MPPointF mpPointF = new MPPointF((-(getWidth() / 2)), -getHeight());
+        MPPointF mpPointF = new MPPointF((-(getWidth() / 2)), -getHeight()-20);
         return mpPointF;
     }
 
     @Override
     public void refreshContent(Entry e, Highlight highlight) {
-        //float value = e.getY();
-        //String value_s = String.format("%,f", value) +"원";
-        tvContent.setText(""+e.getY());
+        int value = (int)e.getY();
+        String value_s = String.format("%,d", value);
+        //String value_s = String.valueOf(value);
+        tvContent.setText(value_s+"원");
 
-       // super.refreshContent(e, highlight);
+       super.refreshContent(e, highlight);
     }
 }

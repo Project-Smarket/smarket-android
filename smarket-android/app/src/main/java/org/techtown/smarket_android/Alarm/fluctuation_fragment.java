@@ -41,6 +41,7 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.google.gson.GsonBuilder;
@@ -60,9 +61,11 @@ import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -97,11 +100,6 @@ public class fluctuation_fragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.price_fluctuation, container, false);
 
-
-        FragmentManager fm = getFragmentManager();
-        for (int i = 0; i < fm.getBackStackEntryCount(); i++) {
-            Log.d("STACK", "onCreateView: " + fm.getBackStackEntryAt(i).getName());
-        }
         // 툴바 설정
         set_toolbar();
 
@@ -129,52 +127,48 @@ public class fluctuation_fragment extends Fragment {
 
         ArrayList<Entry> values = new ArrayList<>();
         for (int i = 0; i < fluctuationList.size(); i++) {
-            values.add(new Entry(i + 1, Integer.parseInt(fluctuationList.get(i).getLprice())));
+            values.add(new Entry(i+1, Integer.parseInt(fluctuationList.get(i).getLprice())));
         }
 
         LineDataSet set = new LineDataSet(values, "fluctuation");
         set.setColor(getResources().getColor(R.color.colorBlack));
         set.setCircleColor(getResources().getColor(R.color.colorBlack));
-        set.setValueTextSize(12);
+        set.setValueTextSize(0);
         set.setLineWidth(3);
         set.setCircleRadius(6);
         set.setCircleHoleRadius(3);
         set.setCircleHoleColor(getResources().getColor(R.color.colorWhite));
         set.setLabel("");
-
+        set.setDrawHighlightIndicators(false);
 
         LineData data = new LineData(set);
+
+        // 모든 선 삭제
         lineChart.getXAxis().setDrawGridLines(false);
-        lineChart.getXAxis().setLabelCount(0, false);
         lineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
         lineChart.getAxisLeft().setDrawGridLines(false);
         lineChart.getAxisRight().setDrawGridLines(false);
         lineChart.getAxisLeft().setEnabled(false);
         lineChart.getAxisRight().setEnabled(false);
-        //lineChart.setDrawGridBackground(true);
-        lineChart.setNoDataText("가겨 변동 내역이 없습니다");
+        lineChart.getXAxis().setEnabled(false);
+
+
+        // 데이터가 없을 경우 표시 되는 텍스트
+        lineChart.setNoDataText("가격 변동 내역이 없습니다");
         lineChart.setNoDataTextColor(getResources().getColor(R.color.colorBlack));
+
+        // 범레 설정
         lineChart.getLegend().setEnabled(false);
+
+        // description 설정
         lineChart.setDescription(null);
-        lineChart.setExtraOffsets(30, 30, 30, 10);
+
+        // 그래프 패딩 설정
+        lineChart.setExtraOffsets(45, 30, 45, 10);
         lineChart.setScaleEnabled(false);
 
         ftMarkerview ftMarker = new ftMarkerview(getContext(), R.layout.price_fluctuation_marker);
         lineChart.setMarker(ftMarker);
-        lineChart.setHighlightPerTapEnabled(true);
-
-        lineChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
-            @Override
-            public void onValueSelected(Entry e, Highlight h) {
-                Toast.makeText(getContext(), "눌림" + e.getX(), Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onNothingSelected() {
-
-            }
-        });
-
 
         lineChart.setData(data);
     }

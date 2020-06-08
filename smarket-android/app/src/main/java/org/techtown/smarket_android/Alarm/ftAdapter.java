@@ -15,7 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.techtown.smarket_android.DTO_Class.Fluctuation;
 import org.techtown.smarket_android.R;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 class ftAdapter extends RecyclerView.Adapter<ftAdapter.ftViewHolder> {
 
@@ -73,7 +75,8 @@ class ftAdapter extends RecyclerView.Adapter<ftAdapter.ftViewHolder> {
 
         public void onBind(Fluctuation data){
 
-            fluctuation_date.setText(data.getDate());
+            String date = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault()).format(data.getDate());
+            fluctuation_date.setText(date);
             fluctuation_diff.setText(String.format("%,d", data.getLprice_diff())+"원");
             int item_lprice = Integer.parseInt(data.getLprice());
             fluctuation_lprice.setText(String.format("%,d", item_lprice)+"원");

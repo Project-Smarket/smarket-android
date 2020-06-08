@@ -65,6 +65,8 @@ public class AlarmReceiver extends BroadcastReceiver {
     private String alarm_date;
     private String fluctation_date;
 
+    private Date currentTime;
+
     @Override
     public void onReceive(Context context, Intent intent) {
 
@@ -74,9 +76,9 @@ public class AlarmReceiver extends BroadcastReceiver {
         // SharedPreference의 alarmList 정보 가져옴
         get_alarmList();
 
-        Date currentTime = Calendar.getInstance().getTime();
+        currentTime = Calendar.getInstance().getTime();
         alarm_date = new SimpleDateFormat("yy/MM/dd", Locale.getDefault()).format(currentTime);
-        fluctation_date = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault()).format(currentTime);
+        //fluctation_date = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault()).format(currentTime);
 
         Toast.makeText(context, "북마크 상품 가격을 재조회합니다", Toast.LENGTH_LONG).show();
 
@@ -165,7 +167,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                                     String item_category3 = data.getString("item_category3");
                                     String item_category4 = data.getString("item_category4");
 
-                                    fluctuationList.add(new Fluctuation(fluctation_date, item_lprice, lprice_diff));
+                                    fluctuationList.add(new Fluctuation(currentTime, item_lprice, lprice_diff));
                                     // fluctuationList 리스트를 저장
                                     save_fluctuationList(id, fluctuationList);
 
