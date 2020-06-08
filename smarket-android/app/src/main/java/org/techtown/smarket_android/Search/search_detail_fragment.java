@@ -119,7 +119,7 @@ public class search_detail_fragment extends Fragment {
     private String refresh_token;
 
     // 상품 상세 정보 검색을 위한 item_title
-    private String item_title;
+    private String item_title = "";
 
     private DTO item_data;
 
@@ -645,7 +645,6 @@ public class search_detail_fragment extends Fragment {
             int lprice = Integer.parseInt(item_data.getItem_lprice());
             String item_lprice = String.format("%,d", lprice);
             String item_image = item_data.getItem_image();
-
 
             ImageView item_image_imageView = viewGroup.findViewById(R.id.detail_item_image);
             TextView item_title_textView = viewGroup.findViewById(R.id.detail_item_name);
