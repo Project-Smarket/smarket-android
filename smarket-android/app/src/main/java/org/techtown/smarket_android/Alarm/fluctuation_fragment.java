@@ -159,6 +159,10 @@ public class fluctuation_fragment extends Fragment {
         lineChart.setExtraOffsets(30, 30, 30, 10);
         lineChart.setScaleEnabled(false);
 
+        ftMarkerview ftMarker = new ftMarkerview(getContext(), R.layout.price_fluctuation_marker);
+        lineChart.setMarker(ftMarker);
+        lineChart.setHighlightPerTapEnabled(true);
+
         lineChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry e, Highlight h) {
