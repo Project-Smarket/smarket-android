@@ -89,7 +89,7 @@ public class user_login_fragment extends Fragment {
          * 유효하면 로그인 성공화면으로 이동
          * 유효하지 않으면 로그인 해야함
          */
-        validate_user();
+        //validate_user();
 
         login_id = viewGroup.findViewById(R.id.login_id_et);
         login_pw = viewGroup.findViewById(R.id.login_pw_et);
@@ -264,6 +264,7 @@ public class user_login_fragment extends Fragment {
     } // user의 로그인 정보를 젖아하는 userFile 생성
 
     private void set_userFile(String user_id, String access_token, String refresh_token, String nickname) {
+        userFile = getActivity().getSharedPreferences("userFile", MODE_PRIVATE);
         SharedPreferences.Editor editor = userFile.edit();
         editor.putString("user_id", user_id);
         editor.putString("access_token", access_token);
