@@ -152,6 +152,7 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
         private TextView bookmark_productype;
         private TextView bookmark_lprice;
         private TextView bookmark_mallName;
+        private TextView bookmark_won;
 
         private ImageView bookmark_btn;
         private ImageView alarm_btn;
@@ -166,6 +167,7 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
             bookmark_productype = itemView.findViewById(R.id.search_list_item_productype);
             bookmark_lprice = itemView.findViewById(R.id.search_list_item_price);
             bookmark_mallName = itemView.findViewById(R.id.search_list_item_mallName);
+            bookmark_won = itemView.findViewById(R.id.search_list_item_won);
 
             bookmark_btn = itemView.findViewById(R.id.bookmark_btn);
             alarm_btn = itemView.findViewById(R.id.alarm_btn);
@@ -206,6 +208,8 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if(item_selling){
+
                     fluctuation_fragment fluctuation_fragment = new fluctuation_fragment();
 
                     // 상품 상세로 데이터 전송
@@ -215,6 +219,10 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
                     FragmentTransaction fragmentTransaction = ((FragmentActivity)mContext).getSupportFragmentManager().beginTransaction();
                     fragmentTransaction.replace(R.id.main_layout, fluctuation_fragment, "search").addToBackStack(null);
                     fragmentTransaction.commit();
+                    }
+                    else{
+                        Toast.makeText(mContext, "판매 종료된 상품입니다.", Toast.LENGTH_LONG).show();
+                    }
                 }
             });
         }
@@ -255,7 +263,8 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
             item_image = bookmark.getItem_image();
             set_bookmark_image();
             alarm_btn.setVisibility(View.GONE);
-            bookmark_productype.setVisibility(View.INVISIBLE);
+            bookmark_productype.setText("");
+            bookmark_won.setText("");
 
         }
 
