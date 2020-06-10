@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -46,11 +47,15 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
 
     @Override
     public void onBindViewHolder(@NonNull alViewHolder holder, int position) {
-        holder.onBind(alarmList.get(position));
-        if (holder.lprice_diff < 0)
-            holder.set_alarmType_down();
-        else if (holder.lprice_diff > 0)
-            holder.set_alarmType_up();
+        if (!alarmList.get(position).isItem_selling()) {
+            holder.onSoldOut(alarmList.get(position));
+        } else {
+            holder.onBind(alarmList.get(position));
+            if (holder.lprice_diff < 0)
+                holder.set_alarmType_down();
+            else if (holder.lprice_diff > 0)
+                holder.set_alarmType_up();
+        }
     }
 
     @Override
@@ -64,6 +69,8 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
 
         private int lprice_diff;
         private String item_image;
+
+        private boolean item_selling;
 
         private TextView alarm_title; // 상품 제목
         private TextView alarm_diff;
@@ -82,7 +89,7 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
 
             alarm_title = itemView.findViewById(R.id.alamr_item_title_textView);
             alarm_image = itemView.findViewById(R.id.alarm_item_imageView);
-            alarm_lprice= itemView.findViewById(R.id.alarm_item_price_textView);
+            alarm_lprice = itemView.findViewById(R.id.alarm_item_price_textView);
             alarm_diff = itemView.findViewById(R.id.alarm_diff_textView);
             alarm_date = itemView.findViewById(R.id.alarm_date_textView);
 
@@ -96,26 +103,48 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if(item_selling){
+
                     fluctuation_fragment fluctuation_fragment = new fluctuation_fragment();
 
                     Bundle bundle = set_bundle();
                     fluctuation_fragment.setArguments(bundle);
 
-                    FragmentTransaction fragmentTransaction = ((AppCompatActivity)mContext).getSupportFragmentManager().beginTransaction();
+                    FragmentTransaction fragmentTransaction = ((AppCompatActivity) mContext).getSupportFragmentManager().beginTransaction();
                     fragmentTransaction.replace(R.id.main_layout, fluctuation_fragment).addToBackStack(null);
                     fragmentTransaction.commit();
+                    }else{
+                        Toast.makeText(mContext, "판매 종료된 상품입니다.", Toast.LENGTH_LONG).show();
+                    }
                 }
             });
         }
 
-        private Bundle set_bundle(){
+        private Bundle set_bundle() {
             Bundle bundle = new Bundle();
             bundle.putParcelable("item_data", item_data);
             return bundle;
         }
 
+        public void onSoldOut(DTO data) {
+            item_data = data;
+            item_selling = data.isItem_selling();
+            alarm_title.setText(data.getItem_title());
+            item_image = data.getItem_image();
+            set_alarm_image(item_image);
+            alarm_lprice.setText("판매종료");
+            alarm_diff.setText("");
+            alarm_type.setText("판매종료");
+            alarm_productType.setText("");
+            alarm_won.setText("");
+            direction.setVisibility(View.GONE);
+            direction2.setVisibility(View.GONE);
+            alarm_date.setText(data.getAlarm_date());
+        }
+
         public void onBind(DTO data) {
             item_data = data;
+            item_selling = data.isItem_selling();
             alarm_title.setText(data.getItem_title());
             item_image = data.getItem_image();
             set_alarm_image(item_image);
@@ -131,7 +160,7 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
 
         // direction ImageView 설정정
         void set_alarmType_down() {
-            alarm_diff.setText(String.format("%,d", lprice_diff*-1)+"원");
+            alarm_diff.setText(String.format("%,d", lprice_diff * -1) + "원");
             alarm_diff.setTextColor(mContext.getResources().getColor(R.color.blue));
             alarm_lprice.setTextColor(mContext.getResources().getColor(R.color.blue));
 
@@ -148,7 +177,7 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
         }
 
         void set_alarmType_up() {
-            alarm_diff.setText(String.format("%,d", lprice_diff)+"원");
+            alarm_diff.setText(String.format("%,d", lprice_diff) + "원");
             alarm_diff.setTextColor(mContext.getResources().getColor(R.color.red));
             alarm_lprice.setTextColor(mContext.getResources().getColor(R.color.red));
 
@@ -163,5 +192,7 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
             direction.setRotationX(180);
             direction2.setRotationX(180);
         }
+
+
     }
 }
