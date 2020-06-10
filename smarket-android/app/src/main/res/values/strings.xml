@@ -18,7 +18,7 @@
     <string name="detailTab3">영상보기</string>
     <string name="detailTab4">리뷰</string>
 
-    <!--<string name="authEndpoint"> http://10.0.2.2:3000/api/auth </string>
+<!--    <string name="authEndpoint"> http://10.0.2.2:3000/api/auth </string>
     <string name="usersEndpoint"> http://10.0.2.2:3000/api/users </string>
     <string name="bookmarksEndpoint">http://10.0.2.2:3000/api/bookmarks</string>
     <string name="fcmEndpoint"> http://10.0.2.2:3000/api/fcm </string>
