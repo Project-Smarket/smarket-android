@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import org.techtown.smarket_android.DTO_Class.DTO;
 import org.techtown.smarket_android.R;
@@ -155,7 +156,8 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
         }
 
         void set_alarm_image(final String item_image) {
-            Glide.with(mContext).asBitmap().load(item_image).into(alarm_image);
+            Glide.with(mContext).asBitmap().load(item_image).diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true).into(alarm_image);
         }
 
         // direction ImageView 설정정

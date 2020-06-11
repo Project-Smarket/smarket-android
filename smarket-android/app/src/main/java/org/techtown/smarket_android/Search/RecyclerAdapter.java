@@ -41,6 +41,7 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -250,7 +251,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
         }
 
         void set_item_image() {
-            Glide.with(mContext).asBitmap().load(item_image_url).into(item_image);
+            Glide.with(mContext).asBitmap().load(item_image_url).diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true).into(item_image);
         }
 
         void onType(String item_type) {
