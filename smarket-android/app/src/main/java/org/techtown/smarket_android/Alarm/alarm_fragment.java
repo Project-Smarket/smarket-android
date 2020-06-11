@@ -120,7 +120,7 @@ public class alarm_fragment extends Fragment {
 
     private void set_toolbar() {
         Toolbar toolbar = viewGroup.findViewById(R.id.alarm_toolbar);
-        toolbar.setTitle("가격 변동 내역");
+        toolbar.setTitle("알람");
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
     }
 

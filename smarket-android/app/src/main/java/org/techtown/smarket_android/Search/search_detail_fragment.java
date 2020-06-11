@@ -474,8 +474,8 @@ public class search_detail_fragment extends Fragment {
     // 북마크 등록 시 alarm 설정
     private void set_alarm(final String folder_name, final DTO item_data) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
-                .setTitle("최저가 알람 등록")
-                .setMessage("최저가 알람을 등록하시겠습니까?")
+                .setTitle("알람 등록")
+                .setMessage("가격 변동 알람을 등록하시겠습니까?")
                 .setPositiveButton("등록", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
