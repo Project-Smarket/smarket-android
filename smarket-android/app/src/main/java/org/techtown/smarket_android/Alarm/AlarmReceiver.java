@@ -36,6 +36,7 @@ import org.techtown.smarket_android.R;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -92,11 +93,16 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         // 다음 알람 시간 설정
         int set_time = intent.getIntExtra("set_time", 0);
-
+        try {
+            intent.getIntent("set_time").removeExtra("set_time");
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         if (set_time == 0) {
             Toast.makeText(context, "알람이 꺼졌습니다", Toast.LENGTH_LONG).show();
         } else {
             set_alarmManager(context, intent, set_time);
+
         }
 
 

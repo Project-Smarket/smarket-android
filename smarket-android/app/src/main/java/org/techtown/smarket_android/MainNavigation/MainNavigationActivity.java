@@ -1,7 +1,11 @@
 package org.techtown.smarket_android.MainNavigation;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -37,6 +41,12 @@ public class MainNavigationActivity extends AppCompatActivity {
     private alarm_fragment alarm_fragment4;
     private boolean back_check = false;
 
+    private SharedPreferences userFile;
+    private String userID;
+    private String user_nickname;
+    private String access_token;
+    private String refresh_token;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,18 +54,7 @@ public class MainNavigationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_navigation);
         bottomNavigationView = findViewById(R.id.bottomNavigationView); //프래그먼트 생성
 
-
-        search_fragment1 = new search_fragment();//제일 처음 띄워줄 뷰를 세팅해줍니다. commit();까지 해줘야 합니다.
-
-//        hotdeal_fragment2 = new hotdeal_fragment(); // 스마켓 홈 창
-        //user_fragment2 = new user_login_success(); // 로그인 완료 창
-//        user_fragment3 = new user_login_fragment(); // 로그인 창
-//        alarm_fragment4 = new alarm_fragment(); // 최저가 알림창
-
-        //set_bookmarkFolderList(); // 디폴트 북마크 폴더 생성 (함수 한번 실행시 어플이 삭제될 때까지 데이터 존재)
-
         set_navigation();
-        //check_alarmManager();
 
         checkNotification();     //알림으로 들어올시 실행되는 메소드
 
@@ -63,10 +62,9 @@ public class MainNavigationActivity extends AppCompatActivity {
     }
 
     // 각 프래그먼트에 addToBackStack 선언 = 뒤로가기를 누르면 스택에 쌓인 프래그먼트가 없어지는 형태
-    // https://youngest-programming.tistory.com/21
-    // https://hwanine.github.io/android/backStack/
 
     private void set_navigation() {
+        search_fragment1 = new search_fragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, search_fragment1, "search").commit(); //bottomnavigationview의 아이콘을 선택 했을때 원하는 프래그먼트가 띄워질 수 있도록 리스너를 추가합니다.
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -92,7 +90,13 @@ public class MainNavigationActivity extends AppCompatActivity {
                     }
                     case R.id.tab3: {
                         user_fragment3 = new user_login_fragment(); // 로그인 창
-                        fragmentTransaction.replace(R.id.main_layout, user_fragment3, "login");
+                        user_login_success user_login_success = new user_login_success();
+                        get_userFile();
+                        if(TextUtils.isEmpty(userID) && TextUtils.isEmpty(access_token))
+                            fragmentTransaction.replace(R.id.main_layout, user_fragment3, "login");
+                        else{
+                            fragmentTransaction.replace(R.id.main_layout, user_login_success, "loginS");
+                        }
 
                         break;
                     }
@@ -124,23 +128,6 @@ public class MainNavigationActivity extends AppCompatActivity {
     }
 
     public void updateBottomMenu(final BottomNavigationView bottomNavigationView) {
-        Fragment search = getSupportFragmentManager().findFragmentByTag("search");
-        Fragment hotDeal = getSupportFragmentManager().findFragmentByTag("hotDeal");
-        Fragment login = getSupportFragmentManager().findFragmentByTag("login");
-        Fragment alarm = getSupportFragmentManager().findFragmentByTag("alarm");
-        Fragment logout = getSupportFragmentManager().findFragmentByTag("logout");
-        Fragment loginS = getSupportFragmentManager().findFragmentByTag("loginS");
-
-        /*if (search != null && search.isVisible())
-            bottomNavigationView.getMenu().findItem(R.id.tab1).setChecked(true);
-        else if (hotDeal != null && hotDeal.isVisible())
-            bottomNavigationView.getMenu().findItem(R.id.tab2).setChecked(true);
-        else if (alarm != null && alarm.isVisible())
-            bottomNavigationView.getMenu().findItem(R.id.tab4).setChecked(true);
-        else if (logout != null && logout.isVisible())
-            bottomNavigationView.getMenu().findItem(R.id.tab3).setChecked(true);
-        else if (loginS != null && loginS.isVisible())
-            bottomNavigationView.getMenu().findItem(R.id.tab3).setChecked(true);*/
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -222,55 +209,14 @@ public class MainNavigationActivity extends AppCompatActivity {
             if ((logout != null && logout.isVisible()) || (loginS != null && loginS.isVisible())) {
                 // Nothing
             } else {
-                fragmentManager.popBackStack();
+                super.onBackPressed();
                 BottomNavigationView bnv = findViewById(R.id.bottomNavigationView);
                 updateBottomMenu(bnv);
             }
         }
 
-
-        /*if (search != null && search.isVisible()) { //첫화면 뒤로가기 종료
-            //this.finish();
-
-            if (System.currentTimeMillis() > backKeyPressedTime + 1000) {
-                backKeyPressedTime = System.currentTimeMillis();
-                back_check = false;
-                List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
-                for (Fragment fragment : fragmentList) {
-                    if (fragment instanceof OnBackpressedListener) {
-                        ((OnBackpressedListener) fragment).onBackPressed();
-                    }
-                }
-                return;
-            }
-
-            if (back_check) {
-                Toast.makeText(this, "한번 더 누르면 종료", Toast.LENGTH_SHORT).cancel();
-                this.finish();
-            }
-
-            if (System.currentTimeMillis() <= backKeyPressedTime + 1000) {
-                back_check = true;
-                backKeyPressedTime = System.currentTimeMillis();
-                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.main_layout, search_fragment.newInstance(), "search").addToBackStack(null).commit();
-                Toast.makeText(this, "한 번더 누르면 종료", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-        } else if (logout != null && logout.isVisible()) { // 로그아웃 후 뒤로가기 방지
-
-        } else if (loginS != null && loginS.isVisible()) { //로그인 후 뒤로가기 방지
-
-        }else {
-            super.onBackPressed();
-            BottomNavigationView bnv = findViewById(R.id.bottomNavigationView);
-            updateBottomMenu(bnv);
-        }*/
-
     }
 
-    //참고사이트 https://featherwing.tistory.com/9
     private void checkNotification() {
         String str = getIntent().getStringExtra("data");
 
@@ -294,6 +240,12 @@ public class MainNavigationActivity extends AppCompatActivity {
         back_check = value;
     }
 
+    // userFile에 저장된 user_id 와 access_token 값 가져오기
+    private void get_userFile() {
+        userFile = getSharedPreferences("userFile", Context.MODE_PRIVATE);
+        userID = userFile.getString("user_id", null);
+        access_token = userFile.getString("access_token", null);
+    }
 }
 
 

@@ -79,7 +79,6 @@ public class user_login_success extends Fragment {
 
     // ** 로그인 및 토큰 정보 ** //
     private SharedPreferences userFile;
-    private Boolean user_alarm;
 
     private String userID;
     private String user_nickname;
@@ -121,7 +120,7 @@ public class user_login_success extends Fragment {
                 bookmark_fragment newbookmark_fragment = new bookmark_fragment();
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_layout, newbookmark_fragment, "login").addToBackStack(null);
+                fragmentTransaction.replace(R.id.main_layout, newbookmark_fragment, "bookmark");
                 fragmentTransaction.commit();
             }
         });
@@ -134,7 +133,7 @@ public class user_login_success extends Fragment {
                 latest_fragment latest_fragment = new latest_fragment();
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_layout, latest_fragment, "login").addToBackStack(null);
+                fragmentTransaction.replace(R.id.main_layout, latest_fragment, "latest");
                 fragmentTransaction.commit();
             }
         });
@@ -208,7 +207,7 @@ public class user_login_success extends Fragment {
                 // 알람끔
                 off_alarm();
                 FragmentManager fragmentManager = getFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.main_layout, user_login_fragment.newInstance(), "logout").addToBackStack(null).commit();
+                fragmentManager.beginTransaction().replace(R.id.main_layout, user_login_fragment.newInstance(), "logout").commit();
             }
         });
 
