@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -217,7 +218,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(context, "Alarm 에러 : " + error.toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "최저가 조회 : " + error.toString(), Toast.LENGTH_SHORT).show();
                 String request_type = "request_get_item_price";
                 error_handling(error, request_type, context, null, 0, null);
             }
@@ -229,6 +230,11 @@ public class AlarmReceiver extends BroadcastReceiver {
                 return params;
             }
         };
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS*4,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
 
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         requestQueue.add(stringRequest);

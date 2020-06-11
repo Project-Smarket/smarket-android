@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -654,6 +655,7 @@ public class bookmark_fragment extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 // ** 북마크 조회 실패시 ** //
+                Toast.makeText(getContext(),  "북마크 조회 : " + error.toString(), Toast.LENGTH_LONG).show();
                 // Error Handling - request 오류(토큰만료) 처리
                 String request_type = "request_bookmarkList";
                 error_handling(error, request_type, folder_name);
@@ -667,6 +669,11 @@ public class bookmark_fragment extends Fragment {
             }
         };
 
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS*4,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
         RequestQueue requestQueue = Volley.newRequestQueue(getContext());
         requestQueue.add(stringRequest);
     }

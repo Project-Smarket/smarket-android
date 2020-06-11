@@ -3,7 +3,7 @@
 
     <item android:drawable="@color/color_lite_gray"/>
     <item
-        android:gravity="fill"
+        android:gravity="fill|clip_vertical"
         android:drawable="@drawable/smarket_footprint">
 
     </item>

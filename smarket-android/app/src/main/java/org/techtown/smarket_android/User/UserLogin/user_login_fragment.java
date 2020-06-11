@@ -60,17 +60,6 @@ public class user_login_fragment extends Fragment {
     private EditText login_pw;
     private Button login_btn;
 
-    InputMethodManager imm;
-
-    // ** 로그인 및 토큰 정보 ** //
-    private SharedPreferences userFile;
-    private String user_id;
-    private String access_token;
-    private String refresh_token;
-    public String device_token = "";
-
-    public RequestQueue queue;
-
 
     public static user_login_fragment newInstance() {
         return new user_login_fragment();
@@ -81,19 +70,9 @@ public class user_login_fragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewGroup = (ViewGroup) inflater.inflate(R.layout.user_login_main, container, false);
 
-
-        // 단말기에 저장된 모든 userInfoList를 불러옴
-        //get_userInfoList();
-        /* user 정보가 유효한지 검사
-         * validate_user()
-         * 유효하면 로그인 성공화면으로 이동
-         * 유효하지 않으면 로그인 해야함
-         */
-        //validate_user();
-
         login_id = viewGroup.findViewById(R.id.login_id_et);
         login_pw = viewGroup.findViewById(R.id.login_pw_et);
-        imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
 
         login_pw.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -128,6 +107,7 @@ public class user_login_fragment extends Fragment {
     }
 
     private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(login_id.getWindowToken(), 0);
     }// 키보드 입력 후 엔터 입력시 키보드 창 내림
 
@@ -151,7 +131,7 @@ public class user_login_fragment extends Fragment {
                         String nickname = data.getString("nickname");
                         set_userFile(user_id, access_token, refresh_token, nickname); // userFile에 user_id와 access_token을 저장
 
-                        createToken(access_token, getContext());
+                        sendToken(access_token, getContext());
 
                         user_login_success user_login_success = new user_login_success();
                         FragmentManager fragmentManager = getFragmentManager();
@@ -162,7 +142,6 @@ public class user_login_fragment extends Fragment {
                         Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
 
                 } catch (JSONException e) {
-                    Log.d(TAG, "onResponse: 실패" + e);
                     e.printStackTrace();
 
                 }
@@ -188,17 +167,17 @@ public class user_login_fragment extends Fragment {
         requestQueue.add(stringRequest);
     }
 
-    private void createToken(String a_token, final Context mContext) {
-        //파이어베이스 API에서 현재 토큰을 검색하는 메소드
+    private void sendToken(String a_token, final Context mContext) {
+        SharedPreferences userFile = getContext().getSharedPreferences("userFile", MODE_PRIVATE);
         final String access = a_token;
+        final String device = userFile.getString("device_token", "");
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(getActivity(),
 
                 new OnSuccessListener<InstanceIdResult>() {
                     @Override
                     public void onSuccess(InstanceIdResult instanceIdResult) {
-                        //instanceIdResult.getToken(); 토큰 조회
-                        sendRegistrationToServer(access, instanceIdResult.getToken(), mContext);
-                }
+                        sendRegistrationToServer(access, device, mContext);
+                    }
                 }
         );
     }
@@ -234,7 +213,6 @@ public class user_login_fragment extends Fragment {
     }
 
 
-
     private void error_handling(VolleyError error) {
         NetworkResponse response = error.networkResponse;
         if (error instanceof ClientError && response != null) {
@@ -259,12 +237,8 @@ public class user_login_fragment extends Fragment {
     }
 
 
-    private void generate_userFile() {
-        userFile = getActivity().getSharedPreferences("userFile", MODE_PRIVATE);
-    } // user의 로그인 정보를 젖아하는 userFile 생성
-
     private void set_userFile(String user_id, String access_token, String refresh_token, String nickname) {
-        userFile = getActivity().getSharedPreferences("userFile", MODE_PRIVATE);
+        SharedPreferences userFile = getActivity().getSharedPreferences("userFile", MODE_PRIVATE);
         SharedPreferences.Editor editor = userFile.edit();
         editor.putString("user_id", user_id);
         editor.putString("access_token", access_token);
@@ -273,18 +247,6 @@ public class user_login_fragment extends Fragment {
         editor.apply(); //완료한다.
     } // 로그인 시 user의 아이디와 토큰 정보를 저장
 
-    private void validate_user() {
-        generate_userFile();
-        String user_id = userFile.getString("user_id", null);
-        String access_token = userFile.getString("access_token", null);
-
-        if (user_id != null && access_token != null) {
-            FragmentManager fragmentManager = getFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.main_layout, user_login_success.newInstance(), "loginS").commit(); // 로그인 성공화면으로 이동
-
-        }
-    }
 
     private void goto_register() {
         FragmentManager fragmentManager = getFragmentManager();
