@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -77,13 +78,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onNewToken(String token) { // 새로운 토큰이 발행될때 호출됨.
-        Log.d(TAG, "Refreshed token: " + token);
+
 
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
+        save_token(token);
 
-//        sendRegistrationToServer(token);
+    }
+    private void save_token(String device_token){
+        SharedPreferences userFile = getSharedPreferences("userFile", MODE_PRIVATE);
+        SharedPreferences.Editor editor = userFile.edit();
+        editor.putString("device_token", device_token);
+        editor.apply();
     }
 
 
