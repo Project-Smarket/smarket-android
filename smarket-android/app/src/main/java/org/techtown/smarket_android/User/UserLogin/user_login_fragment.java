@@ -168,7 +168,7 @@ public class user_login_fragment extends Fragment {
     }
 
     private void sendToken(String a_token, final Context mContext) {
-        SharedPreferences userFile = getContext().getSharedPreferences("userFile", MODE_PRIVATE);
+        final SharedPreferences userFile = getContext().getSharedPreferences("userFile", MODE_PRIVATE);
         final String access = a_token;
         final String device = userFile.getString("device_token", "");
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(getActivity(),
@@ -176,7 +176,10 @@ public class user_login_fragment extends Fragment {
                 new OnSuccessListener<InstanceIdResult>() {
                     @Override
                     public void onSuccess(InstanceIdResult instanceIdResult) {
-                        sendRegistrationToServer(access, device, mContext);
+                        if(!instanceIdResult.getToken().equals(device))
+                            sendRegistrationToServer(access, device, mContext);
+                        else
+                            sendRegistrationToServer(access, instanceIdResult.getToken(), mContext);
                     }
                 }
         );
