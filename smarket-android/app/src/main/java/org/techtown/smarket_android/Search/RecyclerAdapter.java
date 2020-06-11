@@ -508,7 +508,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                 params.put("item_link", item_data.getItem_link());
                 params.put("item_image", item_data.getItem_image());
                 //params.put("item_lprice", item_data.getItem_lprice());
-                params.put("item_lprice", "1000");
+                params.put("item_lprice", "100000");
                 params.put("item_mallname", item_data.getItem_mallName());
                 params.put("item_id", item_data.getItem_id());
                 params.put("item_type", item_data.getItem_type());
