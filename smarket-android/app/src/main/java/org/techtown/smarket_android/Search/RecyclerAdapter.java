@@ -57,18 +57,16 @@ import org.techtown.smarket_android.DTO_Class.DTO;
 import org.techtown.smarket_android.DTO_Class.Fluctuation;
 import org.techtown.smarket_android.R;
 import org.techtown.smarket_android.User.Bookmark.bookmark_dialog;
-import org.techtown.smarket_android.User.Bookmark.bookmark_recyclerview_adapater;
+import org.techtown.smarket_android.User.Bookmark.bookmark_dialog_adapater;
 import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import static com.android.volley.VolleyLog.TAG;
@@ -92,7 +90,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
     private Context mContext;
     private Activity mActivity;
 
-    private bookmark_recyclerview_adapater bookmarkRecyclerviewAdapter;
+    private bookmark_dialog_adapater bookmarkRecyclerviewAdapter;
     private bookmark_dialog bookmarkDialog;
     private List<String> bookmarkFolderList;
 
@@ -151,11 +149,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                     bookmarkFolderList = new ArrayList<>();
                     request_bookmarkFolderList();
 
-                    bookmarkRecyclerviewAdapter = new bookmark_recyclerview_adapater(bookmarkFolderList, mActivity);
+                    bookmarkRecyclerviewAdapter = new bookmark_dialog_adapater(bookmarkFolderList, mActivity);
                     bookmarkDialog = new bookmark_dialog(mActivity, "북마크 폴더 리스트", bookmarkRecyclerviewAdapter, bookmarkFolderList, mClickAddListener);
 
                     // 북마크 폴더 선택 시 서버로 북마크 등록 요청
-                    bookmarkRecyclerviewAdapter.setOnItemClickListener(new bookmark_recyclerview_adapater.OnItemClickListener() {
+                    bookmarkRecyclerviewAdapter.setOnItemClickListener(new bookmark_dialog_adapater.OnItemClickListener() {
                         @Override
                         public void onItemClick(View v, int position, List<String> list) {
 

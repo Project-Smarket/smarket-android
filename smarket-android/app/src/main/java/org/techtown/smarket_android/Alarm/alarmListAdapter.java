@@ -56,6 +56,9 @@ public class alarmListAdapter extends RecyclerView.Adapter<alarmListAdapter.alVi
                 holder.set_alarmType_down();
             else if (holder.lprice_diff > 0)
                 holder.set_alarmType_up();
+
+            if(!holder.item_data.getItem_type().equals("1"))
+                holder.alarm_productType.setText("");
         }
     }
 

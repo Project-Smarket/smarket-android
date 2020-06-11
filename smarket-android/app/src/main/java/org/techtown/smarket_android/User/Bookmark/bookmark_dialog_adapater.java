@@ -14,12 +14,12 @@ import org.techtown.smarket_android.R;
 
 import java.util.List;
 
-public class bookmark_recyclerview_adapater extends RecyclerView.Adapter<bookmark_recyclerview_adapater.itemViewHolder> {
+public class bookmark_dialog_adapater extends RecyclerView.Adapter<bookmark_dialog_adapater.itemViewHolder> {
 
     private List<String> bookmarkFolderList;
     private Activity mActivity;
 
-    public bookmark_recyclerview_adapater(List<String> list, Activity activity){
+    public bookmark_dialog_adapater(List<String> list, Activity activity){
         bookmarkFolderList = list;
         mActivity = activity;
     }
@@ -36,18 +36,18 @@ public class bookmark_recyclerview_adapater extends RecyclerView.Adapter<bookmar
 
     @NonNull
     @Override
-    public bookmark_recyclerview_adapater.itemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public bookmark_dialog_adapater.itemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         LayoutInflater inflater = (LayoutInflater) mActivity.getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.bookmark_folder_list_item, parent, false);
 
-        final bookmark_recyclerview_adapater.itemViewHolder itemViewHolder = new bookmark_recyclerview_adapater.itemViewHolder(view);
+        final bookmark_dialog_adapater.itemViewHolder itemViewHolder = new bookmark_dialog_adapater.itemViewHolder(view);
 
         return new itemViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull bookmark_recyclerview_adapater.itemViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull bookmark_dialog_adapater.itemViewHolder holder, int position) {
         holder.onBind(this.bookmarkFolderList.get(position));
     }
 

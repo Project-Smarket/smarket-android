@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -33,7 +31,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -47,7 +44,6 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
-import com.google.android.gms.common.internal.Objects;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.gson.GsonBuilder;
@@ -64,7 +60,7 @@ import org.techtown.smarket_android.DTO_Class.Fluctuation;
 import org.techtown.smarket_android.Hotdeal.hotdeal_webView;
 import org.techtown.smarket_android.Loading.CustomAnimationDialog;
 import org.techtown.smarket_android.User.Bookmark.bookmark_dialog;
-import org.techtown.smarket_android.User.Bookmark.bookmark_recyclerview_adapater;
+import org.techtown.smarket_android.User.Bookmark.bookmark_dialog_adapater;
 import org.techtown.smarket_android.User.UserLogin.user_login_fragment;
 import org.techtown.smarket_android.DTO_Class.DTO;
 import org.techtown.smarket_android.DTO_Class.Detail_news;
@@ -78,14 +74,12 @@ import org.techtown.smarket_android.Search.Request.danawaRequest;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import static com.android.volley.VolleyLog.TAG;
@@ -109,7 +103,7 @@ public class search_detail_fragment extends Fragment {
     private String item_productType;
 
     // 북마크
-    private bookmark_recyclerview_adapater bookmarkRecyclerviewAdapter;
+    private bookmark_dialog_adapater bookmarkRecyclerviewAdapter;
     private bookmark_dialog bookmarkDialog;
     private List<String> bookmarkFolderList;
     private EditText bookmark_folder_name;
@@ -185,11 +179,11 @@ public class search_detail_fragment extends Fragment {
             bookmarkFolderList = new ArrayList<>();
             request_bookmarkFolderList();
 
-            bookmarkRecyclerviewAdapter = new bookmark_recyclerview_adapater(bookmarkFolderList, getActivity());
+            bookmarkRecyclerviewAdapter = new bookmark_dialog_adapater(bookmarkFolderList, getActivity());
             bookmarkDialog = new bookmark_dialog(getActivity(), "북마크 폴더 리스트", bookmarkRecyclerviewAdapter, bookmarkFolderList, mClickAddListener);
 
             // 북마크 폴더 선택 시 서버로 북마크 등록 요청
-            bookmarkRecyclerviewAdapter.setOnItemClickListener(new bookmark_recyclerview_adapater.OnItemClickListener() {
+            bookmarkRecyclerviewAdapter.setOnItemClickListener(new bookmark_dialog_adapater.OnItemClickListener() {
                 @Override
                 public void onItemClick(View v, int position, List<String> list) {
 

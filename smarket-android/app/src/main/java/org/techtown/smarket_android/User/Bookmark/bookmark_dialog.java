@@ -23,7 +23,7 @@ public class bookmark_dialog extends Dialog {
     // 리스트뷰 어뎁터
     private View.OnClickListener addFolderlistener;
 
-    private bookmark_recyclerview_adapater bookmarkRecyclerviewAdapter;
+    private bookmark_dialog_adapater bookmarkRecyclerviewAdapter;
     private RecyclerView recyclerView;
     private List<String> bookmarkFolderList;
     // 닫기 버튼
@@ -41,7 +41,7 @@ public class bookmark_dialog extends Dialog {
      * @param list
      * @param addFolderlistener
      */
-    public bookmark_dialog(Activity activity, String title, bookmark_recyclerview_adapater adapter, List<String> list,
+    public bookmark_dialog(Activity activity, String title, bookmark_dialog_adapater adapter, List<String> list,
                            View.OnClickListener addFolderlistener) {
         //super(activity, android.R.style.Theme_Material);
         super(activity);
