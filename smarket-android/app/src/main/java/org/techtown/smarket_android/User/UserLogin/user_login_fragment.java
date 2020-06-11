@@ -131,7 +131,7 @@ public class user_login_fragment extends Fragment {
                         String nickname = data.getString("nickname");
                         set_userFile(user_id, access_token, refresh_token, nickname); // userFile에 user_id와 access_token을 저장
 
-                        //createToken(access_token, getContext());
+                        sendToken(access_token, getContext());
 
                         user_login_success user_login_success = new user_login_success();
                         FragmentManager fragmentManager = getFragmentManager();
@@ -153,16 +153,6 @@ public class user_login_fragment extends Fragment {
             }
         }
         ) {
-
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                SharedPreferences userFile = getContext().getSharedPreferences("userFile", MODE_PRIVATE);
-                String device_token = userFile.getString("device_token", "");
-                Map<String, String> params = new HashMap();
-                params.put("x-device-token", device_token);
-                return params;
-            }
-
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 String user_id = login_id.getText().toString();
@@ -177,16 +167,16 @@ public class user_login_fragment extends Fragment {
         requestQueue.add(stringRequest);
     }
 
-    private void createToken(String a_token, final Context mContext) {
-        //파이어베이스 API에서 현재 토큰을 검색하는 메소드
+    private void sendToken(String a_token, final Context mContext) {
+        SharedPreferences userFile = getContext().getSharedPreferences("userFile", MODE_PRIVATE);
         final String access = a_token;
+        final String device = userFile.getString("device_token", "");
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(getActivity(),
 
                 new OnSuccessListener<InstanceIdResult>() {
                     @Override
                     public void onSuccess(InstanceIdResult instanceIdResult) {
-                        //instanceIdResult.getToken(); 토큰 조회
-                        sendRegistrationToServer(access, instanceIdResult.getToken(), mContext);
+                        sendRegistrationToServer(access, device, mContext);
                     }
                 }
         );
