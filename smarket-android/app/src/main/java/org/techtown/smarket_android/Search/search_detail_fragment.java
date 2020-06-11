@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -47,6 +48,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.common.internal.Objects;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -391,12 +393,25 @@ public class search_detail_fragment extends Fragment {
 
                         Date currentTime = Calendar.getInstance().getTime();
                         List<Fluctuation> fluctuationList = new ArrayList<>();
-                        //fluctuationList.add(new Fluctuation(date ,item_data.getItem_lprice()));
-                        fluctuationList.add(new Fluctuation(currentTime , "1000"));
+                        fluctuationList.add(new Fluctuation(currentTime ,item_data.getItem_lprice()));
+                        //fluctuationList.add(new Fluctuation(currentTime , "1000"));
                         save_fluctuationList(id, fluctuationList);
 
-                        Toast.makeText(getContext(), folder_name + " 폴더에 북마크가 등록 되었습니다.", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(getContext(), folder_name + " 폴더에 북마크가 등록 되었습니다.", Toast.LENGTH_LONG).show();
+                        Fragment fragment = ((AppCompatActivity)getActivity()).getSupportFragmentManager().findFragmentById(R.id.main_layout);
 
+                        Snackbar snackbar = Snackbar.make(fragment.getView(), folder_name + " 폴더에 북마크가 등록 되었습니다.", 3000)
+                                .setActionTextColor(getActivity().getResources().getColor(R.color.smarketyello));
+
+                        // 스낵바 배경 색 설정
+                        View sbView = snackbar.getView();
+                        sbView.setBackgroundColor(getActivity().getResources().getColor(R.color.smarketyello));
+
+                        // 스낵바 글씨 색 설정
+                        TextView svTextView = sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                        svTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.colorBlack));
+
+                        snackbar.show();
                     } else if (!success)
                         // ** 북마크 등록 실패 시 ** //
                         Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
