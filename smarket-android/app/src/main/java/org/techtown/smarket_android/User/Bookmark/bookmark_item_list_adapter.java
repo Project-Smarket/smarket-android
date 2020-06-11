@@ -317,13 +317,13 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
                         }
 
                     } catch (JSONException e) {
-                        Toast.makeText(mContext, e.toString(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(mContext, e.toString(), Toast.LENGTH_SHORT).show();
                     }
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(mContext, error.toString(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(mContext, error.toString(), Toast.LENGTH_SHORT).show();
                     error_handling(error, value);
                 }
             }
@@ -388,8 +388,10 @@ public class bookmark_item_list_adapter extends RecyclerView.Adapter<bookmark_it
                             update_accessToken(data);
                             request_alarm(value);
 
-                        } else if (!success)
-                            Toast.makeText(mContext, jsonObject.toString(), Toast.LENGTH_LONG).show();
+                        } else if (!success){
+
+                         //   Toast.makeText(mContext, jsonObject.toString(), Toast.LENGTH_LONG).show();
+                        }
 
                     } catch (JSONException e) {
                         e.printStackTrace();

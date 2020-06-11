@@ -443,7 +443,7 @@ public class user_login_success extends Fragment {
                     Log.d("TOKEN", "device_token: " + device_token);
                     save_deviceToken(device_token);
                 } catch (JSONException e) {
-                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
                 }
             }
         }, new Response.ErrorListener() {
@@ -514,8 +514,10 @@ public class user_login_success extends Fragment {
                         update_accessToken(data);
                         get_deviceToken();
 
-                    } else if (!success)
-                        Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
+                    } else if (!success){
+
+                     //   Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();

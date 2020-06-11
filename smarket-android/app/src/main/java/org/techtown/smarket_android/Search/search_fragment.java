@@ -312,7 +312,7 @@ public class search_fragment extends Fragment implements OnBackpressedListener {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), error + "", Toast.LENGTH_LONG).show();
+                //Toast.makeText(getContext(), error + "", Toast.LENGTH_LONG).show();
             }
         });
         RequestQueue queue = Volley.newRequestQueue(getContext());

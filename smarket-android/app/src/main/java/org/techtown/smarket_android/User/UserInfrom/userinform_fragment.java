@@ -211,7 +211,7 @@ public class userinform_fragment extends Fragment {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(getContext(), "error", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getContext(), "error", Toast.LENGTH_LONG).show();
                 }
             }
         };

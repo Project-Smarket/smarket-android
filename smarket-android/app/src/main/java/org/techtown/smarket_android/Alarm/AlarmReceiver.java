@@ -202,13 +202,13 @@ public class AlarmReceiver extends BroadcastReceiver {
                             Log.d(TAG, "onResponse: 데이터 없음");
                     } else if (!success) {
                         // ** 북마크 조회 실패시 ** //
-                        Toast.makeText(context, "북마크 조회 실패 : " + jsonObject.toString(), Toast.LENGTH_LONG).show();
+                        //Toast.makeText(context, "북마크 조회 실패 : " + jsonObject.toString(), Toast.LENGTH_LONG).show();
                     }
 
                 } catch (JSONException e) {
 
                     e.printStackTrace();
-                    Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
                     Log.d(TAG, "JSONexception: " + e);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -218,7 +218,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(context, "최저가 조회 : " + error.toString(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "최저가 조회 : " + error.toString(), Toast.LENGTH_SHORT).show();
                 String request_type = "request_get_item_price";
                 error_handling(error, request_type, context, null, 0, null);
             }
@@ -300,13 +300,15 @@ public class AlarmReceiver extends BroadcastReceiver {
                     if (success) {
                         // ** 알람 요청 성공시 ** //
                         Toast.makeText(context, "알람 성공", Toast.LENGTH_LONG).show();
-                    } else if (!success)
+                    } else if (!success){
+
                         // ** 북마크 조회 실패시 ** //
-                        Toast.makeText(context, jsonObject.toString(), Toast.LENGTH_LONG).show();
+                        //Toast.makeText(context, jsonObject.toString(), Toast.LENGTH_LONG).show();
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -314,7 +316,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show();
                 String request_type = "request_notification";
                 error_handling(error, request_type, context, noti_title, count, device_token);
             }
@@ -417,8 +419,10 @@ public class AlarmReceiver extends BroadcastReceiver {
                                 break;
                         }
 
-                    } else if (!success)
-                        Toast.makeText(context, jsonObject.toString(), Toast.LENGTH_LONG).show();
+                    } else if (!success){
+                        //Toast.makeText(context, jsonObject.toString(), Toast.LENGTH_LONG).show();
+
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();

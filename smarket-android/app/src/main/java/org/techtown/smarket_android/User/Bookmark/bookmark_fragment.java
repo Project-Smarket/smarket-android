@@ -166,10 +166,12 @@ public class bookmark_fragment extends Fragment {
                         // 북마크 스피너 설정
                         set_bookmark_spinner();
 
-                    } else if (!success)
-                        // ** 북마크 조회 실패 시 ** //
-                        Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
+                    } else if (!success){
 
+                        // ** 북마크 조회 실패 시 ** //
+                        //Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
+
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
 
@@ -318,9 +320,11 @@ public class bookmark_fragment extends Fragment {
                         spinnerAdapter.notifyDataSetChanged(); // 어댑터 갱신
                         //updateBookmarkFolderList(getContext(), SETTINGS_BOOKMARK_JSON, bookmarkFolderList);
                         bookmark_spinner.setSelection(bookmarkFolderList.size() - 1); // 새로운 북마크 생성 시 생성된 북마크 페이지
-                    } else if (!success)
+                    } else if (!success){
+
                         // ** 북마크 폴더 등록 실패 시 ** //
-                        Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
+                     //   Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -461,9 +465,11 @@ public class bookmark_fragment extends Fragment {
                         snackbar.show();
 
 
-                    } else if (!success)
+                    } else if (!success){
+
                         // ** 북마크 삭제 실패시 ** //
-                        Toast.makeText(getContext(), "북마크 삭제 - false", Toast.LENGTH_LONG).show();
+                     //   Toast.makeText(getContext(), "북마크 삭제 - false", Toast.LENGTH_LONG).show();
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -539,9 +545,11 @@ public class bookmark_fragment extends Fragment {
                         snackbar.show();
                         
                         remove_bookmarkFolder_in_bookmarkFolderList(folder_name);
-                    } else if (!success)
+                    } else if (!success){
+
                         // ** 북마크 폴더 삭제 실패시 ** //
-                        Toast.makeText(getContext(), "북마크 폴더 삭제 - false", Toast.LENGTH_LONG).show();
+                     //   Toast.makeText(getContext(), "북마크 폴더 삭제 - false", Toast.LENGTH_LONG).show();
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -642,20 +650,22 @@ public class bookmark_fragment extends Fragment {
                             adapter.notifyDataSetChanged();
                         }else
                             Log.d(TAG, "onResponse: 북마크가 비엇습니다");
-                    } else if (!success)
+                    } else if (!success){
+
                         // ** 북마크 조회 실패시 ** //
-                        Toast.makeText(getContext(), "북마크 조회 - false", Toast.LENGTH_LONG).show();
+                     //   Toast.makeText(getContext(), "북마크 조회 - false", Toast.LENGTH_LONG).show();
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getContext(), e.toString(), Toast.LENGTH_LONG).show();
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 // ** 북마크 조회 실패시 ** //
-                Toast.makeText(getContext(),  "북마크 조회 : " + error.toString(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(getContext(),  "북마크 조회 : " + error.toString(), Toast.LENGTH_LONG).show();
                 // Error Handling - request 오류(토큰만료) 처리
                 String request_type = "request_bookmarkList";
                 error_handling(error, request_type, folder_name);
@@ -734,8 +744,10 @@ public class bookmark_fragment extends Fragment {
                                 break;
                         }
 
-                    } else if (!success)
-                        Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
+                    } else if (!success){
+
+                     //   Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
+                    }
 
                 } catch (JSONException | UnsupportedEncodingException e) {
                     e.printStackTrace();

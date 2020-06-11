@@ -231,10 +231,12 @@ public class search_detail_fragment extends Fragment {
                         }
                         bookmarkRecyclerviewAdapter.notifyDataSetChanged();
                         Log.d(TAG, "북마크 폴더 조회 요청: ");
-                    } else if (!success)
-                        // ** 북마크 조회 실패 시 ** //
-                        Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
+                    } else if (!success){
 
+                        // ** 북마크 조회 실패 시 ** //
+                        //Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
+
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
 
@@ -332,9 +334,11 @@ public class search_detail_fragment extends Fragment {
                         // ** 북마크 폴더 등록 성공 시 ** //
                         bookmarkFolderList.add(folder_name); // 로컬 : bookmarkFolderList에 폴더 추가
                         bookmarkRecyclerviewAdapter.notifyDataSetChanged(); // 어댑터 갱신
-                    } else if (!success)
+                    } else if (!success){
+
                         // ** 북마크 폴더 등록 실패 시 ** //
-                        Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
+                        //Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -412,9 +416,11 @@ public class search_detail_fragment extends Fragment {
                         svTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.colorBlack));
 
                         snackbar.show();
-                    } else if (!success)
+                    } else if (!success){
+
                         // ** 북마크 등록 실패 시 ** //
-                        Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
+                        //Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -548,8 +554,10 @@ public class search_detail_fragment extends Fragment {
                                 break;
                         }
 
-                    } else if (!success)
-                        Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
+                    } else if (!success){
+
+                        //Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
+                    }
 
                 } catch (
                         JSONException e) {

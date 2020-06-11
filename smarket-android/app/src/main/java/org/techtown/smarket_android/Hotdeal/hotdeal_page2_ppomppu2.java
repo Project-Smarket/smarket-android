@@ -112,13 +112,15 @@ public class hotdeal_page2_ppomppu2 extends Fragment {
                         }
                         isMoreLoad = false;
                         page_num += 1;
-                    } else if (!success)
+                    } else if (!success){
+
                         // ** 북마크 조회 실패시 ** //
-                        Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
+                     //   Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getContext(), e.toString(), Toast.LENGTH_LONG).show();
                 }
             }
         }, new Response.ErrorListener() {

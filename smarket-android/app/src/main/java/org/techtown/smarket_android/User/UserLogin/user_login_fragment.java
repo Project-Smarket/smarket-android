@@ -137,9 +137,11 @@ public class user_login_fragment extends Fragment {
                         FragmentManager fragmentManager = getFragmentManager();
                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                         fragmentTransaction.replace(R.id.main_layout, user_login_success, "loginS").commit(); // 로그인 성공화면으로 이동
-                    } else if (!success)
+                    } else if (!success){
+
                         // ** 로그인 실패 시 ** //
-                        Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
+                     //   Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();

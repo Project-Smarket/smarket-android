@@ -166,7 +166,7 @@ public class user_register_fragment extends Fragment {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(getContext(), "error", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getContext(), "error", Toast.LENGTH_LONG).show();
                 }
             }
         };
@@ -240,7 +240,7 @@ public class user_register_fragment extends Fragment {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(mContext, "error", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(mContext, "error", Toast.LENGTH_LONG).show();
                 }
             }
         };

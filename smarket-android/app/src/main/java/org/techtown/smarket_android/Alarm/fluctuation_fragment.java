@@ -286,13 +286,13 @@ public class fluctuation_fragment extends Fragment {
                     }
 
                 } catch (JSONException e) {
-                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
                 error_handling(error, id, value);
             }
         }
@@ -357,8 +357,10 @@ public class fluctuation_fragment extends Fragment {
                         update_accessToken(data);
                         request_alarm(id ,value);
 
-                    } else if (!success)
-                        Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
+                    } else if (!success){
+
+                        //Toast.makeText(getContext(), jsonObject.toString(), Toast.LENGTH_LONG).show();
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
