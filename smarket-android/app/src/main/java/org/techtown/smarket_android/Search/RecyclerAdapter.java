@@ -449,12 +449,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
                         List<Fluctuation> fluctuationList = new ArrayList<>();
                         //fluctuationList.add(new Fluctuation(date ,item_data.getItem_lprice()));
-                        fluctuationList.add(new Fluctuation(currentTime , "1000"));
+                        fluctuationList.add(new Fluctuation(currentTime , "100000"));
                         save_fluctuationList(id, fluctuationList);
 
                         Fragment fragment = ((AppCompatActivity)mActivity).getSupportFragmentManager().findFragmentById(R.id.main_layout);
 
-                        Snackbar snackbar = Snackbar.make(fragment.getView(), folder_name + " 폴더에 북마크가 등록 되었습니다.", 3000)
+                        Snackbar snackbar = Snackbar.make(fragment.getView(), folder_name + " 폴더에 북마크가 등록 되었습니다.", 2000)
                                 .setActionTextColor(mActivity.getResources().getColor(R.color.smarketyello));
 
                         // 스낵바 배경 색 설정
@@ -598,8 +598,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
                                 break;
                         }
 
-                    } else if (!success)
-                        Toast.makeText(mContext, jsonObject.toString(), Toast.LENGTH_LONG).show();
+                    } else if (!success){
+                        //Toast.makeText(mContext, jsonObject.toString(), Toast.LENGTH_LONG).show();
+
+                    }
 
                 } catch (
                         JSONException e) {

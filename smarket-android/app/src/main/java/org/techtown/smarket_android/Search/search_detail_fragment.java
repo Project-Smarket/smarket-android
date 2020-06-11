@@ -400,7 +400,7 @@ public class search_detail_fragment extends Fragment {
                         //Toast.makeText(getContext(), folder_name + " 폴더에 북마크가 등록 되었습니다.", Toast.LENGTH_LONG).show();
                         Fragment fragment = ((AppCompatActivity)getActivity()).getSupportFragmentManager().findFragmentById(R.id.main_layout);
 
-                        Snackbar snackbar = Snackbar.make(fragment.getView(), folder_name + " 폴더에 북마크가 등록 되었습니다.", 3000)
+                        Snackbar snackbar = Snackbar.make(fragment.getView(), folder_name + " 폴더에 북마크가 등록 되었습니다.", 2000)
                                 .setActionTextColor(getActivity().getResources().getColor(R.color.smarketyello));
 
                         // 스낵바 배경 색 설정
