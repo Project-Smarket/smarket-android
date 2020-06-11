@@ -218,7 +218,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(context, "Alarm 에러 : " + error.toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "최저가 조회 : " + error.toString(), Toast.LENGTH_SHORT).show();
                 String request_type = "request_get_item_price";
                 error_handling(error, request_type, context, null, 0, null);
             }
@@ -231,7 +231,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             }
         };
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(
-                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS*2,
+                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS*4,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
         ));
